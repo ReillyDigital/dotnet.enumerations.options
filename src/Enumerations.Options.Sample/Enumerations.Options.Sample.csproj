@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LanguageVersion>12.0</LanguageVersion>
+		<Nullable>enable</Nullable>
+		<OutputType>Exe</OutputType>
+		<ProjectGuid>C6629F9E-FF07-4A96-AC39-46860F5CA3D2</ProjectGuid>
+		<RootNamespace>ReillyDigital.Enumerations.Options.Sample</RootNamespace>
+		<TargetFramework>net8.0</TargetFramework>
+		<Version>1.0.0</Version>
+	</PropertyGroup>
+	<ItemGroup Label="Project References">
+		<ProjectReference Include="../Enumerations.Options/Enumerations.Options.csproj">
+			<Name>ReillyDigital.Enumerations.Options</Name>
+			<Project>{AA0DA09D-1C29-47B8-912B-D323505872C3}</Project>
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup Label="Global Usings">
+		<Using Include="ReillyDigital.Enumerations.Options" />
+		<Using Include="ReillyDigital.Enumerations.Options.Functions" Static="true" />
+	</ItemGroup>
+</Project>

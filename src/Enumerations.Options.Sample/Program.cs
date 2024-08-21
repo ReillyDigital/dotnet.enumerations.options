@@ -1,0 +1,2 @@
+﻿SimpleValuesScenario.Run();
+StreamScenario.Run();
