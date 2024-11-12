@@ -35,11 +35,6 @@ public readonly struct Error<TValue> : IOption<TValue>
 	public Exception Value { get; }
 
 	/// <summary>
-	/// Throws <see cref="Value" />.
-	/// </summary>
-	TValue IOption<TValue>.Value => throw Value;
-
-	/// <summary>
 	/// Constructor for this option. This will have a value of a <see cref="Exception" /> with no provided message.
 	/// </summary>
 	public Error() => Value = new();
@@ -84,6 +79,11 @@ public readonly struct Error<TValue, TError> : IOption<TValue, TError>
 	public static implicit operator TError(Error<TValue, TError> value) => value.Value;
 
 	/// <summary>
+	/// Implicit cast operator to a <see cref="Exception" /> which is the reference of <see cref="ValueAsException" />.
+	/// </summary>
+	public static implicit operator Exception(Error<TValue, TError> value) => value.ValueAsException;
+
+	/// <summary>
 	/// Static default reference for this option.
 	/// </summary>
 	public static readonly Error<TValue, TError> Ref = default!;
@@ -103,11 +103,6 @@ public readonly struct Error<TValue, TError> : IOption<TValue, TError>
 		typeof(TError).IsSerializable ? new(JsonSerializer.Serialize(Value)) : null
 	);
 #pragma warning restore SYSLIB0050
-
-	/// <summary>
-	/// Throws <see cref="ValueAsException" />.
-	/// </summary>
-	TValue IOption<TValue, TError>.Value => throw ValueAsException;
 
 	/// <summary>
 	/// Constructor for this option.

@@ -80,7 +80,10 @@ public sealed class OptionStream<TValue>
 			case End<TValue> end:
 			{
 				EndReceived?.Invoke(this, end);
-				TaskCompletionSource.SetResult(end);
+				if (!TaskCompletionSource.Task.IsCompleted)
+				{
+					TaskCompletionSource.SetResult(end);
+				}
 				break;
 			}
 			case Error<TValue> error:
@@ -253,7 +256,10 @@ public sealed class OptionStream<TValue, TError>
 			case End<TValue, TError> end:
 			{
 				EndReceived?.Invoke(this, end);
-				TaskCompletionSource.SetResult(end);
+				if (!TaskCompletionSource.Task.IsCompleted)
+				{
+					TaskCompletionSource.SetResult(end);
+				}
 				break;
 			}
 			case Error<TValue, TError> error:

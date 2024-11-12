@@ -11,11 +11,6 @@ public readonly struct End<TValue> : IOption<TValue>
 	public static readonly End<TValue> Ref = default!;
 
 	/// <summary>
-	/// The default value of <see cref="TValue" />.
-	/// </summary>
-	public TValue Value { get; } = default!;
-
-	/// <summary>
 	/// Constructor for this option.
 	/// </summary>
 	public End() { }
@@ -40,11 +35,6 @@ public readonly struct End<TValue, TError> : IOption<TValue, TError>
 	/// Static default reference for this option.
 	/// </summary>
 	public static readonly End<TValue, TError> Ref = default!;
-
-	/// <summary>
-	/// The default value of <see cref="TValue" />.
-	/// </summary>
-	public TValue Value { get; } = default!;
 
 	/// <summary>
 	/// Constructor for this option.
