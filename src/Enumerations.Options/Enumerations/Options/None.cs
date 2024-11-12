@@ -11,11 +11,6 @@ public readonly struct None<TValue> : IOption<TValue>
 	public static readonly None<TValue> Ref = default!;
 
 	/// <summary>
-	/// The default value of <see cref="TValue" />.
-	/// </summary>
-	public TValue Value { get; } = default!;
-
-	/// <summary>
 	/// Constructor for this option.
 	/// </summary>
 	public None() { }
@@ -40,11 +35,6 @@ public readonly struct None<TValue, TError> : IOption<TValue, TError>
 	/// Static default reference for this option.
 	/// </summary>
 	public static readonly None<TValue, TError> Ref = default!;
-
-	/// <summary>
-	/// The default value of <see cref="TValue" />.
-	/// </summary>
-	public TValue Value { get; } = default!;
 
 	/// <summary>
 	/// Constructor for this option.
