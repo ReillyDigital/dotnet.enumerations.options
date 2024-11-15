@@ -92,7 +92,7 @@ public readonly struct OptionEnumerableError<TValue> : IOptionEnumerable<TValue>
 /// <summary>
 /// Represents a collection of options which has an error of <see cref="TError" />.
 /// </summary>
-public readonly struct OptionEnumerableError<TValue, TError> : IOptionEnumerable<TValue, TError>
+public readonly struct OptionEnumerableError<TValue, TError> : IOptionEnumerable<TValue>
 {
 	/// <summary>
 	/// Implicit cast operator from a <see cref="TError" /> that will be the reference of <see cref="Value" />.
@@ -112,7 +112,7 @@ public readonly struct OptionEnumerableError<TValue, TError> : IOptionEnumerable
 	/// <summary>
 	/// Throws <see cref="ValueAsException" />.
 	/// </summary>
-	public IEnumerator<IOption<TValue, TError>> IEnumerator => throw ValueAsException;
+	public IEnumerator<IOption<TValue>> IEnumerator => throw ValueAsException;
 
 	/// <summary>
 	/// The option error of <see cref="TError" />.
@@ -133,7 +133,7 @@ public readonly struct OptionEnumerableError<TValue, TError> : IOptionEnumerable
 	/// <summary>
 	/// Throws <see cref="ValueAsException" />.
 	/// </summary>
-	IEnumerator<IOption<TValue, TError>> IOptionEnumerable<TValue, TError>.IEnumerator => throw ValueAsException;
+	IEnumerator<IOption<TValue>> IOptionEnumerable<TValue>.IEnumerator => throw ValueAsException;
 
 	/// <summary>
 	/// Constructor for this option.
@@ -144,7 +144,7 @@ public readonly struct OptionEnumerableError<TValue, TError> : IOptionEnumerable
 	/// <summary>
 	/// Throws <see cref="ValueAsException" />.
 	/// </summary>
-	public IEnumerable<IOption<TValue, TError>> AsEnumerable() => throw ValueAsException;
+	public IEnumerable<IOption<TValue>> AsEnumerable() => throw ValueAsException;
 
 	/// <summary>
 	/// Check if another object is equal to this object.
@@ -161,22 +161,12 @@ public readonly struct OptionEnumerableError<TValue, TError> : IOptionEnumerable
 	/// <summary>
 	/// Throws <see cref="ValueAsException" />.
 	/// </summary>
-	public void ForEach(Action<IOption<TValue, TError>> handler) => throw ValueAsException;
-
-	/// <summary>
-	/// Throws <see cref="ValueAsException" />.
-	/// </summary>
 	public void ForEach<TResult>(Func<IOption<TValue>, TResult> handler) => throw ValueAsException;
 
 	/// <summary>
 	/// Throws <see cref="ValueAsException" />.
 	/// </summary>
-	public void ForEach<TResult>(Func<IOption<TValue, TError>, TResult> handler) => throw ValueAsException;
-
-	/// <summary>
-	/// Throws <see cref="ValueAsException" />.
-	/// </summary>
-	public IEnumerator<IOption<TValue, TError>> GetEnumerator() => throw ValueAsException;
+	public IEnumerator<IOption<TValue>> GetEnumerator() => throw ValueAsException;
 
 	/// <inheritdoc />
 	public override int GetHashCode() => base.GetHashCode();
@@ -184,23 +174,23 @@ public readonly struct OptionEnumerableError<TValue, TError> : IOptionEnumerable
 	/// <summary>
 	/// Throws <see cref="ValueAsException" />.
 	/// </summary>
-	IEnumerable<IOption<TValue, TError>> IOptionEnumerable<TValue, TError>.AsEnumerable() => throw ValueAsException;
+	IEnumerable<IOption<TValue>> IOptionEnumerable<TValue>.AsEnumerable() => throw ValueAsException;
 
 	/// <summary>
 	/// Throws <see cref="ValueAsException" />.
 	/// </summary>
-	void IOptionEnumerable<TValue, TError>.ForEach(Action<IOption<TValue, TError>> handler) => throw ValueAsException;
+	void IOptionEnumerable<TValue>.ForEach(Action<IOption<TValue>> handler) => throw ValueAsException;
 
 	/// <summary>
 	/// Throws <see cref="ValueAsException" />.
 	/// </summary>
-	void IOptionEnumerable<TValue, TError>.ForEach<TResult>(Func<IOption<TValue, TError>, TResult> handler) =>
+	void IOptionEnumerable<TValue>.ForEach<TResult>(Func<IOption<TValue>, TResult> handler) =>
 		throw ValueAsException;
 
 	/// <summary>
 	/// Throws <see cref="ValueAsException" />.
 	/// </summary>
-	IEnumerator<IOption<TValue, TError>> IEnumerable<IOption<TValue, TError>>.GetEnumerator() => throw ValueAsException;
+	IEnumerator<IOption<TValue>> IEnumerable<IOption<TValue>>.GetEnumerator() => throw ValueAsException;
 }
 
 public static partial class Functions

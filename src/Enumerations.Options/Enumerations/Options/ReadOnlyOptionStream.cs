@@ -64,9 +64,9 @@ public sealed class ReadOnlyOptionStream<TValue>(OptionStream<TValue> OptionStre
 public sealed class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> OptionStream)
 {
 	/// <summary>
-	/// An event triggered when an option of type <see cref="End{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="End{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<End<TValue, TError>>? EndReceived
+	public event EventHandler<End<TValue>>? EndReceived
 	{
 		add => OptionStream.EndReceived += value;
 		remove => OptionStream.EndReceived -= value;
@@ -82,34 +82,34 @@ public sealed class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TE
 	}
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="None{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="None{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<None<TValue, TError>>? NoneReceived
+	public event EventHandler<None<TValue>>? NoneReceived
 	{
 		add => OptionStream.NoneReceived += value;
 		remove => OptionStream.NoneReceived -= value;
 	}
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="IOption{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="IOption{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<IOption<TValue, TError>>? OptionReceived
+	public event EventHandler<IOption<TValue>>? OptionReceived
 	{
 		add => OptionStream.OptionReceived += value;
 		remove => OptionStream.OptionReceived -= value;
 	}
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="Some{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="Some{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<Some<TValue, TError>>? SomeReceived
+	public event EventHandler<Some<TValue>>? SomeReceived
 	{
 		add => OptionStream.SomeReceived += value;
 		remove => OptionStream.SomeReceived -= value;
 	}
 
 	/// <summary>
-	/// A task that is resolved once an option of <see cref="End{,} "/> is added to the stream.
+	/// A task that is resolved once an option of <see cref="End{} "/> is added to the stream.
 	/// </summary>
-	public Task<End<TValue, TError>> EndOfStream => OptionStream.EndOfStream;
+	public Task<End<TValue>> EndOfStream => OptionStream.EndOfStream;
 }

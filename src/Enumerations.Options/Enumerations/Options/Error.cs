@@ -66,7 +66,7 @@ public readonly struct Error<TValue> : IOption<TValue>
 /// <summary>
 /// Represents an option which has an error of <see cref="TError" />.
 /// </summary>
-public readonly struct Error<TValue, TError> : IOption<TValue, TError>
+public readonly struct Error<TValue, TError> : IOption<TValue>
 {
 	/// <summary>
 	/// Implicit cast operator from a <see cref="TError" /> that will be the reference of <see cref="Value" />.

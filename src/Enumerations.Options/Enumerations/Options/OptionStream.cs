@@ -183,9 +183,9 @@ public sealed class OptionStream<TValue>
 public sealed class OptionStream<TValue, TError>
 {
 	/// <summary>
-	/// An event triggered when an option of type <see cref="End{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="End{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<End<TValue, TError>>? EndReceived;
+	public event EventHandler<End<TValue>>? EndReceived;
 
 	/// <summary>
 	/// An event triggered when an option of type <see cref="Error{,}" /> is added to the stream.
@@ -193,24 +193,24 @@ public sealed class OptionStream<TValue, TError>
 	public event EventHandler<Error<TValue, TError>>? ErrorReceived;
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="None{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="None{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<None<TValue, TError>>? NoneReceived;
+	public event EventHandler<None<TValue>>? NoneReceived;
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="IOption{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="IOption{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<IOption<TValue, TError>>? OptionReceived;
+	public event EventHandler<IOption<TValue>>? OptionReceived;
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="Some{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="Some{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<Some<TValue, TError>>? SomeReceived;
+	public event EventHandler<Some<TValue>>? SomeReceived;
 
 	/// <summary>
-	/// A task that is resolved once an option of <see cref="End{,} "/> is added to the stream.
+	/// A task that is resolved once an option of <see cref="End{} "/> is added to the stream.
 	/// </summary>
-	public Task<End<TValue, TError>> EndOfStream => TaskCompletionSource.Task;
+	public Task<End<TValue>> EndOfStream => TaskCompletionSource.Task;
 
 	/// <summary>
 	/// Cancellation tokens registered with this stream. The task for <see cref="EndOfStream" /> will be cancelled upon
@@ -221,7 +221,7 @@ public sealed class OptionStream<TValue, TError>
 	/// <summary>
 	/// A task source used to resolve <see cref="EndOfStream" />.
 	/// </summary>
-	private TaskCompletionSource<End<TValue, TError>> TaskCompletionSource { get; } = new();
+	private TaskCompletionSource<End<TValue>> TaskCompletionSource { get; } = new();
 
 	/// <summary>
 	/// Returns a read-only wrapper for the current stream.
@@ -230,10 +230,10 @@ public sealed class OptionStream<TValue, TError>
 	public ReadOnlyOptionStream<TValue, TError> AsReadOnly() => new(this);
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="End{,}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="End{}" /> to the stream, returning this class instance.
 	/// </summary>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> End() => Next(End<TValue, TError>());
+	public OptionStream<TValue, TError> End() => Next(End<TValue>());
 
 	/// <summary>
 	/// A chainable call to add an option of <see cref="Error{,}" /> to the stream, returning this class instance.
@@ -244,16 +244,16 @@ public sealed class OptionStream<TValue, TError>
 
 	/// <summary>
 	/// A chainable call to add an option of <see cref="IOption{}" /> to the stream, returning this class instance. If
-	/// the option is of type <see cref="End{,}" /> then <see cref="EndOfStream" /> will be resolved.
+	/// the option is of type <see cref="End{}" /> then <see cref="EndOfStream" /> will be resolved.
 	/// </summary>
 	/// <param name="option">The option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Next(IOption<TValue, TError> option)
+	public OptionStream<TValue, TError> Next(IOption<TValue> option)
 	{
 		OptionReceived?.Invoke(this, option);
 		switch (option)
 		{
-			case End<TValue, TError> end:
+			case End<TValue> end:
 			{
 				EndReceived?.Invoke(this, end);
 				if (!TaskCompletionSource.Task.IsCompleted)
@@ -267,12 +267,12 @@ public sealed class OptionStream<TValue, TError>
 				ErrorReceived?.Invoke(this, error);
 				break;
 			}
-			case None<TValue, TError> none:
+			case None<TValue> none:
 			{
 				NoneReceived?.Invoke(this, none);
 				break;
 			}
-			case Some<TValue, TError> some:
+			case Some<TValue> some:
 			{
 				SomeReceived?.Invoke(this, some);
 				break;
@@ -282,23 +282,23 @@ public sealed class OptionStream<TValue, TError>
 	}
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{,}" /> to the stream. The options are iterated
+	/// A chainable call to add multiple options of <see cref="IOption{}" /> to the stream. The options are iterated
 	/// over and added to the stream one at a time. Then returning this class instance. If any of the options is of type
-	/// <see cref="End{,}" /> then <see cref="EndOfStream" /> will be resolved.
+	/// <see cref="End{}" /> then <see cref="EndOfStream" /> will be resolved.
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Next(params IOption<TValue, TError>[] options) =>
-		Next(new OptionList<TValue, TError>(options));
+	public OptionStream<TValue, TError> Next(params IOption<TValue>[] options) =>
+		Next(new OptionList<TValue>(options));
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{,}" /> to the stream. The options are iterated
+	/// A chainable call to add multiple options of <see cref="IOption{}" /> to the stream. The options are iterated
 	/// over and added to the stream one at a time. Then returning this class instance. If any of the options is of type
-	/// <see cref="End{,}" /> then <see cref="EndOfStream" /> will be resolved.
+	/// <see cref="End{}" /> then <see cref="EndOfStream" /> will be resolved.
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Next(IOptionEnumerable<TValue, TError> options)
+	public OptionStream<TValue, TError> Next(IOptionEnumerable<TValue> options)
 	{
 		options.ForEach(Next);
 		return this;
@@ -325,11 +325,11 @@ public sealed class OptionStream<TValue, TError>
 	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="Some{,}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="Some{}" /> to the stream, returning this class instance.
 	/// </summary>
 	/// <param name="some">The option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Some(Some<TValue, TError> some) => Next(some);
+	public OptionStream<TValue, TError> Some(Some<TValue> some) => Next(some);
 
 	/// <summary>
 	/// A chainable call to unregister a cancellation token with the stream, then returning this class instance. If the
