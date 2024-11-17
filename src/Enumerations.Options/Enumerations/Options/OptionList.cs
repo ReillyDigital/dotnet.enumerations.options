@@ -4,7 +4,7 @@ namespace ReillyDigital.Enumerations.Options;
 /// Represents a collection of options with a value of <see cref="TValue" /> that can be individually accessed by
 /// index. Errors will be of type <see cref="Exception" />.
 /// </summary>
-public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerable<TValue>
+public class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerable<TValue>
 {
 	/// <summary>
 	/// Returns an empty collection.

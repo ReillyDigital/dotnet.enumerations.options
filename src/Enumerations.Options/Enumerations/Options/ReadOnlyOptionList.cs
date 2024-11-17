@@ -4,7 +4,7 @@ namespace ReillyDigital.Enumerations.Options;
 /// Represents a read-only collection of options with a value of <see cref="TValue" /> that can be individually
 /// accessed by index. Errors will be of type <see cref="Exception" />.
 /// </summary>
-public sealed class ReadOnlyOptionList<TValue> : IOptionEnumerable<TValue>, IReadOnlyList<IOption<TValue>>
+public class ReadOnlyOptionList<TValue> : IOptionEnumerable<TValue>, IReadOnlyList<IOption<TValue>>
 {
 	/// <inheritdoc />
 	public IOption<TValue> this[int index] => List[index];

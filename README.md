@@ -30,12 +30,12 @@ Check the result value against the various option types:
 ```csharp
 switch (GetMessage(2))
 {
-	case Error<string> error:
+	case IError error:
 		throw error.Value;
-	case None<string>:
+	case INone:
 		Console.WriteLine("No message found");
 		break;
-	case Some<string> some:
+	case ISome<string> some:
 		Console.WriteLine(some.Value);
 		break;
 }
@@ -54,7 +54,7 @@ class StreamProvider
 		Stream
 			.Some("This is a value.")
 			.Some("This is another value.")
-			.Error(new Exception("Oops."))
+			.Error("Oops.")
 			.Some("One more value.")
 			.End();
 	}
@@ -72,10 +72,11 @@ var stream = provider.GetStream();
 Add handlers to the stream for the various option types:
 ```csharp
 stream.SomeReceived +=
-	(object? sender, Some<string> some) => Console.WriteLine(some.Value);
+	(object? sender, IOption<string> option) =>
+		Console.WriteLine(option.Value);
 stream.ErrorReceived +=
-	(object? sender, Error<string> error) =>
-		Console.WriteLine("I should log this error.");
+	(object? sender, IOption<string> option) =>
+		Console.WriteLine(((IError)option).Value.Message);
 ```
 
 Tell the stream provider to do stuff:
