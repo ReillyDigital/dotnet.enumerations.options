@@ -7,11 +7,10 @@ public static class StreamScenario
 		var provider = new StreamProvider();
 		var stream = provider.GetStream();
 		stream.SomeReceived +=
-			(object? sender, IOption<string> option) =>
-				Console.WriteLine(option.Value);
+			(object? sender, ISome<string> some) => Console.WriteLine(some.Value);
 		stream.ErrorReceived +=
-			(object? sender, IOption<string> option) =>
-				Console.WriteLine(((IError)option).Value.Message);
+			(object? sender, IError error) =>
+				Console.WriteLine(error.Value.Message);
 		provider.DoStuff();
 		await stream.EndOfStream;
 	}
