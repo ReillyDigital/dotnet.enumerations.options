@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.1] - 2024-11-18
+
 ### Changed
 
 - Updated usage pattern
