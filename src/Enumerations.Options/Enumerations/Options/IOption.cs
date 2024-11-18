@@ -1,85 +1,97 @@
 namespace ReillyDigital.Enumerations.Options;
 
 /// <summary>
-/// Represents an option with a value of <see cref="TValue" />. Errors will be of type <see cref="Exception" />.
+/// Represents an option with a potential value of <see cref="TValue" />.
 /// </summary>
 public interface IOption<out TValue> : IVoid
 {
 	/// <summary>
-	/// Gets the value of the option. Throws an exception if the option is an error.
+	/// Static reference of <see cref="IEnd" />.
 	/// </summary>
-	TValue? Value => this switch
-	{
-		Error<TValue> error => throw error,
-		None<TValue> => default,
-		Some<TValue> some => some,
-		_ => throw new InvalidOperationException("Option does not have a value.")
-	};
+	public static IOption<TValue> End => OptionEnd<TValue>.Ref;
 
 	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="End{}" />.
+	/// Static reference of <see cref="INone" />.
+	/// </summary>
+	public static IOption<TValue> None => OptionNone<TValue>.Ref;
+
+	/// <summary>
+	/// Create a reference of <see cref="IError" />.
+	/// </summary>
+	/// <returns>An option of <see cref="IError" />.</returns>
+	public new static IOption<TValue> Error() => new OptionError<TValue, Exception>(new());
+
+	/// <summary>
+	/// Create a reference of <see cref="IError" />.
+	/// </summary>
+	/// <param name="value">The value of the error.</param>
+	/// <returns>An option of <see cref="IError" />.</returns>
+	public new static IOption<TValue> Error(Exception value) => new OptionError<TValue, Exception>(value);
+
+	/// <summary>
+	/// Create a reference of <see cref="IError" />.
+	/// </summary>
+	/// <param name="message">The error message.</param>
+	/// <param name="innerException">An optional inner exception.</param>
+	/// <returns>An option of <see cref="IError" />.</returns>
+	public new static IOption<TValue> Error(string message, Exception? innerException = null) =>
+		new OptionError<TValue, Exception>(new(message, innerException));
+
+	/// <summary>
+	/// Create a reference of <see cref="IError{}" />.
+	/// </summary>
+	/// <param name="value">The value of the error.</param>
+	/// <returns>An option of <see cref="IError{}" />.</returns>
+	public new static IOption<TValue> Error<TError>(TError value) => new OptionError<TValue, TError>(value);
+
+	/// <summary>
+	/// Create a reference of <see cref="ISome{}" />.
+	/// </summary>
+	/// <param name="value">A <see cref="TValue" /> for the value of the option.</param>
+	/// <returns>An option of <see cref="ISome{}" />.</returns>
+	public static IOption<TValue> Some(TValue value) => new OptionSome<TValue>(value);
+
+	/// <summary>
+	/// The value of the option.
+	/// </summary>
+	public TValue? Value { get; }
+
+	/// <summary>
+	/// Executes the specified callback if the option is of type <see cref="IEnd" />.
 	/// </summary>
 	/// <param name="callback">The callback to execute.</param>
 	/// <returns>The current option.</returns>
 	public IOption<TValue> IfEnd(Action callback)
 	{
-		if (this is End<TValue>)
+		if (this is IEnd)
 		{
 			callback();
 		}
 		return this;
 	}
 
-	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="Error{}" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute.</param>
-	/// <returns>The current option.</returns>
-	public IOption<TValue> IfError(Action callback) => IfError((_) => callback());
+	/// <inheritdoc cref="IVoid.IfError(Action)" />
+	public new IOption<TValue> IfError(Action callback) => (IOption<TValue>)((IVoid)this).IfError(callback);
+
+	/// <inheritdoc cref="IVoid.Error(Exception)" />
+	public new IOption<TValue> IfError(Action<Exception> callback) => (IOption<TValue>)((IVoid)this).IfError(callback);
+
+	/// <inheritdoc cref="IVoid.IfError{TError}(Action)" />
+	public new IOption<TValue> IfError<TError>(Action callback) =>
+		(IOption<TValue>)((IVoid)this).IfError<TError>(callback);
+
+	/// <inheritdoc cref="IVoid.IfError{TError}(Action{TError})" />
+	public new IOption<TValue> IfError<TError>(Action<TError> callback) =>
+		(IOption<TValue>)((IVoid)this).IfError(callback);
 
 	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="Error{,}" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute.</param>
-	/// <returns>The current option.</returns>
-	public IOption<TValue> IfError<TError>(Action callback) => IfError<TError>((_) => callback());
-
-	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="Error{}" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute with the error.</param>
-	/// <returns>The current option.</returns>
-	public IOption<TValue> IfError(Action<Exception> callback)
-	{
-		if (this is Error<TValue> error)
-		{
-			callback(error);
-		}
-		return this;
-	}
-
-	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="Error{,}" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute with the error.</param>
-	/// <returns>The current option.</returns>
-	public IOption<TValue> IfError<TError>(Action<TError> callback)
-	{
-		if (this is Error<TValue, TError> error)
-		{
-			callback(error);
-		}
-		return this;
-	}
-
-	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="None{}" />.
+	/// Executes the specified callback if the option is of type <see cref="INone" />.
 	/// </summary>
 	/// <param name="callback">The callback to execute.</param>
 	/// <returns>The current option.</returns>
 	public IOption<TValue> IfNone(Action callback)
 	{
-		if (this is None<TValue>)
+		if (this is INone)
 		{
 			callback();
 		}
@@ -87,22 +99,22 @@ public interface IOption<out TValue> : IVoid
 	}
 
 	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="Some{}" />.
+	/// Executes the specified callback if the option is of type <see cref="ISome{}" />.
 	/// </summary>
 	/// <param name="callback">The callback to execute.</param>
 	/// <returns>The current option.</returns>
 	public IOption<TValue> IfSome(Action callback) => IfSome((_) => callback());
 
 	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="Some{}" />.
+	/// Executes the specified callback if the option is of type <see cref="ISome{}" />.
 	/// </summary>
 	/// <param name="callback">The callback to execute with the value.</param>
 	/// <returns>The current option.</returns>
 	public IOption<TValue> IfSome(Action<TValue> callback)
 	{
-		if (this is Some<TValue> some)
+		if (this is ISome<TValue> some)
 		{
-			callback(some);
+			callback(some.Value);
 		}
 		return this;
 	}

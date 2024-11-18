@@ -2,92 +2,44 @@ namespace ReillyDigital.Enumerations.Options;
 
 /// <summary>
 /// Represents a read-only stream of options with a value of <see cref="TValue" /> that are accessed by subscribing
-/// to events of each possible option type, triggered when an item of that type is added to the stream.
+/// to events of each possible option type, triggered when an item of that type is added to the stream. Errors are of
+/// type <see cref="Exception" />.
 /// </summary>
-public sealed class ReadOnlyOptionStream<TValue>(OptionStream<TValue> OptionStream)
-{
-	/// <summary>
-	/// An event triggered when an option of type <see cref="End{}" /> is added to the stream.
-	/// </summary>
-	public event EventHandler<End<TValue>>? EndReceived
-	{
-		add => OptionStream.EndReceived += value;
-		remove => OptionStream.EndReceived -= value;
-	}
-
-	/// <summary>
-	/// An event triggered when an option of type <see cref="Error{}" /> is added to the stream.
-	/// </summary>
-	public event EventHandler<Error<TValue>>? ErrorReceived
-	{
-		add => OptionStream.ErrorReceived += value;
-		remove => OptionStream.ErrorReceived -= value;
-	}
-
-	/// <summary>
-	/// An event triggered when an option of type <see cref="None{}" /> is added to the stream.
-	/// </summary>
-	public event EventHandler<None<TValue>>? NoneReceived
-	{
-		add => OptionStream.NoneReceived += value;
-		remove => OptionStream.NoneReceived -= value;
-	}
-
-	/// <summary>
-	/// An event triggered when an option of type <see cref="IOption{}" /> is added to the stream.
-	/// </summary>
-	public event EventHandler<IOption<TValue>>? OptionReceived
-	{
-		add => OptionStream.OptionReceived += value;
-		remove => OptionStream.OptionReceived -= value;
-	}
-
-	/// <summary>
-	/// An event triggered when an option of type <see cref="Some{}" /> is added to the stream.
-	/// </summary>
-	public event EventHandler<Some<TValue>>? SomeReceived
-	{
-		add => OptionStream.SomeReceived += value;
-		remove => OptionStream.SomeReceived -= value;
-	}
-
-	/// <summary>
-	/// A task that is resolved once an option of <see cref="End{}" /> is added to the stream.
-	/// </summary>
-	public Task<End<TValue>> EndOfStream => OptionStream.EndOfStream;
-}
+public class ReadOnlyOptionStream<TValue>(OptionStream<TValue> optionStream)
+	: ReadOnlyOptionStream<TValue, Exception>(optionStream) { }
 
 /// <summary>
 /// Represents a read-only stream of options with a value of <see cref="TValue" /> that are accessed by subscribing
-/// to events of each possible option type, triggered when an item of that type is added to the stream.
+/// to events of each possible option type, triggered when an item of that type is added to the stream. Errors are of
+/// type <see cref="TError" />.
 /// </summary>
-public sealed class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> OptionStream)
+public class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> optionStream) : IVoid
 {
 	/// <summary>
-	/// An event triggered when an option of type <see cref="End{}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="IEnd" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<End<TValue>>? EndReceived
+	public event EventHandler<IOption<TValue>>? EndReceived
 	{
-		add => OptionStream.EndReceived += value;
-		remove => OptionStream.EndReceived -= value;
+		add => optionStream.EndReceived += value;
+		remove => optionStream.EndReceived -= value;
 	}
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="Error{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="IError{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<Error<TValue, TError>>? ErrorReceived
+	public event EventHandler<IOption<TValue>>? ErrorReceived
 	{
-		add => OptionStream.ErrorReceived += value;
-		remove => OptionStream.ErrorReceived -= value;
+		add => optionStream.ErrorReceived += value;
+		remove => optionStream.ErrorReceived -= value;
 	}
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="None{}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="INone" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<None<TValue>>? NoneReceived
+	public event EventHandler<IOption<TValue>>? NoneReceived
 	{
-		add => OptionStream.NoneReceived += value;
-		remove => OptionStream.NoneReceived -= value;
+		add => optionStream.NoneReceived += value;
+		remove => optionStream.NoneReceived -= value;
 	}
 
 	/// <summary>
@@ -95,21 +47,21 @@ public sealed class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TE
 	/// </summary>
 	public event EventHandler<IOption<TValue>>? OptionReceived
 	{
-		add => OptionStream.OptionReceived += value;
-		remove => OptionStream.OptionReceived -= value;
+		add => optionStream.OptionReceived += value;
+		remove => optionStream.OptionReceived -= value;
 	}
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="Some{}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="ISome{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<Some<TValue>>? SomeReceived
+	public event EventHandler<IOption<TValue>>? SomeReceived
 	{
-		add => OptionStream.SomeReceived += value;
-		remove => OptionStream.SomeReceived -= value;
+		add => optionStream.SomeReceived += value;
+		remove => optionStream.SomeReceived -= value;
 	}
 
 	/// <summary>
-	/// A task that is resolved once an option of <see cref="End{} "/> is added to the stream.
+	/// A task that is resolved once an option of <see cref="IEnd" /> is added to the stream.
 	/// </summary>
-	public Task<End<TValue>> EndOfStream => OptionStream.EndOfStream;
+	public Task<IEnd> EndOfStream => optionStream.EndOfStream;
 }

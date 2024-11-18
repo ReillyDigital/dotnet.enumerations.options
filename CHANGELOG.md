@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.1] - 2024-11-18
+
+### Changed
+
+- Updated usage pattern
+  - Interfaces will be the primary usage.
+  - Implementations are now internal.
+  - IOption no longer has the generic overload of TError.
+  - IEnd, IError, INone and ISome no longer inherit from IOption. Internal implementions of each of them do inherit from IOption, so all generated references of those interfaces will still be castable to IOption.
+
 ## [1.0.3] - 2024-11-15
 
 ### Changed

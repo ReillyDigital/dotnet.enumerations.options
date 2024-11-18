@@ -10,8 +10,8 @@ public static partial class IEnumerableExtensions
 	/// </summary>
 	/// <returns>
 	/// A new <see cref="IOptionEnumerable{}" /> containing the items from this collection wrapped as
-	/// <see cref="Some{}" /> values.
+	/// <see cref="ISome{}" /> values.
 	/// </returns>
-	public static IOptionEnumerable<TValue> AsOptionEnumerable<TValue>(this IEnumerable<IOption<TValue>> self) =>
-		new OptionList<TValue>(self);
+	public static IOptionEnumerable<TValue> AsOptionEnumerable<TValue>(this IEnumerable<IOption<TValue>> self)
+		=> new OptionList<TValue>(self);
 }

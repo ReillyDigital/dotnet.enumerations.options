@@ -19,12 +19,12 @@ public static class SimpleValuesScenario
 	{
 		switch (GetMessage(2))
 		{
-			case Error<string> error:
+			case IError error:
 				throw error.Value;
-			case None<string>:
+			case INone:
 				Console.WriteLine("No message found");
 				break;
-			case Some<string> some:
+			case ISome<string> some:
 				Console.WriteLine(some.Value);
 				break;
 		}
