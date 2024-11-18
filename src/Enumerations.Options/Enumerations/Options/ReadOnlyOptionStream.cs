@@ -13,7 +13,7 @@ public class ReadOnlyOptionStream<TValue>(OptionStream<TValue> optionStream)
 /// to events of each possible option type, triggered when an item of that type is added to the stream. Errors are of
 /// type <see cref="TError" />.
 /// </summary>
-public class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> optionStream)
+public class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> optionStream) : IVoid
 {
 	/// <summary>
 	/// An event triggered when an option of type <see cref="IEnd" /> is added to the stream.

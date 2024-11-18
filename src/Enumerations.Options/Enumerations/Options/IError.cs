@@ -12,7 +12,7 @@ public interface IError : IError<Exception> { }
 /// <summary>
 /// Represents an option which has an error of <see cref="TError" />.
 /// </summary>
-public interface IError<TError>
+public interface IError<TError> : IVoid
 {
 	/// <summary>
 	/// The option error of <see cref="TError" />.

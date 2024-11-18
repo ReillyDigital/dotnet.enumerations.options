@@ -19,14 +19,14 @@ public interface IOption<out TValue> : IVoid
 	/// Create a reference of <see cref="IError" />.
 	/// </summary>
 	/// <returns>An option of <see cref="IError" />.</returns>
-	public static IOption<TValue> Error() => new OptionError<TValue, Exception>(new());
+	public new static IOption<TValue> Error() => new OptionError<TValue, Exception>(new());
 
 	/// <summary>
 	/// Create a reference of <see cref="IError" />.
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
 	/// <returns>An option of <see cref="IError" />.</returns>
-	public static IOption<TValue> Error(Exception value) => new OptionError<TValue, Exception>(value);
+	public new static IOption<TValue> Error(Exception value) => new OptionError<TValue, Exception>(value);
 
 	/// <summary>
 	/// Create a reference of <see cref="IError" />.
@@ -34,7 +34,7 @@ public interface IOption<out TValue> : IVoid
 	/// <param name="message">The error message.</param>
 	/// <param name="innerException">An optional inner exception.</param>
 	/// <returns>An option of <see cref="IError" />.</returns>
-	public static IOption<TValue> Error(string message, Exception? innerException = null) =>
+	public new static IOption<TValue> Error(string message, Exception? innerException = null) =>
 		new OptionError<TValue, Exception>(new(message, innerException));
 
 	/// <summary>
@@ -42,7 +42,7 @@ public interface IOption<out TValue> : IVoid
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
 	/// <returns>An option of <see cref="IError{}" />.</returns>
-	public static IOption<TValue> Error<TError>(TError value) => new OptionError<TValue, TError>(value);
+	public new static IOption<TValue> Error<TError>(TError value) => new OptionError<TValue, TError>(value);
 
 	/// <summary>
 	/// Create a reference of <see cref="ISome{}" />.
@@ -70,47 +70,19 @@ public interface IOption<out TValue> : IVoid
 		return this;
 	}
 
-	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="IError" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute.</param>
-	/// <returns>The current option.</returns>
-	public IOption<TValue> IfError(Action callback) => IfError((_) => callback());
+	/// <inheritdoc cref="IVoid.IfError(Action)" />
+	public new IOption<TValue> IfError(Action callback) => (IOption<TValue>)((IVoid)this).IfError(callback);
 
-	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="IError" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute with the error.</param>
-	/// <returns>The current option.</returns>
-	public IOption<TValue> IfError(Action<Exception> callback)
-	{
-		if (this is IError error)
-		{
-			callback(error.Value);
-		}
-		return this;
-	}
+	/// <inheritdoc cref="IVoid.Error(Exception)" />
+	public new IOption<TValue> IfError(Action<Exception> callback) => (IOption<TValue>)((IVoid)this).IfError(callback);
 
-	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="IError{}" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute.</param>
-	/// <returns>The current option.</returns>
-	public IOption<TValue> IfError<TError>(Action callback) => IfError<TError>((_) => callback());
+	/// <inheritdoc cref="IVoid.IfError{TError}(Action)" />
+	public new IOption<TValue> IfError<TError>(Action callback) =>
+		(IOption<TValue>)((IVoid)this).IfError<TError>(callback);
 
-	/// <summary>
-	/// Executes the specified callback if the option is of type <see cref="IError{}" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute with the error.</param>
-	/// <returns>The current option.</returns>
-	public IOption<TValue> IfError<TError>(Action<TError> callback)
-	{
-		if (this is IError<TError> error)
-		{
-			callback(error.Value);
-		}
-		return this;
-	}
+	/// <inheritdoc cref="IVoid.IfError{TError}(Action{TError})" />
+	public new IOption<TValue> IfError<TError>(Action<TError> callback) =>
+		(IOption<TValue>)((IVoid)this).IfError(callback);
 
 	/// <summary>
 	/// Executes the specified callback if the option is of type <see cref="INone" />.
