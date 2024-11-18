@@ -8,10 +8,61 @@ namespace ReillyDigital.Enumerations.Options;
 public class OptionStream<TValue> : OptionStream<TValue, Exception>
 {
 	/// <summary>
-	/// Returns a read-only wrapper for the current stream.
+	/// An event triggered when an option of type <see cref="IError" /> is added to the stream.
 	/// </summary>
-	/// <returns>A new <see cref="ReadOnlyOptionStream{}" /> wrapping this stream.</returns>
-	public new ReadOnlyOptionStream<TValue> AsReadOnly() => new(this);
+	public new event EventHandler<IError>? ErrorReceived;
+
+	/// <inheritdoc />
+	public override ReadOnlyOptionStream<TValue> AsReadOnly() => new(this);
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> End() => (OptionStream<TValue>)base.End();
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> Error(string message, Exception? innerException = null) =>
+		(OptionStream<TValue>)base.Error(message, innerException);
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> Error(Exception value) => (OptionStream<TValue>)base.Error(value);
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> Error(IError error) => (OptionStream<TValue>)base.Error(error);
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> Next(IOption<TValue> option)
+	{
+		if (option is IError error)
+		{
+			ErrorReceived?.Invoke(this, error);
+		}
+		return (OptionStream<TValue>)base.Next(option);
+	}
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> Next(params IOption<TValue>[] options) =>
+		(OptionStream<TValue>)base.Next(options);
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> Next(IOptionEnumerable<TValue> options) =>
+		(OptionStream<TValue>)base.Next(options);
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> None() => Next(None<TValue>());
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> RegisterCancellationToken(CancellationToken cancellationToken) =>
+		(OptionStream<TValue>)base.RegisterCancellationToken(cancellationToken);
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> Some(ISome<TValue> some) => (OptionStream<TValue>)base.Some(some);
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> Some(TValue value) =>
+		(OptionStream<TValue>)base.Next(IOption<TValue>.Some(value));
+
+	/// <inheritdoc />
+	public override OptionStream<TValue> UnregisterCancellationToken(CancellationToken cancellationToken) =>
+		(OptionStream<TValue>)base.UnregisterCancellationToken(cancellationToken);
 }
 
 /// <summary>
@@ -24,17 +75,17 @@ public class OptionStream<TValue, TError> : IVoid
 	/// <summary>
 	/// An event triggered when an option of type <see cref="IEnd" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<IOption<TValue>>? EndReceived;
+	public event EventHandler<IEnd>? EndReceived;
 
 	/// <summary>
 	/// An event triggered when an option of type <see cref="IError{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<IOption<TValue>>? ErrorReceived;
+	public event EventHandler<IError<TError>>? ErrorReceived;
 
 	/// <summary>
 	/// An event triggered when an option of type <see cref="INone" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<IOption<TValue>>? NoneReceived;
+	public event EventHandler<INone>? NoneReceived;
 
 	/// <summary>
 	/// An event triggered when an option of type <see cref="IOption{}" /> is added to the stream.
@@ -44,7 +95,7 @@ public class OptionStream<TValue, TError> : IVoid
 	/// <summary>
 	/// An event triggered when an option of type <see cref="ISome{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<IOption<TValue>>? SomeReceived;
+	public event EventHandler<ISome<TValue>>? SomeReceived;
 
 	/// <summary>
 	/// A task that is resolved once an option of <see cref="IEnd" /> is added to the stream.
@@ -66,13 +117,13 @@ public class OptionStream<TValue, TError> : IVoid
 	/// Returns a read-only wrapper for the current stream.
 	/// </summary>
 	/// <returns>A new <see cref="ReadOnlyOptionStream{}" /> wrapping this stream.</returns>
-	public ReadOnlyOptionStream<TValue, TError> AsReadOnly() => new(this);
+	public virtual ReadOnlyOptionStream<TValue, TError> AsReadOnly() => new(this);
 
 	/// <summary>
 	/// A chainable call to add an option of <see cref="IEnd" /> to the stream, returning this class instance.
 	/// </summary>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> End() => Next(End<TValue>());
+	public virtual OptionStream<TValue, TError> End() => Next(End<TValue>());
 
 	/// <summary>
 	/// A chainable call to add an option of <see cref="IError" /> to the stream, returning this class instance.
@@ -80,7 +131,7 @@ public class OptionStream<TValue, TError> : IVoid
 	/// <param name="message">The error message.</param>
 	/// <param name="innerException">An optional inner exception.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Error(string message, Exception? innerException = null) =>
+	public virtual OptionStream<TValue, TError> Error(string message, Exception? innerException = null) =>
 		Next(IOption<TValue>.Error(message, innerException));
 
 	/// <summary>
@@ -88,14 +139,14 @@ public class OptionStream<TValue, TError> : IVoid
 	/// </summary>
 	/// <param name="value">The value of an option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Error(TError value) => Next(IOption<TValue>.Error(value));
+	public virtual OptionStream<TValue, TError> Error(TError value) => Next(IOption<TValue>.Error(value));
 
 	/// <summary>
 	/// A chainable call to add an option of <see cref="IError" /> to the stream, returning this class instance.
 	/// </summary>
 	/// <param name="error">The option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Error(IError error)
+	public virtual OptionStream<TValue, TError> Error(IError error)
 	{
 		if (error is IOption<TValue> option)
 		{
@@ -110,33 +161,33 @@ public class OptionStream<TValue, TError> : IVoid
 	/// </summary>
 	/// <param name="option">The option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Next(IOption<TValue> option)
+	public virtual OptionStream<TValue, TError> Next(IOption<TValue> option)
 	{
 		OptionReceived?.Invoke(this, option);
 		switch (option)
 		{
 			case IEnd end:
 			{
-				EndReceived?.Invoke(this, option);
+				EndReceived?.Invoke(this, end);
 				if (!TaskCompletionSource.Task.IsCompleted)
 				{
 					TaskCompletionSource.SetResult(end);
 				}
 				break;
 			}
-			case IError<TError>:
+			case IError<TError> error:
 			{
-				ErrorReceived?.Invoke(this, option);
+				ErrorReceived?.Invoke(this, error);
 				break;
 			}
-			case INone:
+			case INone none:
 			{
-				NoneReceived?.Invoke(this, option);
+				NoneReceived?.Invoke(this, none);
 				break;
 			}
-			case ISome<TValue>:
+			case ISome<TValue> some:
 			{
-				SomeReceived?.Invoke(this, option);
+				SomeReceived?.Invoke(this, some);
 				break;
 			}
 		}
@@ -150,7 +201,8 @@ public class OptionStream<TValue, TError> : IVoid
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Next(params IOption<TValue>[] options) => Next(new OptionList<TValue>(options));
+	public virtual OptionStream<TValue, TError> Next(params IOption<TValue>[] options) =>
+		Next(new OptionList<TValue>(options));
 
 	/// <summary>
 	/// A chainable call to add multiple options of <see cref="IOption{}" /> to the stream. The options are iterated
@@ -159,7 +211,7 @@ public class OptionStream<TValue, TError> : IVoid
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Next(IOptionEnumerable<TValue> options)
+	public virtual OptionStream<TValue, TError> Next(IOptionEnumerable<TValue> options)
 	{
 		options.ForEach(Next);
 		return this;
@@ -169,7 +221,7 @@ public class OptionStream<TValue, TError> : IVoid
 	/// A chainable call to add an option of <see cref="INone" /> to the stream, returning this class instance.
 	/// </summary>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> None() => Next(None<TValue>());
+	public virtual OptionStream<TValue, TError> None() => Next(None<TValue>());
 
 	/// <summary>
 	/// A chainable call to register a cancellation token with the stream, then returning this class instance. The task
@@ -178,7 +230,7 @@ public class OptionStream<TValue, TError> : IVoid
 	/// </summary>
 	/// <param name="cancellationToken">A cancellation token to register with the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> RegisterCancellationToken(CancellationToken cancellationToken)
+	public virtual OptionStream<TValue, TError> RegisterCancellationToken(CancellationToken cancellationToken)
 	{
 		if (cancellationToken == CancellationToken.None)
 		{
@@ -196,7 +248,7 @@ public class OptionStream<TValue, TError> : IVoid
 	/// </summary>
 	/// <param name="some">The option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Some(ISome<TValue> some)
+	public virtual OptionStream<TValue, TError> Some(ISome<TValue> some)
 	{
 		if (some is IOption<TValue> option)
 		{
@@ -210,7 +262,7 @@ public class OptionStream<TValue, TError> : IVoid
 	/// </summary>
 	/// <param name="value">The value of an option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Some(TValue value) => Next(IOption<TValue>.Some(value));
+	public virtual OptionStream<TValue, TError> Some(TValue value) => Next(IOption<TValue>.Some(value));
 
 	/// <summary>
 	/// A chainable call to unregister a cancellation token with the stream, then returning this class instance. If the
@@ -218,7 +270,7 @@ public class OptionStream<TValue, TError> : IVoid
 	/// </summary>
 	/// <param name="cancellationToken">A cancellation token to unregister from the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> UnregisterCancellationToken(CancellationToken cancellationToken)
+	public virtual OptionStream<TValue, TError> UnregisterCancellationToken(CancellationToken cancellationToken)
 	{
 		if (cancellationToken == CancellationToken.None)
 		{

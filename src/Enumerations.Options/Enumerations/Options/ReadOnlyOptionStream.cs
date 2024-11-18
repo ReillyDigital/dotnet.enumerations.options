@@ -6,7 +6,17 @@ namespace ReillyDigital.Enumerations.Options;
 /// type <see cref="Exception" />.
 /// </summary>
 public class ReadOnlyOptionStream<TValue>(OptionStream<TValue> optionStream)
-	: ReadOnlyOptionStream<TValue, Exception>(optionStream) { }
+	: ReadOnlyOptionStream<TValue, Exception>(optionStream)
+	{
+		/// <summary>
+		/// An event triggered when an option of type <see cref="IError{}" /> is added to the stream.
+		/// </summary>
+		public new event EventHandler<IError>? ErrorReceived
+		{
+			add => optionStream.ErrorReceived += value;
+			remove => optionStream.ErrorReceived -= value;
+		}
+	}
 
 /// <summary>
 /// Represents a read-only stream of options with a value of <see cref="TValue" /> that are accessed by subscribing
@@ -18,7 +28,7 @@ public class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> o
 	/// <summary>
 	/// An event triggered when an option of type <see cref="IEnd" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<IOption<TValue>>? EndReceived
+	public event EventHandler<IEnd>? EndReceived
 	{
 		add => optionStream.EndReceived += value;
 		remove => optionStream.EndReceived -= value;
@@ -27,7 +37,7 @@ public class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> o
 	/// <summary>
 	/// An event triggered when an option of type <see cref="IError{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<IOption<TValue>>? ErrorReceived
+	public event EventHandler<IError<TError>>? ErrorReceived
 	{
 		add => optionStream.ErrorReceived += value;
 		remove => optionStream.ErrorReceived -= value;
@@ -36,7 +46,7 @@ public class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> o
 	/// <summary>
 	/// An event triggered when an option of type <see cref="INone" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<IOption<TValue>>? NoneReceived
+	public event EventHandler<INone>? NoneReceived
 	{
 		add => optionStream.NoneReceived += value;
 		remove => optionStream.NoneReceived -= value;
@@ -54,7 +64,7 @@ public class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> o
 	/// <summary>
 	/// An event triggered when an option of type <see cref="ISome{}" /> is added to the stream.
 	/// </summary>
-	public event EventHandler<IOption<TValue>>? SomeReceived
+	public event EventHandler<ISome<TValue>>? SomeReceived
 	{
 		add => optionStream.SomeReceived += value;
 		remove => optionStream.SomeReceived -= value;

@@ -72,11 +72,9 @@ var stream = provider.GetStream();
 Add handlers to the stream for the various option types:
 ```csharp
 stream.SomeReceived +=
-	(object? sender, IOption<string> option) =>
-		Console.WriteLine(option.Value);
+	(object? sender, ISome<string> some) => Console.WriteLine(some.Value);
 stream.ErrorReceived +=
-	(object? sender, IOption<string> option) =>
-		Console.WriteLine(((IError)option).Value.Message);
+	(object? sender, IError error) => Console.WriteLine(error.Value.Message);
 ```
 
 Tell the stream provider to do stuff:
