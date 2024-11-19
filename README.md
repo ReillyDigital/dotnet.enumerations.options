@@ -74,7 +74,8 @@ Add handlers to the stream for the various option types:
 stream.SomeReceived +=
 	(object? sender, ISome<string> some) => Console.WriteLine(some.Value);
 stream.ErrorReceived +=
-	(object? sender, IError error) => Console.WriteLine(error.Value.Message);
+	(object? sender, IError<string> error) =>
+		Console.WriteLine(error.Value.Message);
 ```
 
 Tell the stream provider to do stuff:

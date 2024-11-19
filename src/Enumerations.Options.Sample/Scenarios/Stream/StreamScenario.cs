@@ -9,7 +9,7 @@ public static class StreamScenario
 		stream.SomeReceived +=
 			(object? sender, ISome<string> some) => Console.WriteLine(some.Value);
 		stream.ErrorReceived +=
-			(object? sender, IError error) =>
+			(object? sender, IError<string> error) =>
 				Console.WriteLine(error.Value.Message);
 		provider.DoStuff();
 		await stream.EndOfStream;

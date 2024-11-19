@@ -12,6 +12,6 @@ public static partial class OptionsFunctions
 	public static IOption<TValue> Error<TValue>(string message, Exception? innerException = null) =>
 		IOption<TValue>.Error(message, innerException);
 
-	/// <inheritdoc cref="IOption{}.Error{TError}(TError)" />
-	public static IOption<TValue> Error<TValue, TError>(TError value) => IOption<TValue>.Error(value);
+	/// <inheritdoc cref="IOption{TValue, TError}.Error(TError)" />
+	public static IOption<TValue, TError> Error<TValue, TError>(TError value) => IOption<TValue, TError>.Error(value);
 }

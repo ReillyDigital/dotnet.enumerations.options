@@ -2,36 +2,19 @@ namespace ReillyDigital.Enumerations;
 
 public static partial class OptionsFunctions
 {
-	/// <summary>
-	/// Helper function to call the constructor for <see cref="IOptionEnumerableError{}" />.
-	/// </summary>
-	/// <returns>An option of <see cref="IOptionEnumerableError{}" />.</returns>
-	public static IOptionEnumerable<TValue> OptionEnumerableError<TValue>() =>
-		new OptionEnumerableError<TValue, Exception>();
+	/// <inheritdoc cref="IOptionEnumerable{}.Error()" />
+	public static IOptionEnumerable<TValue> OptionEnumerableError<TValue>() => IOptionEnumerable<TValue>.Error();
 
-	/// <summary>
-	/// Helper function to call the constructor for <see cref="IOptionEnumerableError{}" />.
-	/// </summary>
-	/// <param name="value">The value of the option.</param>
-	/// <returns>An option of <see cref="IOptionEnumerableError{}" />.</returns>
+	/// <inheritdoc cref="IOptionEnumerable{}.Error(Exception)" />
 	public static IOptionEnumerable<TValue> OptionEnumerableError<TValue>(Exception value) =>
-		new OptionEnumerableError<TValue, Exception>(value);
+		IOptionEnumerable<TValue>.Error(value);
 
-	/// <summary>
-	/// Helper function to call the constructor for <see cref="IError{}" />.
-	/// </summary>
-	/// <param name="message">The error message.</param>
-	/// <param name="innerException">An optional inner exception.</param>
-	/// <returns>An option of <see cref="IOptionEnumerableError{}" />.</returns>
+	/// <inheritdoc cref="IOptionEnumerable{}.Error(string, Exception?)" />
 	public static IOptionEnumerable<TValue> OptionEnumerableError<TValue>(
 		string message, Exception? innerException = null
-	) => new OptionEnumerableError<TValue, Exception>(new(message, innerException));
+	) => IOptionEnumerable<TValue>.Error(message, innerException);
 
-	/// <summary>
-	/// Helper function to call the constructor for <see cref="IOptionEnumerableError{}" />.
-	/// </summary>
-	/// <param name="value">The value of the option.</param>
-	/// <returns>An option of <see cref="IOptionEnumerableError{}" />.</returns>
-	public static IOptionEnumerable<TValue> OptionEnumerableError<TValue, TError>(TError value) =>
-		new OptionEnumerableError<TValue, TError>(value);
+	/// <inheritdoc cref="IOptionEnumerable{TValue, TError}.Error(TError)" />
+	public static IOptionEnumerable<TValue, TError> OptionEnumerableError<TValue, TError>(TError value) =>
+		IOptionEnumerable<TValue, TError>.Error(value);
 }
