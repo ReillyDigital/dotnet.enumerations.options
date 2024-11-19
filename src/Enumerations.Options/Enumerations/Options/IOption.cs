@@ -8,25 +8,25 @@ public interface IOption<out TValue> : IVoid
 	/// <summary>
 	/// Static reference of <see cref="IEnd{}" />.
 	/// </summary>
-	public static IOption<TValue> End => OptionEnd<TValue, Exception>.Ref;
+	public static IEnd<TValue> End => OptionEnd<TValue, Exception>.Ref;
 
 	/// <summary>
 	/// Static reference of <see cref="INone{}" />.
 	/// </summary>
-	public static IOption<TValue> None => OptionNone<TValue, Exception>.Ref;
+	public static INone<TValue> None => OptionNone<TValue, Exception>.Ref;
 
 	/// <summary>
 	/// Create a reference of <see cref="IError{}" />.
 	/// </summary>
 	/// <returns>An option of <see cref="IError{}" />.</returns>
-	public new static IOption<TValue> Error() => new OptionError<TValue, Exception>(new());
+	public new static IError<TValue> Error() => new OptionError<TValue, Exception>(new());
 
 	/// <summary>
 	/// Create a reference of <see cref="IError{}" />.
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
 	/// <returns>An option of <see cref="IError{}" />.</returns>
-	public new static IOption<TValue> Error(Exception value) => new OptionError<TValue, Exception>(value);
+	public new static IError<TValue> Error(Exception value) => new OptionError<TValue, Exception>(value);
 
 	/// <summary>
 	/// Create a reference of <see cref="IError{}" />.
@@ -34,7 +34,7 @@ public interface IOption<out TValue> : IVoid
 	/// <param name="message">The error message.</param>
 	/// <param name="innerException">An optional inner exception.</param>
 	/// <returns>An option of <see cref="IError{}" />.</returns>
-	public new static IOption<TValue> Error(string message, Exception? innerException = null) =>
+	public new static IError<TValue> Error(string message, Exception? innerException = null) =>
 		new OptionError<TValue, Exception>(new(message, innerException));
 
 	/// <summary>
@@ -42,14 +42,14 @@ public interface IOption<out TValue> : IVoid
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
 	/// <returns>An option of <see cref="IError{,}" />.</returns>
-	public new static IOption<TValue> Error<TError>(TError value) => new OptionError<TValue, TError>(value);
+	public new static IError<TValue> Error<TError>(TError value) => new OptionError<TValue, TError>(value);
 
 	/// <summary>
 	/// Create a reference of <see cref="ISome{}" />.
 	/// </summary>
 	/// <param name="value">A <see cref="TValue" /> for the value of the option.</param>
 	/// <returns>An option of <see cref="ISome{}" />.</returns>
-	public static IOption<TValue> Some(TValue value) => new OptionSome<TValue, Exception>(value);
+	public static ISome<TValue> Some(TValue value) => new OptionSome<TValue, Exception>(value);
 
 	/// <summary>
 	/// The value of the option.
@@ -141,26 +141,26 @@ public interface IOption<out TValue, out TError> : IVoid<TError>
 	/// <summary>
 	/// Static reference of <see cref="IEnd" />.
 	/// </summary>
-	public static IOption<TValue, TError> End => OptionEnd<TValue, TError>.Ref;
+	public static IEnd<TValue, TError> End => OptionEnd<TValue, TError>.Ref;
 
 	/// <summary>
 	/// Static reference of <see cref="INone" />.
 	/// </summary>
-	public static IOption<TValue, TError> None => OptionNone<TValue, TError>.Ref;
+	public static INone<TValue, TError> None => OptionNone<TValue, TError>.Ref;
 
 	/// <summary>
 	/// Create a reference of <see cref="IError{}" />.
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
 	/// <returns>An option of <see cref="IError{}" />.</returns>
-	public new static IOption<TValue, TError> Error(TError value) => new OptionError<TValue, TError>(value);
+	public new static IError<TValue, TError> Error(TError value) => new OptionError<TValue, TError>(value);
 
 	/// <summary>
 	/// Create a reference of <see cref="ISome{}" />.
 	/// </summary>
 	/// <param name="value">A <see cref="TValue" /> for the value of the option.</param>
 	/// <returns>An option of <see cref="ISome{}" />.</returns>
-	public static IOption<TValue, TError> Some(TValue value) => new OptionSome<TValue, TError>(value);
+	public static ISome<TValue, TError> Some(TValue value) => new OptionSome<TValue, TError>(value);
 
 	/// <summary>
 	/// The value of the option.

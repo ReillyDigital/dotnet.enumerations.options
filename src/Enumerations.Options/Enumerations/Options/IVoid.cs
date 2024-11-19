@@ -14,14 +14,14 @@ public interface IVoid
 	/// Create a reference of <see cref="IError" />.
 	/// </summary>
 	/// <returns>A <see cref="IVoid" /> of <see cref="IError" />.</returns>
-	public static IVoid Error() => new OptionError<IVoid, Exception>(new());
+	public static IError<IVoid> Error() => new OptionError<IVoid, Exception>(new());
 
 	/// <summary>
 	/// Create a reference of <see cref="IError" />.
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
 	/// <returns>A <see cref="IVoid" /> of <see cref="IError" />.</returns>
-	public static IVoid Error(Exception value) => new OptionError<IVoid, Exception>(value);
+	public static IError<IVoid> Error(Exception value) => new OptionError<IVoid, Exception>(value);
 
 	/// <summary>
 	/// Create a reference of <see cref="IError" />.
@@ -29,7 +29,7 @@ public interface IVoid
 	/// <param name="message">The error message.</param>
 	/// <param name="innerException">An optional inner exception.</param>
 	/// <returns>A <see cref="IVoid" /> of <see cref="IError" />.</returns>
-	public static IVoid Error(string message, Exception? innerException = null) =>
+	public static IError<IVoid> Error(string message, Exception? innerException = null) =>
 		new OptionError<IVoid, Exception>(new(message, innerException));
 
 	/// <summary>
@@ -37,7 +37,7 @@ public interface IVoid
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
 	/// <returns>A <see cref="IVoid" /> of <see cref="IError" />.</returns>
-	public static IVoid Error<TError>(TError value) => new OptionError<IVoid, TError>(value);
+	public static IError<IVoid> Error<TError>(TError value) => new OptionError<IVoid, TError>(value);
 
 	/// <summary>
 	/// Executes the specified callback if this reference is of type <see cref="IError" />.
@@ -97,7 +97,7 @@ public interface IVoid<out TError> : IVoid
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
 	/// <returns>A <see cref="IVoid" /> of <see cref="IError" />.</returns>
-	public static IVoid<TError> Error(TError value) => new OptionError<IVoid, TError>(value);
+	public static IError<IVoid, TError> Error(TError value) => new OptionError<IVoid, TError>(value);
 
 	/// <summary>
 	/// Executes the specified callback if this reference is of type <see cref="IError{}" />.
