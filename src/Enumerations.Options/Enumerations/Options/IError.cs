@@ -7,24 +7,37 @@ using System.Text.Json;
 /// <summary>
 /// Represents an option which has an error of <see cref="Exception" />.
 /// </summary>
-public interface IError : IError<Exception> { }
+public interface IError : IVoid
+{
+	/// <summary>
+	/// The option error of <see cref="Exception" />.
+	/// </summary>
+	public Exception Value { get; }
+}
+
+/// <summary>
+/// Represents an option which has an error of <see cref="Exception" />.
+/// </summary>
+public interface IError<out TValue> : IError, IOption<TValue>
+{
+	/// <summary>
+	/// The option error of <see cref="Exception" />.
+	/// </summary>
+	public new Exception Value { get; }
+}
 
 /// <summary>
 /// Represents an option which has an error of <see cref="TError" />.
 /// </summary>
-public interface IError<TError> : IVoid
+public interface IError<out TValue, out TError> : IError, IOption<TValue, TError>
 {
 	/// <summary>
 	/// The option error of <see cref="TError" />.
 	/// </summary>
-	public TError Value { get; }
+	public new TError Value { get; }
 
-	/// <summary>
-	/// Gets the value of the error if it is of the type <see cref="Exception" />. Otherwise, gets a new
-	/// <see cref="Exception" /> with an inner <see cref="Exception" /> of the serialized <see cref="Value" /> if the
-	/// value is serializable.
-	/// </summary>
-	public Exception AsException() => Value switch
+	/// <inheritdoc />
+	Exception IError.Value => Value switch
 	{
 		Exception exception => exception,
 		_ => new(

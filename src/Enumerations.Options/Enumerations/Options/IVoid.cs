@@ -8,7 +8,7 @@ public interface IVoid
 	/// <summary>
 	/// Static reference of <see cref="IVoid" />.
 	/// </summary>
-	public static IVoid Void => _Implementations.Void.Ref;
+	public static IVoid Void => _Internal.Void<Exception>.Ref;
 
 	/// <summary>
 	/// Create a reference of <see cref="IError" />.
@@ -74,7 +74,46 @@ public interface IVoid
 	/// <returns>The current reference.</returns>
 	public IVoid IfError<TError>(Action<TError> callback)
 	{
-		if (this is IError<TError> error)
+		if (this is IError<IVoid, TError> error)
+		{
+			callback(error.Value);
+		}
+		return this;
+	}
+}
+
+/// <summary>
+/// Represents the simplest return type of nothing or anything.
+/// </summary>
+public interface IVoid<out TError> : IVoid
+{
+	/// <summary>
+	/// Static reference of <see cref="IVoid" />.
+	/// </summary>
+	public new static IVoid<TError> Void => _Internal.Void<TError>.Ref;
+
+	/// <summary>
+	/// Create a reference of <see cref="IError{}" />.
+	/// </summary>
+	/// <param name="value">The value of the error.</param>
+	/// <returns>A <see cref="IVoid" /> of <see cref="IError" />.</returns>
+	public static IVoid<TError> Error(TError value) => new OptionError<IVoid, TError>(value);
+
+	/// <summary>
+	/// Executes the specified callback if this reference is of type <see cref="IError{}" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute.</param>
+	/// <returns>The current reference.</returns>
+	public new IVoid<TError> IfError(Action callback) => IfError((_) => callback());
+
+	/// <summary>
+	/// Executes the specified callback if this reference is of type <see cref="IError{}" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute with the error.</param>
+	/// <returns>The current reference.</returns>
+	public IVoid<TError> IfError(Action<TError> callback)
+	{
+		if (this is IError<IVoid, TError> error)
 		{
 			callback(error.Value);
 		}
