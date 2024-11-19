@@ -4,7 +4,7 @@ namespace ReillyDigital.Enumerations.Options._Internal;
 /// Represents a collection of options which has an error of <see cref="Exception" />.
 /// </summary>
 internal readonly struct OptionEnumerableError<TValue, TError>(TError value)
-	: IError<TValue>, IError<TValue, TError>, IOptionEnumerable<TValue>, IOptionEnumerable<TValue, TError>
+	: IOptionEnumerableError<TValue>, IOptionEnumerableError<TValue, TError>
 {
 	/// <summary>
 	/// The option error of <see cref="TError" />.

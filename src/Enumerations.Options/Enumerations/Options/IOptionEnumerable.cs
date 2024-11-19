@@ -9,33 +9,35 @@ using System.Collections;
 public interface IOptionEnumerable<out TValue> : IEnumerable<IOption<TValue>>, IVoid
 {
 	/// <summary>
-	/// Create a reference of <see cref="IError{}" />.
+	/// Create a reference of <see cref="IOptionEnumerableError{}" />.
 	/// </summary>
-	/// <returns>An option of <see cref="IError{}" />.</returns>
-	public new static IError<TValue> Error() => new OptionEnumerableError<TValue, Exception>(new());
+	/// <returns>An option of <see cref="IOptionEnumerableError{}" />.</returns>
+	public new static IOptionEnumerableError<TValue> Error() => new OptionEnumerableError<TValue, Exception>(new());
 
 	/// <summary>
-	/// Create a reference of <see cref="IError{}" />.
+	/// Create a reference of <see cref="IOptionEnumerableError{}" />.
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
-	/// <returns>An option of <see cref="IError{}" />.</returns>
-	public new static IError<TValue> Error(Exception value) => new OptionEnumerableError<TValue, Exception>(value);
+	/// <returns>An option of <see cref="IOptionEnumerableError{}" />.</returns>
+	public new static IOptionEnumerableError<TValue> Error(Exception value) =>
+		new OptionEnumerableError<TValue, Exception>(value);
 
 	/// <summary>
-	/// Create a reference of <see cref="IError{}" />.
+	/// Create a reference of <see cref="IOptionEnumerableError{}" />.
 	/// </summary>
 	/// <param name="message">The error message.</param>
 	/// <param name="innerException">An optional inner exception.</param>
-	/// <returns>An option of <see cref="IError{}" />.</returns>
-	public new static IError<TValue> Error(string message, Exception? innerException = null) =>
+	/// <returns>An option of <see cref="IOptionEnumerableError{}" />.</returns>
+	public new static IOptionEnumerableError<TValue> Error(string message, Exception? innerException = null) =>
 		new OptionEnumerableError<TValue, Exception>(new(message, innerException));
 
 	/// <summary>
-	/// Create a reference of <see cref="IError{}" />.
+	/// Create a reference of <see cref="IOptionEnumerableError{}" />.
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
-	/// <returns>An option of <see cref="IError{}" />.</returns>
-	public new static IError<TValue> Error<TError>(TError value) => new OptionEnumerableError<TValue, TError>(value);
+	/// <returns>An option of <see cref="IOptionEnumerableError{}" />.</returns>
+	public new static IOptionEnumerableError<TValue> Error<TError>(TError value) =>
+		new OptionEnumerableError<TValue, TError>(value);
 
 	/// <summary>
 	/// The enumerator for the collection.
@@ -74,11 +76,12 @@ public interface IOptionEnumerable<out TValue> : IEnumerable<IOption<TValue>>, I
 public interface IOptionEnumerable<out TValue, out TError> : IEnumerable<IOption<TValue, TError>>, IVoid<TError>
 {
 	/// <summary>
-	/// Create a reference of <see cref="IError{,}" />.
+	/// Create a reference of <see cref="IOptionEnumerableError{,}" />.
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
-	/// <returns>An option of <see cref="IError{,}" />.</returns>
-	public new static IError<TValue, TError> Error(TError value) => new OptionEnumerableError<TValue, TError>(value);
+	/// <returns>An option of <see cref="IOptionEnumerableError{,}" />.</returns>
+	public new static IOptionEnumerableError<TValue, TError> Error(TError value) =>
+		new OptionEnumerableError<TValue, TError>(value);
 
 	/// <summary>
 	/// The enumerator for the collection.
