@@ -1,4 +1,8 @@
+#pragma warning disable SYSLIB0050
+
 namespace ReillyDigital.Enumerations.Options._Internal;
+
+using System.Text.Json;
 
 /// <summary>
 /// Represents an option which has an error of <see cref="TError" />.
@@ -9,7 +13,14 @@ internal readonly struct OptionError<TValue, TError>(TError value) : IError<TVal
 	public TError Value => value;
 
 	/// <inheritdoc />
-	Exception IError.Value => ((IError)this).Value;
+	Exception IError.Value => Value switch
+	{
+		Exception exception => exception,
+		_ => new(
+			$"Value is an error of type {typeof(TError).FullName}.",
+			typeof(TError).IsSerializable ? new(JsonSerializer.Serialize(Value)) : null
+		)
+	};
 
 	/// <inheritdoc />
 	Exception IError<TValue>.Value => ((IError)this).Value;
