@@ -55,7 +55,7 @@ public interface IOptionEnumerable<out TValue> : IEnumerable<IOption<TValue>>, I
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>An option of <see cref="IOptionEnumerableError{TValue}" />.</returns>
-	public new static IOptionEnumerableError<TValue> Error<TError>(
+	public static IOptionEnumerableError<TValue> Error<TError>(
 		TError value, IEnumerable<TError>? ignoredErrors = null
 	) => new OptionEnumerableError<TValue, TError>(value, ignoredErrors: ignoredErrors);
 

@@ -68,18 +68,6 @@ public interface IOption<out TValue> : IVoid
 	);
 
 	/// <summary>
-	/// Create a reference of <see cref="IError{TValue}" />.
-	/// </summary>
-	/// <param name="value">The value of the error.</param>
-	/// <param name="ignoredErrors">
-	/// Errors that are ignored instead of being returned as the option value.
-	/// </param>
-	/// <returns>An option of <see cref="IError{TValue}" />.</returns>
-	public new static IError<TValue> Error<TError>(
-		TError value, IEnumerable<TError>? ignoredErrors = null
-	) => new OptionError<TValue, TError>(value, ignoredErrors: ignoredErrors);
-
-	/// <summary>
 	/// Create a reference of <see cref="ISome{TValue}" />.
 	/// </summary>
 	/// <param name="value">A <see cref="TValue" /> for the value of the option.</param>
@@ -117,28 +105,6 @@ public interface IOption<out TValue> : IVoid
 	/// <inheritdoc cref="IVoid.Error(Exception)" />
 	public new IOption<TValue> IfError(Action<Exception> callback)
 		=> (IOption<TValue>)((IVoid)this).IfError(callback);
-
-	/// <summary>
-	/// Executes the specified callback if this reference is of type <see cref="IError{TValue}" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute.</param>
-	/// <returns>The current reference.</returns>
-	public new IOption<TValue> IfError<TError>(Action callback)
-		=> IfError<TError>((_) => callback());
-
-	/// <summary>
-	/// Executes the specified callback if this reference is of type <see cref="IError{TValue}" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute with the error.</param>
-	/// <returns>The current reference.</returns>
-	public new IOption<TValue> IfError<TError>(Action<TError> callback)
-	{
-		if (this is IError<TValue, TError> error)
-		{
-			callback(error.Value);
-		}
-		return this;
-	}
 
 	/// <summary>
 	/// Executes the specified callback if the option is of type <see cref="INone{TValue}" />.

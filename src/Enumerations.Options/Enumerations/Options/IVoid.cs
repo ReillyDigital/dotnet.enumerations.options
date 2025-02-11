@@ -56,18 +56,6 @@ public interface IVoid
 	) => Error(new(message, innerException), ignoredErrors: ignoredErrors);
 
 	/// <summary>
-	/// Create a reference of <see cref="IError" />.
-	/// </summary>
-	/// <param name="value">The value of the error.</param>
-	/// <param name="ignoredErrors">
-	/// Errors that are ignored instead of being returned as the option value.
-	/// </param>
-	/// <returns>A <see cref="IVoid" /> of <see cref="IError" />.</returns>
-	public static IError Error<TError>(
-		TError value, IEnumerable<TError>? ignoredErrors = null
-	) => new OptionError<IVoid, TError>(value, ignoredErrors: ignoredErrors);
-
-	/// <summary>
 	/// Additional errors of <see cref="Exception" /> which are ignored instead of being returned as
 	/// the option value.
 	/// </summary>
@@ -88,27 +76,6 @@ public interface IVoid
 	public IVoid IfError(Action<Exception> callback)
 	{
 		if (this is IError error)
-		{
-			callback(error.Value);
-		}
-		return this;
-	}
-
-	/// <summary>
-	/// Executes the specified callback if this reference is of type <see cref="IError" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute.</param>
-	/// <returns>The current reference.</returns>
-	public IVoid IfError<TError>(Action callback) => IfError<TError>((_) => callback());
-
-	/// <summary>
-	/// Executes the specified callback if this reference is of type <see cref="IError{TValue, TError}" />.
-	/// </summary>
-	/// <param name="callback">The callback to execute with the error.</param>
-	/// <returns>The current reference.</returns>
-	public IVoid IfError<TError>(Action<TError> callback)
-	{
-		if (this is IError<IVoid, TError> error)
 		{
 			callback(error.Value);
 		}
