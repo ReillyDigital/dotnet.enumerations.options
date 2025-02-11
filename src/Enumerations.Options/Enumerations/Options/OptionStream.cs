@@ -1,47 +1,54 @@
 namespace ReillyDigital.Enumerations.Options;
 
 /// <summary>
-/// Represents a stream of options with a value of <see cref="TValue" /> that are accessed by subscribing to events
-/// of each possible option type, triggered when an item of that type is added to the stream. Errors are of type
-/// <see cref="Exception" />.
+/// Represents a stream of options with a value of <see cref="TValue" /> that are accessed by
+/// subscribing to events of each possible option type, triggered when an item of that type is
+/// added to the stream. Errors are of type <see cref="Exception" />.
 /// </summary>
+/// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public class OptionStream<TValue> : IVoid
 {
 	/// <summary>
-	/// An event triggered when an option of type <see cref="IEnd{}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="IEnd{TValue}" /> is added to the stream.
 	/// </summary>
 	public event EventHandler<IEnd<TValue>>? EndReceived;
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="IError{}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="IError{TValue}" /> is added to the stream.
 	/// </summary>
 	public event EventHandler<IError<TValue>>? ErrorReceived;
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="INone{}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="INone{TValue}" /> is added to the stream.
 	/// </summary>
 	public event EventHandler<INone<TValue>>? NoneReceived;
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="IOption{}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="IOption{TValue}" /> is added to the stream.
 	/// </summary>
 	public event EventHandler<IOption<TValue>>? OptionReceived;
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="ISome{}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="ISome{TValue}" /> is added to the stream.
 	/// </summary>
 	public event EventHandler<ISome<TValue>>? SomeReceived;
 
 	/// <summary>
-	/// A task that is resolved once an option of <see cref="IEnd{}" /> is added to the stream.
+	/// A task that is resolved once an option of <see cref="IEnd{TValue}" /> is added to the stream.
 	/// </summary>
 	public Task<IEnd<TValue>> EndOfStream => TaskCompletionSource.Task;
 
+	/// <inheritdoc />
+	public IEnumerable<Exception> IgnoredErrors => throw new(
+		"Ignored errors are only supported on option stream values, not on the stream itself."
+	);
+
 	/// <summary>
-	/// Cancellation tokens registered with this stream. The task for <see cref="EndOfStream" /> will be cancelled upon
-	/// the cancellation of any of these tokens.
+	/// Cancellation tokens registered with this stream. The task for <see cref="EndOfStream" />
+	/// will be cancelled upon the cancellation of any of these tokens.
 	/// </summary>
-	private Dictionary<CancellationToken, CancellationTokenRegistration> CancellationTokens { get; init; } = [];
+	private Dictionary<CancellationToken, CancellationTokenRegistration> CancellationTokens
+	{ get; init; } = [];
 
 	/// <summary>
 	/// A task source used to resolve <see cref="EndOfStream" />.
@@ -51,33 +58,51 @@ public class OptionStream<TValue> : IVoid
 	/// <summary>
 	/// Returns a read-only wrapper for the current stream.
 	/// </summary>
-	/// <returns>A new <see cref="ReadOnlyOptionStream{}" /> wrapping this stream.</returns>
+	/// <returns>A new <see cref="ReadOnlyOptionStream{TValue}" /> wrapping this stream.</returns>
 	public ReadOnlyOptionStream<TValue> AsReadOnly() => new(this);
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IEnd{}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="IEnd{TValue}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue> End() => Next(IOption<TValue>.End);
+	public OptionStream<TValue> End(IEnumerable<Exception>? ignoredErrors = null)
+		=> Next(IOption<TValue>.End(ignoredErrors: ignoredErrors));
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IError{}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="IError{TValue}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
 	/// <param name="message">The error message.</param>
 	/// <param name="innerException">An optional inner exception.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue> Error(string message, Exception? innerException = null) =>
-		Next(IOption<TValue>.Error(message, innerException));
+	public OptionStream<TValue> Error(
+		string message, Exception? innerException = null, IEnumerable<Exception>? ignoredErrors = null
+	) => Next(IOption<TValue>.Error(
+		message, innerException: innerException, ignoredErrors: ignoredErrors)
+	);
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IError{}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="IError{TValue}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
 	/// <param name="value">The value of an option to add to the stream.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue> Error(Exception value) => Next(IOption<TValue>.Error(value));
+	public OptionStream<TValue> Error(Exception value, IEnumerable<Exception>? ignoredErrors = null)
+		=> Next(IOption<TValue>.Error(value, ignoredErrors: ignoredErrors));
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IError{}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="IError{TValue}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
 	/// <param name="error">The option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
@@ -87,12 +112,13 @@ public class OptionStream<TValue> : IVoid
 		{
 			return Next(option);
 		}
-		return Next(IOption<TValue>.Error(error.Value));
+		return Next(IOption<TValue>.Error(error.Value, ignoredErrors: error.IgnoredErrors));
 	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IOption{}" /> to the stream, returning this class instance. If
-	/// the option is of type <see cref="IEnd{}" /> then <see cref="EndOfStream" /> will be resolved.
+	/// A chainable call to add an option of <see cref="IOption{TValue}" /> to the stream, returning this
+	/// class instance. If the option is of type <see cref="IEnd{TValue}" /> then
+	/// <see cref="EndOfStream" /> will be resolved.
 	/// </summary>
 	/// <param name="option">The option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
@@ -130,18 +156,21 @@ public class OptionStream<TValue> : IVoid
 	}
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{}" /> to the stream. The options are iterated
-	/// over and added to the stream one at a time. Then returning this class instance. If any of the options is of type
-	/// <see cref="IEnd{}" /> then <see cref="EndOfStream" /> will be resolved.
+	/// A chainable call to add multiple options of <see cref="IOption{TValue}" /> to the stream. The
+	/// options are iterated over and added to the stream one at a time. Then returning this class
+	/// instance. If any of the options is of type <see cref="IEnd{TValue}" /> then
+	/// <see cref="EndOfStream" /> will be resolved.
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue> Next(params IOption<TValue>[] options) => Next(new OptionList<TValue>(options));
+	public OptionStream<TValue> Next(params IOption<TValue>[] options)
+		=> Next(new OptionList<TValue>(options));
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{}" /> to the stream. The options are iterated
-	/// over and added to the stream one at a time. Then returning this class instance. If any of the options is of type
-	/// <see cref="IEnd{}" /> then <see cref="EndOfStream" /> will be resolved.
+	/// A chainable call to add multiple options of <see cref="IOption{TValue}" /> to the stream. The
+	/// options are iterated over and added to the stream one at a time. Then returning this class
+	/// instance. If any of the options is of type <see cref="IEnd{TValue}" /> then
+	/// <see cref="EndOfStream" /> will be resolved.
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <returns>This class instance.</returns>
@@ -152,15 +181,21 @@ public class OptionStream<TValue> : IVoid
 	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="INone{}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="INone{TValue}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue> None() => Next(IOption<TValue>.None);
+	public OptionStream<TValue> None(IEnumerable<Exception>? ignoredErrors = null)
+		=> Next(IOption<TValue>.None(ignoredErrors: ignoredErrors));
 
 	/// <summary>
-	/// A chainable call to register a cancellation token with the stream, then returning this class instance. The task
-	/// for <see cref="EndOfStream" /> will be cancelled upon the cancellation of the provided token. If the provided
-	/// token is equal to <see cref="CancellationToken.None" /> then nothing will be registered.
+	/// A chainable call to register a cancellation token with the stream, then returning this class
+	/// instance. The task for <see cref="EndOfStream" /> will be cancelled upon the cancellation of
+	/// the provided token. If the provided token is equal to <see cref="CancellationToken.None" />
+	/// then nothing will be registered.
 	/// </summary>
 	/// <param name="cancellationToken">A cancellation token to register with the stream.</param>
 	/// <returns>This class instance.</returns>
@@ -178,7 +213,8 @@ public class OptionStream<TValue> : IVoid
 	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="ISome{}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="ISome{TValue}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
 	/// <param name="some">The option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
@@ -188,19 +224,24 @@ public class OptionStream<TValue> : IVoid
 		{
 			return Next(option);
 		}
-		return Next(IOption<TValue>.Some(some.Value));
+		return Next(IOption<TValue>.Some(some.Value, ignoredErrors: some.IgnoredErrors));
 	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="ISome{}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="ISome{TValue}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
 	/// <param name="value">The value of an option to add to the stream.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue> Some(TValue value) => Next(IOption<TValue>.Some(value));
+	public OptionStream<TValue> Some(TValue value, IEnumerable<Exception>? ignoredErrors = null)
+		=> Next(IOption<TValue>.Some(value, ignoredErrors: ignoredErrors));
 
 	/// <summary>
-	/// A chainable call to unregister a cancellation token with the stream, then returning this class instance. If the
-	/// provided token is not registered then nothing will be unregistered.
+	/// A chainable call to unregister a cancellation token with the stream, then returning this
+	/// class instance. If the provided token is not registered then nothing will be unregistered.
 	/// </summary>
 	/// <param name="cancellationToken">A cancellation token to unregister from the stream.</param>
 	/// <returns>This class instance.</returns>
@@ -221,47 +262,55 @@ public class OptionStream<TValue> : IVoid
 }
 
 /// <summary>
-/// Represents a stream of options with a value of <see cref="TValue" /> that are accessed by subscribing to events
-/// of each possible option type, triggered when an item of that type is added to the stream. Errors are of type
-/// <see cref="TError" />.
+/// Represents a stream of options with a value of <see cref="TValue" /> that are accessed by
+/// subscribing to events of each possible option type, triggered when an item of that type is
+/// added to the stream. Errors are of type <see cref="TError" />.
 /// </summary>
+/// <typeparam name="TValue">The type of the value of the options.</typeparam>
+/// <typeparam name="TError">The type of the error of the options.</typeparam>
 public class OptionStream<TValue, TError> : IVoid<TError>
 {
 	/// <summary>
-	/// An event triggered when an option of type <see cref="IEnd{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="IEnd{TValue, TError}" /> is added to the stream.
 	/// </summary>
 	public event EventHandler<IEnd<TValue, TError>>? EndReceived;
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="IError{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="IError{TValue, TError}" /> is added to the stream.
 	/// </summary>
 	public event EventHandler<IError<TValue, TError>>? ErrorReceived;
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="INone{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="INone{TValue, TError}" /> is added to the stream.
 	/// </summary>
 	public event EventHandler<INone<TValue, TError>>? NoneReceived;
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="IOption{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="IOption{TValue, TError}" /> is added to the stream.
 	/// </summary>
 	public event EventHandler<IOption<TValue, TError>>? OptionReceived;
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="ISome{,}" /> is added to the stream.
+	/// An event triggered when an option of type <see cref="ISome{TValue, TError}" /> is added to the stream.
 	/// </summary>
 	public event EventHandler<ISome<TValue, TError>>? SomeReceived;
 
 	/// <summary>
-	/// A task that is resolved once an option of <see cref="IEnd{,}" /> is added to the stream.
+	/// A task that is resolved once an option of <see cref="IEnd{TValue, TError}" /> is added to the stream.
 	/// </summary>
 	public Task<IEnd<TValue, TError>> EndOfStream => TaskCompletionSource.Task;
 
+	/// <inheritdoc />
+	public IEnumerable<TError> IgnoredErrors => throw new(
+		"Ignored errors are only supported on option stream values, not on the stream itself."
+	);
+
 	/// <summary>
-	/// Cancellation tokens registered with this stream. The task for <see cref="EndOfStream" /> will be cancelled upon
-	/// the cancellation of any of these tokens.
+	/// Cancellation tokens registered with this stream. The task for <see cref="EndOfStream" />
+	/// will be cancelled upon the cancellation of any of these tokens.
 	/// </summary>
-	private Dictionary<CancellationToken, CancellationTokenRegistration> CancellationTokens { get; init; } = [];
+	private Dictionary<CancellationToken, CancellationTokenRegistration> CancellationTokens
+	{ get; init; } = [];
 
 	/// <summary>
 	/// A task source used to resolve <see cref="EndOfStream" />.
@@ -271,24 +320,36 @@ public class OptionStream<TValue, TError> : IVoid<TError>
 	/// <summary>
 	/// Returns a read-only wrapper for the current stream.
 	/// </summary>
-	/// <returns>A new <see cref="ReadOnlyOptionStream{,}" /> wrapping this stream.</returns>
+	/// <returns>A new <see cref="ReadOnlyOptionStream{TValue, TError}" /> wrapping this stream.</returns>
 	public ReadOnlyOptionStream<TValue, TError> AsReadOnly() => new(this);
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IEnd{,}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="IEnd{TValue, TError}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> End() => Next(IOption<TValue, TError>.End);
+	public OptionStream<TValue, TError> End(IEnumerable<TError>? ignoredErrors = null)
+		=> Next(IOption<TValue, TError>.End(ignoredErrors: ignoredErrors));
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IError{,}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="IError{TValue, TError}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
 	/// <param name="value">The value of an option to add to the stream.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Error(TError value) => Next(IOption<TValue, TError>.Error(value));
+	public OptionStream<TValue, TError> Error(
+		TError value, IEnumerable<TError>? ignoredErrors = null
+	) => Next(IOption<TValue, TError>.Error(value, ignoredErrors: ignoredErrors));
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IError{,}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="IError{TValue, TError}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
 	/// <param name="error">The option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
@@ -298,12 +359,13 @@ public class OptionStream<TValue, TError> : IVoid<TError>
 		{
 			return Next(option);
 		}
-		return Next(IOption<TValue, TError>.Error(error.Value));
+		return Next(IOption<TValue, TError>.Error(error.Value, ignoredErrors: error.IgnoredErrors));
 	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IOption{,}" /> to the stream, returning this class instance. If
-	/// the option is of type <see cref="IEnd{,}" /> then <see cref="EndOfStream" /> will be resolved.
+	/// A chainable call to add an option of <see cref="IOption{TValue, TError}" /> to the stream, returning this
+	/// class instance. If the option is of type <see cref="IEnd{TValue, TError}" /> then
+	/// <see cref="EndOfStream" /> will be resolved.
 	/// </summary>
 	/// <param name="option">The option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
@@ -341,19 +403,21 @@ public class OptionStream<TValue, TError> : IVoid<TError>
 	}
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{,}" /> to the stream. The options are iterated
-	/// over and added to the stream one at a time. Then returning this class instance. If any of the options is of type
-	/// <see cref="IEnd{,}" /> then <see cref="EndOfStream" /> will be resolved.
+	/// A chainable call to add multiple options of <see cref="IOption{TValue, TError}" /> to the stream. The
+	/// options are iterated over and added to the stream one at a time. Then returning this class
+	/// instance. If any of the options is of type <see cref="IEnd{TValue, TError}" /> then
+	/// <see cref="EndOfStream" /> will be resolved.
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Next(params IOption<TValue, TError>[] options) =>
-		Next(new OptionList<TValue, TError>(options));
+	public OptionStream<TValue, TError> Next(params IOption<TValue, TError>[] options)
+		=> Next(new OptionList<TValue, TError>(options));
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{,}" /> to the stream. The options are iterated
-	/// over and added to the stream one at a time. Then returning this class instance. If any of the options is of type
-	/// <see cref="IEnd{,}" /> then <see cref="EndOfStream" /> will be resolved.
+	/// A chainable call to add multiple options of <see cref="IOption{TValue, TError}" /> to the stream. The
+	/// options are iterated over and added to the stream one at a time. Then returning this class
+	/// instance. If any of the options is of type <see cref="IEnd{TValue, TError}" /> then
+	/// <see cref="EndOfStream" /> will be resolved.
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <returns>This class instance.</returns>
@@ -364,19 +428,27 @@ public class OptionStream<TValue, TError> : IVoid<TError>
 	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="INone{,}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="INone{TValue, TError}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> None() => Next(IOption<TValue, TError>.None);
+	public OptionStream<TValue, TError> None(IEnumerable<TError>? ignoredErrors = null)
+		=> Next(IOption<TValue, TError>.None(ignoredErrors: ignoredErrors));
 
 	/// <summary>
-	/// A chainable call to register a cancellation token with the stream, then returning this class instance. The task
-	/// for <see cref="EndOfStream" /> will be cancelled upon the cancellation of the provided token. If the provided
-	/// token is equal to <see cref="CancellationToken.None" /> then nothing will be registered.
+	/// A chainable call to register a cancellation token with the stream, then returning this class
+	/// instance. The task for <see cref="EndOfStream" /> will be cancelled upon the cancellation of
+	/// the provided token. If the provided token is equal to <see cref="CancellationToken.None" />
+	/// then nothing will be registered.
 	/// </summary>
 	/// <param name="cancellationToken">A cancellation token to register with the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> RegisterCancellationToken(CancellationToken cancellationToken)
+	public OptionStream<TValue, TError> RegisterCancellationToken(
+		CancellationToken cancellationToken
+	)
 	{
 		if (cancellationToken == CancellationToken.None)
 		{
@@ -390,7 +462,8 @@ public class OptionStream<TValue, TError> : IVoid<TError>
 	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="ISome{,}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="ISome{TValue, TError}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
 	/// <param name="some">The option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
@@ -400,23 +473,27 @@ public class OptionStream<TValue, TError> : IVoid<TError>
 		{
 			return Next(option);
 		}
-		return Next(IOption<TValue, TError>.Some(some.Value));
+		return Next(IOption<TValue, TError>.Some(some.Value, ignoredErrors: some.IgnoredErrors));
 	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="ISome{,}" /> to the stream, returning this class instance.
+	/// A chainable call to add an option of <see cref="ISome{TValue, TError}" /> to the stream, returning this
+	/// class instance.
 	/// </summary>
 	/// <param name="value">The value of an option to add to the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> Some(TValue value) => Next(IOption<TValue, TError>.Some(value));
+	public OptionStream<TValue, TError> Some(TValue value)
+		=> Next(IOption<TValue, TError>.Some(value));
 
 	/// <summary>
-	/// A chainable call to unregister a cancellation token with the stream, then returning this class instance. If the
-	/// provided token is not registered then nothing will be unregistered.
+	/// A chainable call to unregister a cancellation token with the stream, then returning this
+	/// class instance. If the provided token is not registered then nothing will be unregistered.
 	/// </summary>
 	/// <param name="cancellationToken">A cancellation token to unregister from the stream.</param>
 	/// <returns>This class instance.</returns>
-	public OptionStream<TValue, TError> UnregisterCancellationToken(CancellationToken cancellationToken)
+	public OptionStream<TValue, TError> UnregisterCancellationToken(
+	CancellationToken cancellationToken
+	)
 	{
 		if (cancellationToken == CancellationToken.None)
 		{

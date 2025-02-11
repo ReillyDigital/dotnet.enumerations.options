@@ -1,15 +1,16 @@
 namespace ReillyDigital.Enumerations.Options;
 
 /// <summary>
-/// Represents a collection of options with a value of <see cref="TValue" /> that can be individually accessed by
-/// index. Errors will be of type <see cref="Exception" />.
+/// Represents a collection of options with a value of <see cref="TValue" /> that can be
+/// individually accessed by index. Errors will be of type <see cref="Exception" />.
 /// </summary>
+/// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerable<TValue>
 {
 	/// <summary>
 	/// Returns an empty collection.
 	/// </summary>
-	/// <returns>An empty <see cref="OptionList{}" />.</returns>
+	/// <returns>An empty <see cref="OptionList{TValue}" />.</returns>
 	public static OptionList<TValue> Empty() => [];
 
 	/// <inheritdoc />
@@ -26,6 +27,11 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	/// The enumerator for the collection.
 	/// </summary>
 	private IEnumerator<IOption<TValue>> IEnumerator => List.GetEnumerator();
+
+	/// <inheritdoc />
+	public IEnumerable<Exception> IgnoredErrors => throw new(
+		"Ignored errors are only supported on option list values, not on the list itself."
+	);
 
 	/// <summary>
 	/// The backing list for this collection.
@@ -50,7 +56,7 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	/// Constructor for this collection, having its items set to the provided values.
 	/// </summary>
 	/// <param name="values">The items of the new collection.</param>
-	public OptionList(IEnumerable<IOption<TValue>> values) => List = values.ToList();
+	public OptionList(IEnumerable<IOption<TValue>> values) => List = [..values];
 
 	/// <summary>
 	/// Constructor for this collection, having its items set to the provided values.
@@ -90,7 +96,7 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	/// <summary>
 	/// Returns a read-only wrapper for the current collection.
 	/// </summary>
-	/// <returns>A new <see cref="ReadOnlyOptionList{}" /> wrapping this collection.</returns>
+	/// <returns>A new <see cref="ReadOnlyOptionList{TValue}" /> wrapping this collection.</returns>
 	public ReadOnlyOptionList<TValue> AsReadOnly() => new(this);
 
 	/// <summary>
@@ -107,17 +113,17 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	public bool Contains(IOption<TValue> item) => List.Contains(item);
 
 	/// <summary>
-	/// Copies the entire collection to a compatible one-dimensional array, starting at the specified index of the
-	/// target array.
+	/// Copies the entire collection to a compatible one-dimensional array, starting at the
+	/// specified index of the target array.
 	/// </summary>
 	/// <param name="array">
-	/// The one-dimensional Array that is the destination of the elements copied from this collection. The Array must
-	/// have zero-based indexing. Copies the entire collection to a compatible one-dimensional array, starting at the
-	/// specified index of the target array.
+	/// The one-dimensional Array that is the destination of the elements copied from this
+	/// collection. The Array must have zero-based indexing. Copies the entire collection to a
+	/// compatible one-dimensional array, starting at the specified index of the target array.
 	/// </param>
 	/// <param name="arrayIndex">
-	/// The zero-based index in array at which copying begins. Copies the entire collection to a compatible
-	/// one-dimensional array, starting at the specified index of the target array.
+	/// The zero-based index in array at which copying begins. Copies the entire collection to a
+	/// compatible one-dimensional array, starting at the specified index of the target array.
 	/// </param>
 	/// <exception cref="ArgumentNullException" />
 	/// <exception cref="ArgumentOutOfRangeException" />
@@ -140,15 +146,16 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	public IEnumerator<IOption<TValue>> GetEnumerator() => IEnumerator;
 
 	/// <summary>
-	/// Searches for the specified item and returns the zero-based index of the first occurrence within the entire
-	/// collection.
+	/// Searches for the specified item and returns the zero-based index of the first occurrence
+	/// within the entire collection.
 	/// </summary>
 	/// <param name="item">
-	/// The item to locate in the collection. Searches for the specified item and returns the zero-based index of the
-	/// first occurrence within the collection.
+	/// The item to locate in the collection. Searches for the specified item and returns the
+	/// zero-based index of the first occurrence within the collection.
 	/// </param>
 	/// <returns>
-	/// The zero-based index of the first occurrence of item within the collection, if found; otherwise, -1.
+	/// The zero-based index of the first occurrence of item within the collection, if found;
+	/// otherwise, -1.
 	/// </returns>
 	public int IndexOf(IOption<TValue> item) => List.IndexOf(item);
 
@@ -156,8 +163,8 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	/// Inserts an element into the collection at the specified index.
 	/// </summary>
 	/// <param name="index">
-	/// The zero-based index at which item should be inserted. Inserts an element into the collection at the specified
-	/// index.
+	/// The zero-based index at which item should be inserted. Inserts an element into the
+	/// collection at the specified index.
 	/// </param>
 	/// <param name="item">The item to insert into the collection.</param>
 	/// <exception cref="ArgumentOutOfRangeException" />
@@ -168,8 +175,8 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	/// </summary>
 	/// <param name="item">The item to remove from the collection.</param>
 	/// <returns>
-	/// true if item is successfully removed; otherwise, false. This method also returns false if item was not found in
-	/// the collection.
+	/// true if item is successfully removed; otherwise, false. This method also returns false if
+	/// item was not found in the collection.
 	/// </returns>
 	public bool Remove(IOption<TValue> item) => List.Remove(item);
 
@@ -177,8 +184,8 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	/// Removes all the elements that match the conditions defined by the specified predicate.
 	/// </summary>
 	/// <param name="match">
-	/// Delegate that defines the conditions of the elements to remove. Removes all the elements that match the
-	/// conditions defined by the specified predicate.
+	/// Delegate that defines the conditions of the elements to remove. Removes all the elements
+	/// that match the conditions defined by the specified predicate.
 	/// </param>
 	/// <returns>The number of elements removed from the List.</returns>
 	/// <exception cref="ArgumentNullException" />
@@ -193,15 +200,18 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 }
 
 /// <summary>
-/// Represents a collection of options with a value of <see cref="TValue" /> that can be individually accessed by
-/// index. Errors will be of type <see cref="TError" />.
+/// Represents a collection of options with a value of <see cref="TValue" /> that can be
+/// individually accessed by index. Errors will be of type <see cref="TError" />.
 /// </summary>
-public sealed class OptionList<TValue, TError> : IList<IOption<TValue, TError>>, IOptionEnumerable<TValue, TError>
+/// <typeparam name="TValue">The type of the value of the options.</typeparam>
+/// <typeparam name="TError">The type of the error of the options.</typeparam>
+public sealed class OptionList<TValue, TError>
+	: IList<IOption<TValue, TError>>, IOptionEnumerable<TValue, TError>
 {
 	/// <summary>
 	/// Returns an empty collection.
 	/// </summary>
-	/// <returns>An empty <see cref="OptionList{,}" />.</returns>
+	/// <returns>An empty <see cref="OptionList{TValue, TError}" />.</returns>
 	public static OptionList<TValue, TError> Empty() => [];
 
 	/// <inheritdoc />
@@ -219,13 +229,19 @@ public sealed class OptionList<TValue, TError> : IList<IOption<TValue, TError>>,
 	/// </summary>
 	private IEnumerator<IOption<TValue, TError>> IEnumerator => List.GetEnumerator();
 
+	/// <inheritdoc />
+	public IEnumerable<TError> IgnoredErrors => throw new(
+		"Ignored errors are only supported on option list values, not on the list itself."
+	);
+
 	/// <summary>
 	/// The backing list for this collection.
 	/// </summary>
 	private List<IOption<TValue, TError>> List { get; }
 
 	/// <inheritdoc />
-	IEnumerator<IOption<TValue, TError>> IOptionEnumerable<TValue, TError>.IEnumerator => IEnumerator;
+	IEnumerator<IOption<TValue, TError>> IOptionEnumerable<TValue, TError>.IEnumerator
+		=> IEnumerator;
 
 	/// <summary>
 	/// Gets a value indicating whether the collection is read-only.
@@ -242,7 +258,7 @@ public sealed class OptionList<TValue, TError> : IList<IOption<TValue, TError>>,
 	/// Constructor for this collection, having its items set to the provided values.
 	/// </summary>
 	/// <param name="values">The items of the new collection.</param>
-	public OptionList(IEnumerable<IOption<TValue, TError>> values) => List = values.ToList();
+	public OptionList(IEnumerable<IOption<TValue, TError>> values) => List = [..values];
 
 	/// <summary>
 	/// Constructor for this collection, having its items set to the provided values.
@@ -261,7 +277,8 @@ public sealed class OptionList<TValue, TError> : IList<IOption<TValue, TError>>,
 	/// </summary>
 	/// <param name="collection">The items to be added to the collection.</param>
 	/// <exception cref="ArgumentNullException" />
-	public void AddRange(IEnumerable<IOption<TValue, TError>> collection) => List.AddRange(collection);
+	public void AddRange(IEnumerable<IOption<TValue, TError>> collection)
+		=> List.AddRange(collection);
 
 	/// <summary>
 	/// Adds the elements of the specified span to the end of the List.
@@ -282,7 +299,7 @@ public sealed class OptionList<TValue, TError> : IList<IOption<TValue, TError>>,
 	/// <summary>
 	/// Returns a read-only wrapper for the current collection.
 	/// </summary>
-	/// <returns>A new <see cref="ReadOnlyOptionList{,}" /> wrapping this collection.</returns>
+	/// <returns>A new <see cref="ReadOnlyOptionList{TValue, TError}" /> wrapping this collection.</returns>
 	public ReadOnlyOptionList<TValue, TError> AsReadOnly() => new(this);
 
 	/// <summary>
@@ -299,22 +316,23 @@ public sealed class OptionList<TValue, TError> : IList<IOption<TValue, TError>>,
 	public bool Contains(IOption<TValue, TError> item) => List.Contains(item);
 
 	/// <summary>
-	/// Copies the entire collection to a compatible one-dimensional array, starting at the specified index of the
-	/// target array.
+	/// Copies the entire collection to a compatible one-dimensional array, starting at the
+	/// specified index of the target array.
 	/// </summary>
 	/// <param name="array">
-	/// The one-dimensional Array that is the destination of the elements copied from this collection. The Array must
-	/// have zero-based indexing. Copies the entire collection to a compatible one-dimensional array, starting at the
-	/// specified index of the target array.
+	/// The one-dimensional Array that is the destination of the elements copied from this
+	/// collection. The Array must have zero-based indexing. Copies the entire collection to a
+	/// compatible one-dimensional array, starting at the specified index of the target array.
 	/// </param>
 	/// <param name="arrayIndex">
-	/// The zero-based index in array at which copying begins. Copies the entire collection to a compatible
-	/// one-dimensional array, starting at the specified index of the target array.
+	/// The zero-based index in array at which copying begins. Copies the entire collection to a
+	/// compatible one-dimensional array, starting at the specified index of the target array.
 	/// </param>
 	/// <exception cref="ArgumentNullException" />
 	/// <exception cref="ArgumentOutOfRangeException" />
 	/// <exception cref="ArgumentException" />
-	public void CopyTo(IOption<TValue, TError>[] array, int arrayIndex) => List.CopyTo(array, arrayIndex);
+	public void CopyTo(IOption<TValue, TError>[] array, int arrayIndex)
+		=> List.CopyTo(array, arrayIndex);
 
 	/// <inheritdoc />
 	public void ForEach(Action<IOption<TValue, TError>> handler) => List.ForEach(handler);
@@ -332,15 +350,16 @@ public sealed class OptionList<TValue, TError> : IList<IOption<TValue, TError>>,
 	public IEnumerator<IOption<TValue, TError>> GetEnumerator() => IEnumerator;
 
 	/// <summary>
-	/// Searches for the specified item and returns the zero-based index of the first occurrence within the entire
-	/// collection.
+	/// Searches for the specified item and returns the zero-based index of the first occurrence
+	/// within the entire collection.
 	/// </summary>
 	/// <param name="item">
-	/// The item to locate in the collection. Searches for the specified item and returns the zero-based index of the
-	/// first occurrence within the collection.
+	/// The item to locate in the collection. Searches for the specified item and returns the
+	/// zero-based index of the first occurrence within the collection.
 	/// </param>
 	/// <returns>
-	/// The zero-based index of the first occurrence of item within the collection, if found; otherwise, -1.
+	/// The zero-based index of the first occurrence of item within the collection, if found;
+	/// otherwise, -1.
 	/// </returns>
 	public int IndexOf(IOption<TValue, TError> item) => List.IndexOf(item);
 
@@ -348,8 +367,8 @@ public sealed class OptionList<TValue, TError> : IList<IOption<TValue, TError>>,
 	/// Inserts an element into the collection at the specified index.
 	/// </summary>
 	/// <param name="index">
-	/// The zero-based index at which item should be inserted. Inserts an element into the collection at the specified
-	/// index.
+	/// The zero-based index at which item should be inserted. Inserts an element into the
+	/// collection at the specified index.
 	/// </param>
 	/// <param name="item">The item to insert into the collection.</param>
 	/// <exception cref="ArgumentOutOfRangeException" />
@@ -360,8 +379,8 @@ public sealed class OptionList<TValue, TError> : IList<IOption<TValue, TError>>,
 	/// </summary>
 	/// <param name="item">The item to remove from the collection.</param>
 	/// <returns>
-	/// true if item is successfully removed; otherwise, false. This method also returns false if item was not found in
-	/// the collection.
+	/// true if item is successfully removed; otherwise, false. This method also returns false if
+	/// item was not found in the collection.
 	/// </returns>
 	public bool Remove(IOption<TValue, TError> item) => List.Remove(item);
 
@@ -369,8 +388,8 @@ public sealed class OptionList<TValue, TError> : IList<IOption<TValue, TError>>,
 	/// Removes all the elements that match the conditions defined by the specified predicate.
 	/// </summary>
 	/// <param name="match">
-	/// Delegate that defines the conditions of the elements to remove. Removes all the elements that match the
-	/// conditions defined by the specified predicate.
+	/// Delegate that defines the conditions of the elements to remove. Removes all the elements
+	/// that match the conditions defined by the specified predicate.
 	/// </param>
 	/// <returns>The number of elements removed from the List.</returns>
 	/// <exception cref="ArgumentNullException" />

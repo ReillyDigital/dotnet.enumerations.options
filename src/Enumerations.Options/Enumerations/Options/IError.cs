@@ -18,6 +18,7 @@ public interface IError : IVoid
 /// <summary>
 /// Represents an option which has an error of <see cref="Exception" />.
 /// </summary>
+/// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public interface IError<out TValue> : IError, IOption<TValue>
 {
 	/// <summary>
@@ -29,6 +30,8 @@ public interface IError<out TValue> : IError, IOption<TValue>
 /// <summary>
 /// Represents an option which has an error of <see cref="TError" />.
 /// </summary>
+/// <typeparam name="TValue">The type of the value of the options.</typeparam>
+/// <typeparam name="TError">The type of the error of the options.</typeparam>
 public interface IError<out TValue, out TError> : IError, IOption<TValue, TError>
 {
 	/// <summary>
