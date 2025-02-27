@@ -6,13 +6,24 @@ public static class StreamScenario
 	{
 		var provider = new StreamProvider();
 		var stream = provider.GetStream();
-		stream.SomeReceived +=
-			(object? sender, ISome<string> some) => Console.WriteLine(some.Value);
-		stream.ErrorReceived +=
-			(object? sender, IError<string> error) =>
-				Console.WriteLine(error.Value.Message);
-		provider.DoStuff();
-		await stream.EndOfStream;
+		await Task.WhenAll(
+			Task.Run(async () =>
+			{
+				await foreach (var each in stream.ReadToEnd())
+				{
+					switch (each)
+					{
+						case IError error:
+							Console.WriteLine(error.Value.Message);
+							break;
+						case ISome<string> some:
+							Console.WriteLine(some.Value);
+							break;
+					}
+				}
+			}),
+			Task.Run(provider.DoStuff)
+		);
 	}
 
 	private class StreamProvider
@@ -22,10 +33,10 @@ public static class StreamScenario
 		public void DoStuff()
 		{
 			Stream
-				.Some("This is a value.")
-				.Some("This is another value.")
-				.Error("Oops.")
-				.Some("One more value.")
+				.Some("This is a streamed value.")
+				.Some("This is another streamed value.")
+				.Error("Oops. Streamed error.")
+				.Some("One more streamed value.")
 				.End();
 		}
 

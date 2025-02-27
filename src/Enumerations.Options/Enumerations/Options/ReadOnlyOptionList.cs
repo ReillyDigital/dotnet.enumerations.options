@@ -17,27 +17,19 @@ public sealed class ReadOnlyOptionList<TValue>
 	/// <returns>The number of elements contained in the Collection.</returns>
 	public int Count => List.Count;
 
-	/// <summary>
-	/// The enumerator for the collection.
-	/// </summary>
-	private IEnumerator<IOption<TValue>> IEnumerator => List.GetEnumerator();
-
 	/// <inheritdoc />
 	public IEnumerable<Exception> IgnoredErrors => List.IgnoredErrors;
-
-	/// <summary>
-	/// The backing option list for this collection.
-	/// </summary>
-	private OptionList<TValue> List { get; }
-
-	/// <inheritdoc />
-	IEnumerator<IOption<TValue>> IOptionEnumerable<TValue>.IEnumerator => IEnumerator;
 
 	/// <summary>
 	/// Gets a value indicating whether the collection is read-only.
 	/// </summary>
 	/// <returns>true</returns>
 	public bool IsReadOnly => true;
+
+	/// <summary>
+	/// The backing option list for this collection.
+	/// </summary>
+	private OptionList<TValue> List { get; }
 
 	/// <summary>
 	/// Constructor for this collection, having its items set to the provided values.
@@ -92,7 +84,7 @@ public sealed class ReadOnlyOptionList<TValue>
 	public void ForEach<TResult>(Func<IOption<TValue>, TResult> handler) => List.ForEach(handler);
 
 	/// <inheritdoc />
-	public IEnumerator<IOption<TValue>> GetEnumerator() => IEnumerator;
+	public IEnumerator<IOption<TValue>> GetEnumerator() => List.GetEnumerator();
 
 	/// <summary>
 	/// Searches for the specified item and returns the zero-based index of the first occurrence
@@ -127,28 +119,19 @@ public sealed class ReadOnlyOptionList<TValue, TError>
 	/// <returns>The number of elements contained in the Collection.</returns>
 	public int Count => List.Count;
 
-	/// <summary>
-	/// The enumerator for the collection.
-	/// </summary>
-	private IEnumerator<IOption<TValue, TError>> IEnumerator => List.GetEnumerator();
-
 	/// <inheritdoc />
 	public IEnumerable<TError> IgnoredErrors => List.IgnoredErrors;
-
-	/// <summary>
-	/// The backing option list for this collection.
-	/// </summary>
-	private OptionList<TValue, TError> List { get; }
-
-	/// <inheritdoc />
-	IEnumerator<IOption<TValue, TError>> IOptionEnumerable<TValue, TError>.IEnumerator
-		=> IEnumerator;
 
 	/// <summary>
 	/// Gets a value indicating whether the collection is read-only.
 	/// </summary>
 	/// <returns>true</returns>
 	public bool IsReadOnly => true;
+
+	/// <summary>
+	/// The backing option list for this collection.
+	/// </summary>
+	private OptionList<TValue, TError> List { get; }
 
 	/// <summary>
 	/// Constructor for this collection, having its items set to the provided values.
@@ -205,7 +188,7 @@ public sealed class ReadOnlyOptionList<TValue, TError>
 		=> List.ForEach(handler);
 
 	/// <inheritdoc />
-	public IEnumerator<IOption<TValue, TError>> GetEnumerator() => IEnumerator;
+	public IEnumerator<IOption<TValue, TError>> GetEnumerator() => List.GetEnumerator();
 
 	/// <summary>
 	/// Searches for the specified item and returns the zero-based index of the first occurrence

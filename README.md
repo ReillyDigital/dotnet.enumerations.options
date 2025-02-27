@@ -52,10 +52,10 @@ class StreamProvider
 	public void DoStuff()
 	{
 		Stream
-			.Some("This is a value.")
-			.Some("This is another value.")
-			.Error("Oops.")
-			.Some("One more value.")
+			.Some("This is a streamed value.")
+			.Some("This is another streamed value.")
+			.Error("Oops. Streamed error.")
+			.Some("One more streamed value.")
 			.End();
 	}
 
@@ -69,23 +69,72 @@ var provider = new StreamProvider();
 var stream = provider.GetStream();
 ```
 
-Add handlers to the stream for the various option types:
-```csharp
-stream.SomeReceived +=
-	(object? sender, ISome<string> some) => Console.WriteLine(some.Value);
-stream.ErrorReceived +=
-	(object? sender, IError<string> error) =>
-		Console.WriteLine(error.Value.Message);
-```
-
 Tell the stream provider to do stuff:
 ```csharp
 provider.DoStuff();
 ```
 
-Await the end of the stream:
+Iterate over the stream options until an end of stream is provided:
 ```csharp
-await stream.EndOfStream;
+await foreach (var each in stream.ReadToEnd())
+{
+	switch (each)
+	{
+		case IError error:
+			Console.WriteLine(error.Value.Message);
+			break;
+		case ISome<string> some:
+			Console.WriteLine(some.Value);
+			break;
+	}
+}
+```
+
+### Value Pipes
+
+Define a class that provides an option pipe.
+```csharp
+class PipeProvider
+{
+	private OptionPipe<string> Pipe { get; } = new();
+
+	public void DoStuff()
+	{
+		Pipe
+			.Some("This is a piped value.")
+			.Some("This is another piped value.")
+			.Error("Oops. Piped error.")
+			.Some("One more piped value.")
+			.End();
+	}
+
+	public ReadOnlyOptionPipe<string> GetPipe() => Pipe.AsReadOnly();
+}
+```
+
+Get the provided pipe:
+```csharp
+var provider = new PipeProvider();
+var pipe = provider.GetPipe();
+```
+
+Add handlers to the pipe for the various option types:
+```csharp
+pipe.SomeReceived +=
+	(object? sender, ISome<string> some) => Console.WriteLine(some.Value);
+pipe.ErrorReceived +=
+	(object? sender, IError<string> error) =>
+		Console.WriteLine(error.Value.Message);
+```
+
+Tell the pipe provider to do stuff:
+```csharp
+provider.DoStuff();
+```
+
+Await the end of the pipe:
+```csharp
+await pipe.Ended;
 ```
 
 ## Links

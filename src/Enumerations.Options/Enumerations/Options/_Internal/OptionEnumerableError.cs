@@ -27,18 +27,6 @@ internal readonly struct OptionEnumerableError<TValue, TError>(
 	/// <summary>
 	/// Throws the value of the error as returned by <see cref="IError.Value" />.
 	/// </summary>
-	IEnumerator<IOption<TValue>> IOptionEnumerable<TValue>.IEnumerator
-		=> throw ((IError)this).Value;
-
-	/// <summary>
-	/// Throws the value of the error as returned by <see cref="IError.Value" />.
-	/// </summary>
-	IEnumerator<IOption<TValue, TError>> IOptionEnumerable<TValue, TError>.IEnumerator
-		=> throw ((IError)this).Value;
-
-	/// <summary>
-	/// Throws the value of the error as returned by <see cref="IError.Value" />.
-	/// </summary>
 	TValue? IOption<TValue>.Value => throw ((IError)this).Value;
 
 	/// <summary>
@@ -92,12 +80,12 @@ internal readonly struct OptionEnumerableError<TValue, TError>(
 	/// <summary>
 	/// Throws the value of the error as returned by <see cref="IError.Value" />.
 	/// </summary>
-	IEnumerator<IOption<TValue>> IEnumerable<IOption<TValue>>.GetEnumerator()
+	IEnumerator<IOption<TValue>> IOptionEnumerable<TValue>.GetEnumerator()
 		=> throw ((IError)this).Value;
 
 	/// <summary>
 	/// Throws the value of the error as returned by <see cref="IError.Value" />.
 	/// </summary>
-	IEnumerator<IOption<TValue, TError>> IEnumerable<IOption<TValue, TError>>.GetEnumerator()
+	IEnumerator<IOption<TValue, TError>> IOptionEnumerable<TValue, TError>.GetEnumerator()
 		=> throw ((IError)this).Value;
 }

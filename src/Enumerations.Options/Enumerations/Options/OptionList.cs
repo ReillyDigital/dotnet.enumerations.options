@@ -23,11 +23,6 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	/// <inheritdoc />
 	public int Count => List.Count;
 
-	/// <summary>
-	/// The enumerator for the collection.
-	/// </summary>
-	private IEnumerator<IOption<TValue>> IEnumerator => List.GetEnumerator();
-
 	/// <inheritdoc />
 	public IEnumerable<Exception> IgnoredErrors => throw new(
 		"Ignored errors are only supported on option list values, not on the list itself."
@@ -37,9 +32,6 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	/// The backing list for this collection.
 	/// </summary>
 	private List<IOption<TValue>> List { get; }
-
-	/// <inheritdoc />
-	IEnumerator<IOption<TValue>> IOptionEnumerable<TValue>.IEnumerator => IEnumerator;
 
 	/// <summary>
 	/// Gets a value indicating whether the collection is read-only.
@@ -143,7 +135,7 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	}
 
 	/// <inheritdoc />
-	public IEnumerator<IOption<TValue>> GetEnumerator() => IEnumerator;
+	public IEnumerator<IOption<TValue>> GetEnumerator() => List.GetEnumerator();
 
 	/// <summary>
 	/// Searches for the specified item and returns the zero-based index of the first occurrence
@@ -224,11 +216,6 @@ public sealed class OptionList<TValue, TError>
 	/// <inheritdoc />
 	public int Count => List.Count;
 
-	/// <summary>
-	/// The enumerator for the collection.
-	/// </summary>
-	private IEnumerator<IOption<TValue, TError>> IEnumerator => List.GetEnumerator();
-
 	/// <inheritdoc />
 	public IEnumerable<TError> IgnoredErrors => throw new(
 		"Ignored errors are only supported on option list values, not on the list itself."
@@ -238,10 +225,6 @@ public sealed class OptionList<TValue, TError>
 	/// The backing list for this collection.
 	/// </summary>
 	private List<IOption<TValue, TError>> List { get; }
-
-	/// <inheritdoc />
-	IEnumerator<IOption<TValue, TError>> IOptionEnumerable<TValue, TError>.IEnumerator
-		=> IEnumerator;
 
 	/// <summary>
 	/// Gets a value indicating whether the collection is read-only.
@@ -347,7 +330,7 @@ public sealed class OptionList<TValue, TError>
 	}
 
 	/// <inheritdoc />
-	public IEnumerator<IOption<TValue, TError>> GetEnumerator() => IEnumerator;
+	public IEnumerator<IOption<TValue, TError>> GetEnumerator() => List.GetEnumerator();
 
 	/// <summary>
 	/// Searches for the specified item and returns the zero-based index of the first occurrence

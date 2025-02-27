@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Added parameters for ignoredErrors for all option types.
+- IAsyncOptionEnumerable interface for being an async equivalent to the IOptionEnumerable interface.
+- New OptionStream type added that is now more appropriate for its use case of single receiver, and is consumed via Read and ReadToEnd methods instead of events. Read-only equivalent is also added.
+
+### Changed
+
+- End and None option types on IOption interfaces are now functions instead of values to support passing new ignoredErrors prameter.
+- OptionStream is renamed to OptionPipe as that naming is more appropriate for its ability to have multiple senders/receivers. Read-only equivalent is also changed.
+
 ## [2.0.0-alpha.6] - 2024-11-18
 
 ### Changed
