@@ -51,12 +51,11 @@ class StreamProvider
 
 	public void DoStuff()
 	{
-		Stream
-			.Some("This is a streamed value.")
-			.Some("This is another streamed value.")
-			.Error("Oops. Streamed error.")
-			.Some("One more streamed value.")
-			.End();
+		await Stream.Some("This is a streamed value.");
+		await Stream.Some("This is another streamed value.");
+		await Stream.Error("Oops. Streamed error.");
+		await Stream.Some("One more streamed value.");
+		await Stream.End();
 	}
 
 	public ReadOnlyOptionStream<string> GetStream() => Stream.AsReadOnly();

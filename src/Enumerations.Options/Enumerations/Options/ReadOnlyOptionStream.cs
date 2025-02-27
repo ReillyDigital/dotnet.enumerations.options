@@ -11,11 +11,11 @@ using System.Runtime.CompilerServices;
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public class ReadOnlyOptionStream<TValue>(OptionStream<TValue> optionStream) : IVoid
 {
+	/// <inheritdoc cref="OptionStream{TValue}.Current" />
+	public IOption<TValue>? Current => optionStream.Current;
+
 	/// <inheritdoc cref="OptionStream{TValue}.IgnoredErrors" />
 	public IEnumerable<Exception> IgnoredErrors => optionStream.IgnoredErrors;
-
-	/// <inheritdoc cref="OptionStream{TValue}.IsAtEnd" />
-	public bool IsAtEnd => optionStream.IsAtEnd;
 
 	/// <inheritdoc cref="OptionStream{TValue}.Read" />
 	public async Task<IOption<TValue>> Read(CancellationToken cancellationToken = default)
@@ -26,7 +26,7 @@ public class ReadOnlyOptionStream<TValue>(OptionStream<TValue> optionStream) : I
 		[EnumeratorCancellation] CancellationToken cancellationToken = default
 	)
 	{
-		await foreach (var each in optionStream.ReadToEnd(cancellationToken))
+		await foreach (var each in optionStream.ReadToEnd(cancellationToken: cancellationToken))
 		{
 			yield return each;
 		}
@@ -44,11 +44,11 @@ public class ReadOnlyOptionStream<TValue>(OptionStream<TValue> optionStream) : I
 public class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> optionStream)
 	: IVoid<TError>
 {
+	/// <inheritdoc cref="OptionStream{TValue, TError}.Current" />
+	public IOption<TValue, TError>? Current => optionStream.Current;
+
 	/// <inheritdoc cref="OptionStream{TValue, TError}.IgnoredErrors" />
 	public IEnumerable<TError> IgnoredErrors => optionStream.IgnoredErrors;
-
-	/// <inheritdoc cref="OptionStream{TValue, TError}.IsAtEnd" />
-	public bool IsAtEnd => optionStream.IsAtEnd;
 
 	/// <inheritdoc cref="OptionStream{TValue, TError}.Read" />
 	public async Task<IOption<TValue, TError>> Read(CancellationToken cancellationToken = default)
@@ -59,7 +59,7 @@ public class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> o
 		[EnumeratorCancellation] CancellationToken cancellationToken = default
 	)
 	{
-		await foreach (var each in optionStream.ReadToEnd(cancellationToken))
+		await foreach (var each in optionStream.ReadToEnd(cancellationToken: cancellationToken))
 		{
 			yield return each;
 		}
