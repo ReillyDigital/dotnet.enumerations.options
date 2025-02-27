@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 public static class StreamScenario
 {
 	public static void Run() => RunAsync().Wait();
@@ -30,7 +28,7 @@ public static class StreamScenario
 
 	private class StreamProvider
 	{
-		private OptionStream<string> Stream { get; } = new();
+		private OptionStream<string> Stream { get; } = new(bufferSize: 2);
 
 		public async Task DoStuff()
 		{

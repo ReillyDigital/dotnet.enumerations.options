@@ -158,7 +158,7 @@ public sealed class OptionStream<TValue> : IVoid
 		await BufferLock.WaitAsync(cancellationToken);
 		if (Buffer is null)
 		{
-			while (UnbufferedNext is null)
+			while (UnbufferedNext is not null)
 			{
 				await Task.Delay(100, cancellationToken);
 			}
@@ -491,7 +491,7 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 		await BufferLock.WaitAsync(cancellationToken);
 		if (Buffer is null)
 		{
-			while (UnbufferedNext is null)
+			while (UnbufferedNext is not null)
 			{
 				await Task.Delay(100, cancellationToken);
 			}

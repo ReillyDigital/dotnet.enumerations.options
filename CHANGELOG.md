@@ -12,8 +12,8 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- End and None option types on IOption interfaces are now functions instead of values to support passing new ignoredErrors prameter.
-- OptionStream is renamed to OptionPipe as that naming is more appropriate for its ability to have multiple senders/receivers. Read-only equivalent is also changed.
+- End and None option types on IOption interface are now functions instead of values to support passing new ignoredErrors prameter.
+- OptionStream is renamed to OptionBus as that naming is more appropriate for its ability to have multiple senders/receivers. Read-only equivalent is also changed.
 
 ## [2.0.0-alpha.6] - 2024-11-18
 

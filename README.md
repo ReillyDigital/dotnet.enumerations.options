@@ -89,51 +89,54 @@ await foreach (var each in stream.ReadToEnd())
 }
 ```
 
-### Value Pipes
+### Value Bus
 
-Define a class that provides an option pipe.
+Define a class that provides an option bus.
 ```csharp
-class PipeProvider
+class BusProvider
 {
-	private OptionPipe<string> Pipe { get; } = new();
+	private OptionBus<string> Bus { get; } = new();
 
 	public void DoStuff()
 	{
-		Pipe
-			.Some("This is a piped value.")
-			.Some("This is another piped value.")
-			.Error("Oops. Piped error.")
-			.Some("One more piped value.")
+		Bus
+			.Some("This is a bussed value.")
+			.Some("This is another bussed value.")
+			.Error("Oops. Bussed error.")
+			.Some("One more bussed value.")
 			.End();
 	}
 
-	public ReadOnlyOptionPipe<string> GetPipe() => Pipe.AsReadOnly();
+	public ReadOnlyOptionBus<string> GetBus() => Bus.AsReadOnly();
 }
 ```
 
-Get the provided pipe:
+Get the provided bus:
 ```csharp
-var provider = new PipeProvider();
-var pipe = provider.GetPipe();
+var provider = new BusProvider();
+var bus = provider.GetBus();
 ```
 
-Add handlers to the pipe for the various option types:
+Add handlers to the bus for the various option types:
 ```csharp
-pipe.SomeReceived +=
+var completion = new TaskCompletionSource();
+bus.SomeReceived +=
 	(object? sender, ISome<string> some) => Console.WriteLine(some.Value);
-pipe.ErrorReceived +=
+bus.ErrorReceived +=
 	(object? sender, IError<string> error) =>
 		Console.WriteLine(error.Value.Message);
+bus.EndReceived +=
+	(object? sender, IEnd<string> error) => completion.SetResult();
 ```
 
-Tell the pipe provider to do stuff:
+Tell the bus provider to do stuff:
 ```csharp
 provider.DoStuff();
 ```
 
-Await the end of the pipe:
+Await the end of the bus:
 ```csharp
-await pipe.Ended;
+await completion.Task;
 ```
 
 ## Links

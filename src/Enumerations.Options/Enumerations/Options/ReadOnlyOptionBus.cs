@@ -1,137 +1,126 @@
 namespace ReillyDigital.Enumerations.Options;
 
 /// <summary>
-/// Represents a read-only pipe of options with a value of <see cref="TValue" /> that are
+/// Represents a read-only bus of options with a value of <see cref="TValue" /> that are
 /// accessed by subscribing to events of each possible option type, triggered when an item of that
-/// type is added to the pipe. Errors are of
+/// type is added to the bus. Errors are of
 /// type <see cref="Exception" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
-public sealed class ReadOnlyOptionPipe<TValue>(OptionPipe<TValue> optionPipe) : IVoid
+public sealed class ReadOnlyOptionBus<TValue>(OptionBus<TValue> optionBus) : IVoid
 {
 	/// <summary>
-	/// An event triggered when an option of type <see cref="IEnd{TValue}" /> is added to the pipe.
+	/// An event triggered when an option of type <see cref="IEnd{TValue}" /> is added to the bus.
 	/// </summary>
 	public event EventHandler<IEnd<TValue>>? EndReceived
 	{
-		add => optionPipe.EndReceived += value;
-		remove => optionPipe.EndReceived -= value;
+		add => optionBus.EndReceived += value;
+		remove => optionBus.EndReceived -= value;
 	}
 
 	/// <summary>
 	/// An event triggered when an option of type <see cref="IError{TValue}" /> is added to the
-	/// pipe.
+	/// bus.
 	/// </summary>
 	public event EventHandler<IError<TValue>>? ErrorReceived
 	{
-		add => optionPipe.ErrorReceived += value;
-		remove => optionPipe.ErrorReceived -= value;
+		add => optionBus.ErrorReceived += value;
+		remove => optionBus.ErrorReceived -= value;
 	}
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="INone{TValue}" /> is added to the pipe.
+	/// An event triggered when an option of type <see cref="INone{TValue}" /> is added to the bus.
 	/// </summary>
 	public event EventHandler<INone<TValue>>? NoneReceived
 	{
-		add => optionPipe.NoneReceived += value;
-		remove => optionPipe.NoneReceived -= value;
+		add => optionBus.NoneReceived += value;
+		remove => optionBus.NoneReceived -= value;
 	}
 
 	/// <summary>
 	/// An event triggered when an option of type <see cref="IOption{TValue}" /> is added to the
-	/// pipe.
+	/// bus.
 	/// </summary>
 	public event EventHandler<IOption<TValue>>? OptionReceived
 	{
-		add => optionPipe.OptionReceived += value;
-		remove => optionPipe.OptionReceived -= value;
+		add => optionBus.OptionReceived += value;
+		remove => optionBus.OptionReceived -= value;
 	}
 
 	/// <summary>
-	/// An event triggered when an option of type <see cref="ISome{TValue}" /> is added to the pipe.
+	/// An event triggered when an option of type <see cref="ISome{TValue}" /> is added to the bus.
 	/// </summary>
 	public event EventHandler<ISome<TValue>>? SomeReceived
 	{
-		add => optionPipe.SomeReceived += value;
-		remove => optionPipe.SomeReceived -= value;
+		add => optionBus.SomeReceived += value;
+		remove => optionBus.SomeReceived -= value;
 	}
 
-	/// <summary>
-	/// A task that is resolved once an option of <see cref="IEnd{TValue}" /> is added to the pipe.
-	/// </summary>
-	public Task<IEnd<TValue>> Ended => optionPipe.Ended;
-
 	/// <inheritdoc />
-	public IEnumerable<Exception> IgnoredErrors => optionPipe.IgnoredErrors;
+	public IEnumerable<Exception> IgnoredErrors => optionBus.IgnoredErrors;
 }
 
 /// <summary>
-/// Represents a read-only pipe of options with a value of <see cref="TValue" /> that are
+/// Represents a read-only bus of options with a value of <see cref="TValue" /> that are
 /// accessed by subscribing to events of each possible option type, triggered when an item of that
-/// type is added to the pipe. Errors are of
+/// type is added to the bus. Errors are of
 /// type <see cref="TError" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <typeparam name="TError">The type of the error of the options.</typeparam>
-public sealed class ReadOnlyOptionPipe<TValue, TError>(OptionPipe<TValue, TError> optionPipe)
+public sealed class ReadOnlyOptionBus<TValue, TError>(OptionBus<TValue, TError> optionBus)
 	: IVoid<TError>
 {
 	/// <summary>
 	/// An event triggered when an option of type <see cref="IEnd{TValue, TError}" /> is added to
-	/// the pipe.
+	/// the bus.
 	/// </summary>
 	public event EventHandler<IEnd<TValue, TError>>? EndReceived
 	{
-		add => optionPipe.EndReceived += value;
-		remove => optionPipe.EndReceived -= value;
+		add => optionBus.EndReceived += value;
+		remove => optionBus.EndReceived -= value;
 	}
 
 	/// <summary>
 	/// An event triggered when an option of type <see cref="IError{TValue, TError}" /> is added to
-	/// the pipe.
+	/// the bus.
 	/// </summary>
 	public event EventHandler<IError<TValue, TError>>? ErrorReceived
 	{
-		add => optionPipe.ErrorReceived += value;
-		remove => optionPipe.ErrorReceived -= value;
+		add => optionBus.ErrorReceived += value;
+		remove => optionBus.ErrorReceived -= value;
 	}
 
 	/// <summary>
 	/// An event triggered when an option of type <see cref="INone{TValue, TError}" /> is added to
-	/// the pipe.
+	/// the bus.
 	/// </summary>
 	public event EventHandler<INone<TValue, TError>>? NoneReceived
 	{
-		add => optionPipe.NoneReceived += value;
-		remove => optionPipe.NoneReceived -= value;
+		add => optionBus.NoneReceived += value;
+		remove => optionBus.NoneReceived -= value;
 	}
 
 	/// <summary>
 	/// An event triggered when an option of type <see cref="IOption{TValue, TError}" /> is added to
-	/// the pipe.
+	/// the bus.
 	/// </summary>
 	public event EventHandler<IOption<TValue, TError>>? OptionReceived
 	{
-		add => optionPipe.OptionReceived += value;
-		remove => optionPipe.OptionReceived -= value;
+		add => optionBus.OptionReceived += value;
+		remove => optionBus.OptionReceived -= value;
 	}
 
 	/// <summary>
 	/// An event triggered when an option of type <see cref="ISome{TValue, TError}" /> is added to
-	/// the pipe.
+	/// the bus.
 	/// </summary>
 	public event EventHandler<ISome<TValue, TError>>? SomeReceived
 	{
-		add => optionPipe.SomeReceived += value;
-		remove => optionPipe.SomeReceived -= value;
+		add => optionBus.SomeReceived += value;
+		remove => optionBus.SomeReceived -= value;
 	}
 
-	/// <summary>
-	/// A task that is resolved once an option of <see cref="IEnd{TValue, TError}" /> is added to
-	/// the pipe.
-	/// </summary>
-	public Task<IEnd<TValue, TError>> Ended => optionPipe.Ended;
-
 	/// <inheritdoc />
-	public IEnumerable<TError> IgnoredErrors => optionPipe.IgnoredErrors;
+	public IEnumerable<TError> IgnoredErrors => optionBus.IgnoredErrors;
 }
