@@ -19,11 +19,17 @@ internal readonly struct OptionNone<TValue, TError>(IEnumerable<TError>? ignored
 	/// <inheritdoc />
 	public IEnumerable<TError> IgnoredErrors => ignoredErrors ?? [];
 
-	/// <inheritdoc />
-	TValue? IOption<TValue>.Value => default;
+	/// <summary>
+	/// Throws a <see cref="NotSupportedException" />.
+	/// </summary>
+	TValue? IOption<TValue>.Value
+		=> throw new NotSupportedException("Option is not a type with a value.");
 
-	/// <inheritdoc />
-	TValue? IOption<TValue, TError>.Value => default;
+	/// <summary>
+	/// Throws a <see cref="NotSupportedException" />.
+	/// </summary>
+	TValue? IOption<TValue, TError>.Value
+		=> throw new NotSupportedException("Option is not a type with a value.");
 
 	/// <inheritdoc />
 	public override bool Equals(object? obj) => obj is OptionEnd<TValue, TError>;
