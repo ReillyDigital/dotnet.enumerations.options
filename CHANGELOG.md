@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.7] - 2025-03-18
+
 ### Added
 
 - Added parameters for ignoredErrors for all option types.
