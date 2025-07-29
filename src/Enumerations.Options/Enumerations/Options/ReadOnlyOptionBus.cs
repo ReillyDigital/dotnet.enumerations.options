@@ -55,9 +55,6 @@ public sealed class ReadOnlyOptionBus<TValue>(OptionBus<TValue> optionBus) : IVo
 		add => optionBus.SomeReceived += value;
 		remove => optionBus.SomeReceived -= value;
 	}
-
-	/// <inheritdoc />
-	public IEnumerable<Exception> IgnoredErrors => optionBus.IgnoredErrors;
 }
 
 /// <summary>
@@ -120,7 +117,4 @@ public sealed class ReadOnlyOptionBus<TValue, TError>(OptionBus<TValue, TError> 
 		add => optionBus.SomeReceived += value;
 		remove => optionBus.SomeReceived -= value;
 	}
-
-	/// <inheritdoc />
-	public IEnumerable<TError> IgnoredErrors => optionBus.IgnoredErrors;
 }

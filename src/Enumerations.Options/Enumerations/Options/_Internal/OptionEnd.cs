@@ -10,7 +10,7 @@ namespace ReillyDigital.Enumerations.Options._Internal;
 /// Errors that are ignored instead of being returned as the option value.
 /// </param>
 internal readonly struct OptionEnd<TValue, TError>(IEnumerable<TError>? ignoredErrors = null)
-	: IEnd<TValue>, IEnd<TValue, TError>
+	: IEnd<TValue>, IEnd<TValue, TError>, IIgnoredErrorSet<TError>
 {
 	/// <summary>
 	/// Static default reference for this option.

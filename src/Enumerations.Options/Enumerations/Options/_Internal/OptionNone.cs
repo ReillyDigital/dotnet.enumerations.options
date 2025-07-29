@@ -9,7 +9,7 @@ namespace ReillyDigital.Enumerations.Options._Internal;
 /// Errors that are ignored instead of being returned as the option value.
 /// </param>
 internal readonly struct OptionNone<TValue, TError>(IEnumerable<TError>? ignoredErrors = null)
-	: INone<TValue>, INone<TValue, TError>
+	: IIgnoredErrorSet<TError>, INone<TValue>, INone<TValue, TError>
 {
 	/// <summary>
 	/// Static default reference for this option.

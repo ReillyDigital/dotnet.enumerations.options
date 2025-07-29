@@ -7,7 +7,8 @@ namespace ReillyDigital.Enumerations.Options._Internal;
 /// <param name="ignoredErrors">
 /// Errors that are ignored instead of being returned as the option value.
 /// </param>
-internal readonly struct Void<TError>(IEnumerable<TError>? ignoredErrors = null) : IVoid<TError>
+internal readonly struct Void<TError>(IEnumerable<TError>? ignoredErrors = null)
+	: IIgnoredErrorSet<TError>, IVoid<TError>
 {
 	/// <summary>
 	/// Static default reference for this option.

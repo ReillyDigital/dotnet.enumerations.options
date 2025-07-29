@@ -5,7 +5,8 @@ namespace ReillyDigital.Enumerations.Options;
 /// individually accessed by index. Errors will be of type <see cref="Exception" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
-public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerable<TValue>
+public sealed class OptionList<TValue>
+	: IList<IOption<TValue>>, IIgnoredErrorSet, IOptionEnumerable<TValue>
 {
 	/// <summary>
 	/// Returns an empty collection.
@@ -24,9 +25,7 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	public int Count => List.Count;
 
 	/// <inheritdoc />
-	public IEnumerable<Exception> IgnoredErrors => throw new(
-		"Ignored errors are only supported on option list values, not on the list itself."
-	);
+	public IEnumerable<Exception> IgnoredErrors { get; }
 
 	/// <summary>
 	/// The backing list for this collection.
@@ -42,19 +41,32 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 	/// <summary>
 	/// Constructor for this collection, initially containing no items.
 	/// </summary>
-	public OptionList() => List = [];
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	public OptionList(IEnumerable<Exception>? ignoredErrors = null)
+		=> (List, IgnoredErrors) = ([], ignoredErrors ?? []);
 
 	/// <summary>
 	/// Constructor for this collection, having its items set to the provided values.
 	/// </summary>
 	/// <param name="values">The items of the new collection.</param>
-	public OptionList(IEnumerable<IOption<TValue>> values) => List = [..values];
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	public OptionList(
+		IEnumerable<IOption<TValue>> values, IEnumerable<Exception>? ignoredErrors = null
+	) => (List, IgnoredErrors) = ([..values], ignoredErrors ?? []);
 
 	/// <summary>
 	/// Constructor for this collection, having its items set to the provided values.
 	/// </summary>
 	/// <param name="values">The items of the new collection.</param>
-	public OptionList(List<IOption<TValue>> values) => List = values;
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	public OptionList(List<IOption<TValue>> values, IEnumerable<Exception>? ignoredErrors = null)
+		=> (List, IgnoredErrors) = (values, ignoredErrors ?? []);
 
 	/// <summary>
 	/// Adds an item to the end of the collection.
@@ -198,7 +210,7 @@ public sealed class OptionList<TValue> : IList<IOption<TValue>>, IOptionEnumerab
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <typeparam name="TError">The type of the error of the options.</typeparam>
 public sealed class OptionList<TValue, TError>
-	: IList<IOption<TValue, TError>>, IOptionEnumerable<TValue, TError>
+	: IList<IOption<TValue, TError>>, IIgnoredErrorSet<TError>, IOptionEnumerable<TValue, TError>
 {
 	/// <summary>
 	/// Returns an empty collection.
@@ -217,9 +229,7 @@ public sealed class OptionList<TValue, TError>
 	public int Count => List.Count;
 
 	/// <inheritdoc />
-	public IEnumerable<TError> IgnoredErrors => throw new(
-		"Ignored errors are only supported on option list values, not on the list itself."
-	);
+	public IEnumerable<TError> IgnoredErrors { get; }
 
 	/// <summary>
 	/// The backing list for this collection.
@@ -235,19 +245,33 @@ public sealed class OptionList<TValue, TError>
 	/// <summary>
 	/// Constructor for this collection, initially containing no items.
 	/// </summary>
-	public OptionList() => List = [];
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	public OptionList(IEnumerable<TError>? ignoredErrors = null)
+		=> (List, IgnoredErrors) = ([], ignoredErrors ?? []);
 
 	/// <summary>
 	/// Constructor for this collection, having its items set to the provided values.
 	/// </summary>
 	/// <param name="values">The items of the new collection.</param>
-	public OptionList(IEnumerable<IOption<TValue, TError>> values) => List = [..values];
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	public OptionList(
+		IEnumerable<IOption<TValue, TError>> values, IEnumerable<TError>? ignoredErrors = null
+	) => (List, IgnoredErrors) = ([..values], ignoredErrors ?? []);
 
 	/// <summary>
 	/// Constructor for this collection, having its items set to the provided values.
 	/// </summary>
 	/// <param name="values">The items of the new collection.</param>
-	public OptionList(List<IOption<TValue, TError>> values) => List = values;
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	public OptionList(
+		List<IOption<TValue, TError>> values, IEnumerable<TError>? ignoredErrors = null
+	) => (List, IgnoredErrors) = (values, ignoredErrors ?? []);
 
 	/// <summary>
 	/// Adds an item to the end of the collection.

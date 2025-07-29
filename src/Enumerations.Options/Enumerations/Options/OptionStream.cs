@@ -17,11 +17,6 @@ public sealed class OptionStream<TValue> : IVoid
 	/// </summary>
 	public IOption<TValue>? Current { get; private set; }
 
-	/// <inheritdoc />
-	public IEnumerable<Exception> IgnoredErrors => throw new(
-		"Ignored errors are only supported on option stream values, not on the stream itself."
-	);
-
 	/// <summary>
 	/// Buffer used to temporarily hold items of the stream until they are read.
 	/// </summary>
@@ -386,11 +381,6 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	/// The current option from the stream.
 	/// </summary>
 	public IOption<TValue, TError>? Current { get; private set; }
-
-	/// <inheritdoc />
-	public IEnumerable<TError> IgnoredErrors => throw new(
-		"Ignored errors are only supported on option stream values, not on the stream itself."
-	);
 
 	/// <summary>
 	/// Buffer used to temporarily hold items of the stream until they are read.

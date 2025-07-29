@@ -14,9 +14,6 @@ public class ReadOnlyOptionStream<TValue>(OptionStream<TValue> optionStream) : I
 	/// <inheritdoc cref="OptionStream{TValue}.Current" />
 	public IOption<TValue>? Current => optionStream.Current;
 
-	/// <inheritdoc cref="OptionStream{TValue}.IgnoredErrors" />
-	public IEnumerable<Exception> IgnoredErrors => optionStream.IgnoredErrors;
-
 	/// <inheritdoc cref="OptionStream{TValue}.Read" />
 	public async Task<IOption<TValue>> Read(CancellationToken cancellationToken = default)
 		=> await optionStream.Read(cancellationToken);
@@ -46,9 +43,6 @@ public class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> o
 {
 	/// <inheritdoc cref="OptionStream{TValue, TError}.Current" />
 	public IOption<TValue, TError>? Current => optionStream.Current;
-
-	/// <inheritdoc cref="OptionStream{TValue, TError}.IgnoredErrors" />
-	public IEnumerable<TError> IgnoredErrors => optionStream.IgnoredErrors;
 
 	/// <inheritdoc cref="OptionStream{TValue, TError}.Read" />
 	public async Task<IOption<TValue, TError>> Read(CancellationToken cancellationToken = default)

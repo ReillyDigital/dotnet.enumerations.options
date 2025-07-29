@@ -59,7 +59,8 @@ public interface IVoid
 	/// Additional errors of <see cref="Exception" /> which are ignored instead of being returned as
 	/// the option value.
 	/// </summary>
-	public IEnumerable<Exception> IgnoredErrors { get; }
+	public IEnumerable<Exception> IgnoredErrors
+		=> this is IIgnoredErrorSet ignoredErrorSet ? ignoredErrorSet.IgnoredErrors : [];
 
 	/// <summary>
 	/// Executes the specified callback if this reference is of type <see cref="IError" />.
@@ -131,7 +132,9 @@ public interface IVoid<out TError> : IVoid
 	/// Additional errors of <see cref="TError" /> which are ignored instead of being returned as
 	/// the option value.
 	/// </summary>
-	public new IEnumerable<TError> IgnoredErrors { get; }
+	public new IEnumerable<TError> IgnoredErrors
+		=> this is IIgnoredErrorSet<TError> ignoredErrorSet ? ignoredErrorSet.IgnoredErrors : [];
+
 
 	/// <summary>
 	/// Executes the specified callback if this reference is of type <see cref="IError{TValue, TError}" />.

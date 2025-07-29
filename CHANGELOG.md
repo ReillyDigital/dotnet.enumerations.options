@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.8] - 2025-07-29
+
+### Changed
+
+- Refactored ignored errors to avoid exceptions being thrown when accessed form stream/bus types.
+
 ## [2.0.0-alpha.7] - 2025-03-18
 
 ### Added

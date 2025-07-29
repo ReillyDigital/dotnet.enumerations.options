@@ -11,7 +11,7 @@ namespace ReillyDigital.Enumerations.Options._Internal;
 /// </param>
 internal readonly struct OptionEnumerableError<TValue, TError>(
 	TError value, IEnumerable<TError>? ignoredErrors = null
-) : IOptionEnumerableError<TValue>, IOptionEnumerableError<TValue, TError>
+) : IIgnoredErrorSet<TError>, IOptionEnumerableError<TValue>, IOptionEnumerableError<TValue, TError>
 {
 	/// <inheritdoc />
 	public IEnumerable<TError> IgnoredErrors => ignoredErrors ?? [];

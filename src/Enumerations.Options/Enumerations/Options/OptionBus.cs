@@ -35,11 +35,6 @@ public sealed class OptionBus<TValue> : IVoid
 	/// </summary>
 	public event EventHandler<ISome<TValue>>? SomeReceived;
 
-	/// <inheritdoc />
-	public IEnumerable<Exception> IgnoredErrors => throw new(
-		"Ignored errors are only supported on option bus values, not on the bus itself."
-	);
-
 	/// <summary>
 	/// Returns a read-only wrapper for the current bus.
 	/// </summary>
@@ -235,11 +230,6 @@ public sealed class OptionBus<TValue, TError> : IVoid<TError>
 	/// the bus.
 	/// </summary>
 	public event EventHandler<ISome<TValue, TError>>? SomeReceived;
-
-	/// <inheritdoc />
-	public IEnumerable<TError> IgnoredErrors => throw new(
-		"Ignored errors are only supported on option bus values, not on the bus itself."
-	);
 
 	/// <summary>
 	/// Returns a read-only wrapper for the current bus.
