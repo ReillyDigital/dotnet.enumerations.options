@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.9] - 2025-08-24
+
+### Changed
+
+- Fix return type of `Some<T>` helper functions to return a `ISome<T>` instead of a `IOption<T>`.
+- Use MIT license for pending 2.0 release.
+
 ## [2.0.0-alpha.8] - 2025-07-29
 
 ### Changed
@@ -14,20 +21,20 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
-- Added parameters for ignoredErrors for all option types.
-- IAsyncOptionEnumerable interface for being an async equivalent to the IOptionEnumerable interface.
-- New OptionStream type added that is now more appropriate for its use case of single receiver, and is consumed via Read and ReadToEnd methods instead of events. Read-only equivalent is also added.
+- Added parameters for `ignoredErrors` for all option types.
+- `IAsyncOptionEnumerable` interface for being an async equivalent to the `IOptionEnumerable` interface.
+- New `OptionStream` type added that is now more appropriate for its use case of single receiver, and is consumed via `Read` and `ReadToEnd` methods instead of events. Read-only equivalent is also added.
 
 ### Changed
 
-- End and None option types on IOption interface are now functions instead of values to support passing new ignoredErrors prameter.
-- OptionStream is renamed to OptionBus as that naming is more appropriate for its ability to have multiple senders/receivers. Read-only equivalent is also changed.
+- `End` and `None` option types on `IOption` interface are now functions instead of values to support passing new `ignoredErrors` prameter.
+- `OptionStream` is renamed to `OptionBus` as that naming is more appropriate for its ability to have multiple senders/receivers. Read-only equivalent is also changed.
 
 ## [2.0.0-alpha.6] - 2024-11-18
 
 ### Changed
 
-- Fix stack overflow error when accessing Exception value of error options of type TError.
+- Fix stack overflow error when accessing Exception value of error options of type `TError`.
 
 ## [2.0.0-alpha.1] - 2024-11-18
 
@@ -36,8 +43,8 @@ All notable changes to this project will be documented in this file.
 - Updated usage pattern
   - Interfaces will be the primary usage.
   - Implementations are now internal.
-  - IOption no longer has the generic overload of TError.
-  - IEnd, IError, INone and ISome no longer inherit from IOption. Internal implementions of each of them do inherit from IOption, so all generated references of those interfaces will still be castable to IOption.
+  - `IOption` no longer has the generic overload of `TError`.
+  - `IEnd`, `IError`, `INone` and `ISome` no longer inherit from `IOption`. Internal implementions of each of them do inherit from `IOption`, so all generated references of those interfaces will still be castable to `IOption`.
 
 ## [1.0.3] - 2024-11-15
 
