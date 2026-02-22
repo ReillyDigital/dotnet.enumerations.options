@@ -11,13 +11,13 @@ public static class StreamScenario
 			{
 				await foreach (var each in stream.ReadToEnd())
 				{
-					switch (each)
+					switch (each.Type)
 					{
-						case IError error:
-							Console.WriteLine(error.Value.Message);
+						case OptionType.Error:
+							Console.WriteLine(each.ErrorValue.Message);
 							break;
-						case ISome<string> some:
-							Console.WriteLine(some.Value);
+						case OptionType.Some:
+							Console.WriteLine(each.Value);
 							break;
 					}
 				}
@@ -36,7 +36,7 @@ public static class StreamScenario
 			await Stream.Some("This is another streamed value.");
 			await Stream.Error("Oops. Streamed error.");
 			await Stream.Some("One more streamed value.");
-			await Stream.End();
+			Stream.End();
 		}
 
 		public ReadOnlyOptionStream<string> GetStream() => Stream.AsReadOnly();

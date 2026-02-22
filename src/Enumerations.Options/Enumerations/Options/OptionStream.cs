@@ -1,13 +1,11 @@
 namespace ReillyDigital.Enumerations.Options;
 
-using System;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
 
 /// <summary>
 /// Represents a stream of options with a value of <see cref="TValue" /> that are accessed by
 /// subscribing to events of each possible option type, triggered when an item of that type is
-/// added to the stream. Errors are of type <see cref="Exception" />.
+/// added to the stream. Errors are of type <see cref="ErrorValue" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public sealed class OptionStream<TValue> : IVoid
@@ -15,12 +13,17 @@ public sealed class OptionStream<TValue> : IVoid
 	/// <summary>
 	/// The current option from the stream.
 	/// </summary>
-	public IOption<TValue>? Current { get; private set; }
+	public Option<TValue>? Current { get; private set; }
+
+	/// <summary>
+	/// Whether the stream has ended.
+	/// </summary>
+	public bool IsEnded { get; private set; }
 
 	/// <summary>
 	/// Buffer used to temporarily hold items of the stream until they are read.
 	/// </summary>
-	private Queue<IOption<TValue>>? Buffer { get; }
+	private Queue<Option<TValue>>? Buffer { get; }
 
 	/// <summary>
 	/// A lock to prevent too many items from being added to the buffer at once.
@@ -35,7 +38,7 @@ public sealed class OptionStream<TValue> : IVoid
 	/// <summary>
 	/// The next option to be read from the stream when the buffer is not used.
 	/// </summary>
-	private IOption<TValue>? UnbufferedNext { get; set; }
+	private Option<TValue>? UnbufferedNext { get; set; }
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="OptionStream{TValue}" /> class.
@@ -57,25 +60,12 @@ public sealed class OptionStream<TValue> : IVoid
 	public ReadOnlyOptionStream<TValue> AsReadOnly() => new(this);
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IEnd{TValue}" /> to the stream, returning this
-	/// class instance.
+	/// Signals the end of the stream.
 	/// </summary>
-	/// <param name="ignoredErrors">
-	/// Errors that are ignored instead of being returned as the option value.
-	/// </param>
-	/// <param name="cancellationToken">
-	/// A cancellation token to observe while waiting for the task to complete.
-	/// </param>
-	/// <returns>A task representing the asynchronous operation.</returns>
-	public async Task End(
-		IEnumerable<Exception>? ignoredErrors = null, CancellationToken cancellationToken = default
-	) => await Next(
-		IOption<TValue>.End(ignoredErrors: ignoredErrors), cancellationToken: cancellationToken
-	);
+	public void End() => IsEnded = true;
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IError{TValue}" /> to the stream, returning
-	/// this class instance.
+	/// A chainable call to add an option of Error to the stream.
 	/// </summary>
 	/// <param name="error">The option to add to the stream.</param>
 	/// <param name="cancellationToken">
@@ -83,21 +73,13 @@ public sealed class OptionStream<TValue> : IVoid
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Error(IError error, CancellationToken cancellationToken = default)
-	{
-		if (error is IOption<TValue> option)
-		{
-			await Next(option, cancellationToken: cancellationToken);
-			return;
-		}
-		await Next(
-			IOption<TValue>.Error(error.Value, ignoredErrors: error.IgnoredErrors),
+		=> await Next(
+			Option<TValue>.Error(error.Value, error.IgnoredErrors),
 			cancellationToken: cancellationToken
 		);
-	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IError{TValue}" /> to the stream, returning
-	/// this class instance.
+	/// A chainable call to add an option of Error to the stream.
 	/// </summary>
 	/// <param name="value">The value of an option to add to the stream.</param>
 	/// <param name="ignoredErrors">
@@ -108,47 +90,20 @@ public sealed class OptionStream<TValue> : IVoid
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Error(
-		Exception value,
-		IEnumerable<Exception>? ignoredErrors = null,
+		ErrorValue value,
+		IEnumerable<ErrorValue>? ignoredErrors = null,
 		CancellationToken cancellationToken = default
-	) => await Next(
-		IOption<TValue>.Error(value, ignoredErrors: ignoredErrors),
-		cancellationToken: cancellationToken
-	);
+	) => await Next(Option<TValue>.Error(value, ignoredErrors), cancellationToken: cancellationToken);
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IError{TValue}" /> to the stream, returning
-	/// this class instance.
-	/// </summary>
-	/// <param name="message">The error message.</param>
-	/// <param name="innerException">An optional inner exception.</param>
-	/// <param name="ignoredErrors">
-	/// Errors that are ignored instead of being returned as the option value.
-	/// </param>
-	/// <param name="cancellationToken">
-	/// A cancellation token to observe while waiting for the task to complete.
-	/// </param>
-	/// <returns>A task representing the asynchronous operation.</returns>
-	public async Task Error(
-		string message,
-		Exception? innerException = null,
-		IEnumerable<Exception>? ignoredErrors = null,
-		CancellationToken cancellationToken = default
-	) => await Next(
-		IOption<TValue>.Error(message, innerException: innerException, ignoredErrors: ignoredErrors),
-		cancellationToken: cancellationToken
-	);
-
-	/// <summary>
-	/// A chainable call to add an option of <see cref="IOption{TValue}" /> to the stream, returning
-	/// this class instance.
+	/// A chainable call to add an option to the stream.
 	/// </summary>
 	/// <param name="option">The option to add to the stream.</param>
 	/// <param name="cancellationToken">
 	/// A cancellation token to observe while waiting for the task to complete.
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
-	public async Task Next(IOption<TValue> option, CancellationToken cancellationToken = default)
+	public async Task Next(Option<TValue> option, CancellationToken cancellationToken = default)
 	{
 		await BufferLock.WaitAsync(cancellationToken);
 		if (Buffer is null)
@@ -171,9 +126,8 @@ public sealed class OptionStream<TValue> : IVoid
 	}
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{TValue}" /> to the stream.
-	/// The options are iterated over and added to the stream one at a time. Then returning this
-	/// class instance.
+	/// A chainable call to add multiple options to the stream. The options are iterated over and
+	/// added to the stream one at a time.
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <param name="cancellationToken">
@@ -181,7 +135,7 @@ public sealed class OptionStream<TValue> : IVoid
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Next(
-		IOptionEnumerable<TValue> options, CancellationToken cancellationToken = default
+		IEnumerable<Option<TValue>> options, CancellationToken cancellationToken = default
 	)
 	{
 		foreach (var option in options)
@@ -191,9 +145,8 @@ public sealed class OptionStream<TValue> : IVoid
 	}
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{TValue}" /> to the stream.
-	/// The options are iterated over and added to the stream one at a time. Then returning this
-	/// class instance.
+	/// A chainable call to add multiple options to the stream. The options are iterated over and
+	/// added to the stream one at a time.
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <param name="cancellationToken">
@@ -201,7 +154,7 @@ public sealed class OptionStream<TValue> : IVoid
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Next(
-		IAsyncOptionEnumerable<TValue> options, CancellationToken cancellationToken = default
+		IAsyncEnumerable<Option<TValue>> options, CancellationToken cancellationToken = default
 	)
 	{
 		await foreach (var option in options)
@@ -211,23 +164,20 @@ public sealed class OptionStream<TValue> : IVoid
 	}
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{TValue}" /> to the stream. The
-	/// options are iterated over and added to the stream one at a time. Then returning this class
-	/// instance. If any of the options is of type <see cref="IEnd{TValue}" /> then
-	/// <see cref="IsAtEnd" /> will be set to true.
+	/// A chainable call to add multiple options to the stream. The options are iterated over and
+	/// added to the stream one at a time.
 	/// </summary>
-	/// <param name="options">The options to add to the stream.</param>
 	/// <param name="cancellationToken">
 	/// A cancellation token to observe while waiting for the task to complete.
 	/// </param>
+	/// <param name="options">The options to add to the stream.</param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Next(
-		CancellationToken cancellationToken = default, params IOption<TValue>[] options
-	) => await Next(new OptionList<TValue>(options), cancellationToken: cancellationToken);
+		CancellationToken cancellationToken = default, params Option<TValue>[] options
+	) => await Next((IEnumerable<Option<TValue>>)options, cancellationToken: cancellationToken);
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="INone{TValue}" /> to the stream, returning
-	/// this class instance.
+	/// A chainable call to add an option of None to the stream.
 	/// </summary>
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
@@ -237,15 +187,12 @@ public sealed class OptionStream<TValue> : IVoid
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task None(
-		IEnumerable<Exception>? ignoredErrors = null, CancellationToken cancellationToken = default
-	) => await Next(
-		IOption<TValue>.None(ignoredErrors: ignoredErrors), cancellationToken: cancellationToken
-	);
+		IEnumerable<ErrorValue>? ignoredErrors = null, CancellationToken cancellationToken = default
+	) => await Next(Option<TValue>.None(ignoredErrors), cancellationToken: cancellationToken);
 
 	/// <summary>
-	/// Reads the next option from the stream. Once an option of <see cref="IEnd" /> is read, that
-	/// will mark the end of the stream. An <see cref="Exception" /> will be thrown if the stream is
-	/// read again after that.
+	/// Reads the next option from the stream. An <see cref="Exception" /> will be thrown if the
+	/// stream has ended and no buffered items remain.
 	/// </summary>
 	/// <param name="cancellationToken">
 	/// A cancellation token to observe while waiting for the task to complete.
@@ -254,17 +201,19 @@ public sealed class OptionStream<TValue> : IVoid
 	/// A task representing the asynchronous operation. The result value is the next option from
 	/// the stream.
 	/// </returns>
-	/// <exception cref="Exception">Thrown when reading after the stream has ended.</exception>
-	public async Task<IOption<TValue>> Read(CancellationToken cancellationToken = default)
+	/// <exception cref="Exception">
+	/// Thrown when reading after the stream has ended with no buffered items.
+	/// </exception>
+	public async Task<Option<TValue>> Read(CancellationToken cancellationToken = default)
 	{
-		if (Current is IEnd)
-		{
-			throw new Exception("Stream has already been read to end.");
-		}
 		if (Buffer is null)
 		{
 			while (UnbufferedNext is null)
 			{
+				if (IsEnded)
+				{
+					throw new Exception("Stream has ended with no items to read.");
+				}
 				await Task.Delay(100, cancellationToken);
 			}
 			Current = UnbufferedNext;
@@ -272,83 +221,72 @@ public sealed class OptionStream<TValue> : IVoid
 		}
 		else
 		{
-			IOption<TValue>? next;
-			while (!Buffer.TryDequeue(out next) || next is null)
+			Option<TValue> next;
+			while (!Buffer.TryDequeue(out next) || next.Type == default)
 			{
+				if (IsEnded && Buffer.Count == 0)
+				{
+					throw new Exception("Stream has ended with no items to read.");
+				}
 				await Task.Delay(100, cancellationToken);
 			}
 			Current = next;
 		}
-		return Current;
+		return Current.Value;
 	}
 
 	/// <summary>
-	/// Reads all options from the stream until an option of <see cref="IEnd" /> is read, which will
-	/// mark the end of the stream. An <see cref="Exception" /> will be thrown if the stream is read
-	/// again after that.
+	/// Reads all options from the stream until the stream has ended.
 	/// </summary>
+	/// <param name="shouldSkipErrors">Whether to skip error options.</param>
 	/// <param name="cancellationToken">
 	/// A cancellation token to observe while waiting for the task to complete.
 	/// </param>
 	/// <returns>
-	/// An enumeration of option from the stream until the end of the stream is reached.
+	/// An enumeration of options from the stream until the end of the stream is reached.
 	/// </returns>
-	/// <exception cref="Exception">Thrown when reading after the stream has ended.</exception>
-	public async IAsyncEnumerable<IOption<TValue>> ReadToEnd(
+	public async IAsyncEnumerable<Option<TValue>> ReadToEnd(
 		bool shouldSkipErrors = false,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default
 	)
 	{
-		while (Current is not IEnd)
+		while (!IsEnded || (Buffer is not null && Buffer.Count > 0) || UnbufferedNext is not null)
 		{
 			var next = await Read(cancellationToken: cancellationToken);
-			switch (next)
+			switch (next.Type)
 			{
-				case IEnd:
-				{
-					yield break;
-				}
-				case IError:
-				{
+				case OptionType.Error:
 					if (shouldSkipErrors)
 					{
 						continue;
 					}
 					yield return next;
 					break;
-				}
-				case ISome<TValue>:
-				{
+				case OptionType.Some:
 					yield return next;
 					break;
-				}
 				default:
-				{
 					continue;
-				}
 			}
 		}
 	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="ISome{TValue}" /> to the stream, returning
-	/// this class instance.
+	/// A chainable call to add an option of Some to the stream.
 	/// </summary>
 	/// <param name="some">The option to add to the stream.</param>
 	/// <param name="cancellationToken">
 	/// A cancellation token to observe while waiting for the task to complete.
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
-	public async Task Some(
-		ISome<TValue> some, CancellationToken cancellationToken = default
-	) => await Next(
-		IOption<TValue>.Some(some.Value, ignoredErrors: some.IgnoredErrors),
-		cancellationToken: cancellationToken
-	);
+	public async Task Some(ISome<TValue> some, CancellationToken cancellationToken = default)
+		=> await Next(
+			Option<TValue>.Some(some.Value, some.IgnoredErrors),
+			cancellationToken: cancellationToken
+		);
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="ISome{TValue}" /> to the stream, returning
-	/// this class instance.
+	/// A chainable call to add an option of Some to the stream.
 	/// </summary>
 	/// <param name="value">The value of an option to add to the stream.</param>
 	/// <param name="ignoredErrors">
@@ -360,18 +298,15 @@ public sealed class OptionStream<TValue> : IVoid
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Some(
 		TValue value,
-		IEnumerable<Exception>? ignoredErrors = null,
+		IEnumerable<ErrorValue>? ignoredErrors = null,
 		CancellationToken cancellationToken = default
-	) => await Next(
-		IOption<TValue>.Some(value, ignoredErrors: ignoredErrors),
-		cancellationToken: cancellationToken
-	);
+	) => await Next(Option<TValue>.Some(value, ignoredErrors), cancellationToken: cancellationToken);
 }
 
 /// <summary>
 /// Represents a stream of options with a value of <see cref="TValue" /> that are accessed by
 /// subscribing to events of each possible option type, triggered when an item of that type is
-/// added to the stream. Errors are of type <see cref="Exception" />.
+/// added to the stream. Errors are of type <see cref="TError" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <typeparam name="TError">The type of the errors.</typeparam>
@@ -380,12 +315,17 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	/// <summary>
 	/// The current option from the stream.
 	/// </summary>
-	public IOption<TValue, TError>? Current { get; private set; }
+	public Option<TValue, TError>? Current { get; private set; }
+
+	/// <summary>
+	/// Whether the stream has ended.
+	/// </summary>
+	public bool IsEnded { get; private set; }
 
 	/// <summary>
 	/// Buffer used to temporarily hold items of the stream until they are read.
 	/// </summary>
-	private Queue<IOption<TValue, TError>>? Buffer { get; }
+	private Queue<Option<TValue, TError>>? Buffer { get; }
 
 	/// <summary>
 	/// A lock to prevent too many items from being added to the buffer at once.
@@ -400,7 +340,7 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	/// <summary>
 	/// The next option to be read from the stream when the buffer is not used.
 	/// </summary>
-	private IOption<TValue, TError>? UnbufferedNext { get; set; }
+	private Option<TValue, TError>? UnbufferedNext { get; set; }
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="OptionStream{TValue, TError}" /> class.
@@ -424,9 +364,14 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	public ReadOnlyOptionStream<TValue, TError> AsReadOnly() => new(this);
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IEnd{TValue, TError}" /> to the stream,
-	/// returning this class instance.
+	/// Signals the end of the stream.
 	/// </summary>
+	public void End() => IsEnded = true;
+
+	/// <summary>
+	/// A chainable call to add an option of Error to the stream.
+	/// </summary>
+	/// <param name="error">The error to add to the stream.</param>
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
@@ -434,40 +379,17 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	/// A cancellation token to observe while waiting for the task to complete.
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
-	public async Task End(
-		IEnumerable<TError>? ignoredErrors = null, CancellationToken cancellationToken = default
+	public async Task Error(
+		TError error,
+		IEnumerable<TError>? ignoredErrors = null,
+		CancellationToken cancellationToken = default
 	) => await Next(
-		IOption<TValue, TError>.End(ignoredErrors: ignoredErrors),
+		Option<TValue, TError>.Error(error, ignoredErrors),
 		cancellationToken: cancellationToken
 	);
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="IError{TValue, TError}" /> to the stream,
-	/// returning this class instance.
-	/// </summary>
-	/// <param name="error">The option to add to the stream.</param>
-	/// <param name="cancellationToken">
-	/// A cancellation token to observe while waiting for the task to complete.
-	/// </param>
-	/// <returns>A task representing the asynchronous operation.</returns>
-	public async Task Error(
-		IError<TValue, TError> error, CancellationToken cancellationToken = default
-	)
-	{
-		if (error is IOption<TValue, TError> option)
-		{
-			await Next(option, cancellationToken: cancellationToken);
-			return;
-		}
-		await Next(
-			IOption<TValue, TError>.Error(error.Value, ignoredErrors: error.IgnoredErrors),
-			cancellationToken: cancellationToken
-		);
-	}
-
-	/// <summary>
-	/// A chainable call to add an option of <see cref="IOption{TValue, TError}" /> to the stream,
-	/// returning this class instance.
+	/// A chainable call to add an option to the stream.
 	/// </summary>
 	/// <param name="option">The option to add to the stream.</param>
 	/// <param name="cancellationToken">
@@ -475,7 +397,7 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Next(
-		IOption<TValue, TError> option, CancellationToken cancellationToken = default
+		Option<TValue, TError> option, CancellationToken cancellationToken = default
 	)
 	{
 		await BufferLock.WaitAsync(cancellationToken);
@@ -499,9 +421,8 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	}
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{TValue, TError}" /> to the
-	/// stream. The options are iterated over and added to the stream one at a time. Then returning
-	/// this class instance.
+	/// A chainable call to add multiple options to the stream. The options are iterated over and
+	/// added to the stream one at a time.
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <param name="cancellationToken">
@@ -509,7 +430,7 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Next(
-		IOptionEnumerable<TValue, TError> options, CancellationToken cancellationToken = default
+		IEnumerable<Option<TValue, TError>> options, CancellationToken cancellationToken = default
 	)
 	{
 		foreach (var option in options)
@@ -519,9 +440,8 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	}
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{TValue, TError}" /> to the
-	/// stream. The options are iterated over and added to the stream one at a time. Then returning
-	/// this class instance.
+	/// A chainable call to add multiple options to the stream. The options are iterated over and
+	/// added to the stream one at a time.
 	/// </summary>
 	/// <param name="options">The options to add to the stream.</param>
 	/// <param name="cancellationToken">
@@ -529,7 +449,8 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Next(
-		IAsyncOptionEnumerable<TValue, TError> options, CancellationToken cancellationToken = default
+		IAsyncEnumerable<Option<TValue, TError>> options,
+		CancellationToken cancellationToken = default
 	)
 	{
 		await foreach (var option in options)
@@ -539,22 +460,22 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	}
 
 	/// <summary>
-	/// A chainable call to add multiple options of <see cref="IOption{TValue, TError}" /> to the
-	/// stream. The options are iterated over and added to the stream one at a time. Then returning
-	/// this class instance.
+	/// A chainable call to add multiple options to the stream. The options are iterated over and
+	/// added to the stream one at a time.
 	/// </summary>
-	/// <param name="options">The options to add to the stream.</param>
 	/// <param name="cancellationToken">
 	/// A cancellation token to observe while waiting for the task to complete.
 	/// </param>
+	/// <param name="options">The options to add to the stream.</param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Next(
-		CancellationToken cancellationToken = default, params IOption<TValue, TError>[] options
-	) => await Next(new OptionList<TValue, TError>(options), cancellationToken: cancellationToken);
+		CancellationToken cancellationToken = default, params Option<TValue, TError>[] options
+	) => await Next(
+		(IEnumerable<Option<TValue, TError>>)options, cancellationToken: cancellationToken
+	);
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="INone{TValue, TError}" /> to the stream,
-	/// returning this class instance.
+	/// A chainable call to add an option of None to the stream.
 	/// </summary>
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
@@ -566,14 +487,12 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	public async Task None(
 		IEnumerable<TError>? ignoredErrors = null, CancellationToken cancellationToken = default
 	) => await Next(
-		IOption<TValue, TError>.None(ignoredErrors: ignoredErrors),
-		cancellationToken: cancellationToken
+		Option<TValue, TError>.None(ignoredErrors), cancellationToken: cancellationToken
 	);
 
 	/// <summary>
-	/// Reads the next option from the stream. Once an option of <see cref="IEnd" /> is read, that
-	/// will mark the end of the stream. An <see cref="TError" /> will be thrown if the stream is
-	/// read again after that.
+	/// Reads the next option from the stream. An <see cref="Exception" /> will be thrown if the
+	/// stream has ended and no buffered items remain.
 	/// </summary>
 	/// <param name="cancellationToken">
 	/// A cancellation token to observe while waiting for the task to complete.
@@ -582,19 +501,19 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 	/// A task representing the asynchronous operation. The result value is the next option from
 	/// the stream.
 	/// </returns>
-	/// <exception cref="TError">Thrown when reading after the stream has ended.</exception>
-	public async Task<IOption<TValue, TError>> Read(
-		CancellationToken cancellationToken = default
-	)
+	/// <exception cref="Exception">
+	/// Thrown when reading after the stream has ended with no buffered items.
+	/// </exception>
+	public async Task<Option<TValue, TError>> Read(CancellationToken cancellationToken = default)
 	{
-		if (Current is IEnd)
-		{
-			throw new Exception("Stream has already been read to end.");
-		}
 		if (Buffer is null)
 		{
 			while (UnbufferedNext is null)
 			{
+				if (IsEnded)
+				{
+					throw new Exception("Stream has ended with no items to read.");
+				}
 				await Task.Delay(100, cancellationToken);
 			}
 			Current = UnbufferedNext;
@@ -602,83 +521,58 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 		}
 		else
 		{
-			IOption<TValue, TError>? next;
-			while (!Buffer.TryDequeue(out next) || next is null)
+			Option<TValue, TError> next;
+			while (!Buffer.TryDequeue(out next) || next.Type == default)
 			{
+				if (IsEnded && Buffer.Count == 0)
+				{
+					throw new Exception("Stream has ended with no items to read.");
+				}
 				await Task.Delay(100, cancellationToken);
 			}
 			Current = next;
 		}
-		return Current;
+		return Current.Value;
 	}
 
 	/// <summary>
-	/// Reads all options from the stream until an option of <see cref="IEnd" /> is read, which will
-	/// mark the end of the stream. An <see cref="TError" /> will be thrown if the stream is read
-	/// again after that.
+	/// Reads all options from the stream until the stream has ended.
 	/// </summary>
+	/// <param name="shouldSkipErrors">Whether to skip error options.</param>
 	/// <param name="cancellationToken">
 	/// A cancellation token to observe while waiting for the task to complete.
 	/// </param>
 	/// <returns>
-	/// An enumeration of option from the stream until the end of the stream is reached.
+	/// An enumeration of options from the stream until the end of the stream is reached.
 	/// </returns>
-	/// <exception cref="TError">Thrown when reading after the stream has ended.</exception>
-	public async IAsyncEnumerable<IOption<TValue, TError>> ReadToEnd(
+	public async IAsyncEnumerable<Option<TValue, TError>> ReadToEnd(
 		bool shouldSkipErrors = false,
 		[EnumeratorCancellation] CancellationToken cancellationToken = default
 	)
 	{
-		while (Current is not IEnd)
+		while (!IsEnded || (Buffer is not null && Buffer.Count > 0) || UnbufferedNext is not null)
 		{
 			var next = await Read(cancellationToken: cancellationToken);
-			switch (next)
+			switch (next.Type)
 			{
-				case IEnd:
-				{
-					yield break;
-				}
-				case IError:
-				{
+				case OptionType.Error:
 					if (shouldSkipErrors)
 					{
 						continue;
 					}
 					yield return next;
 					break;
-				}
-				case ISome<TValue>:
-				{
+				case OptionType.Some:
 					yield return next;
 					break;
-				}
 				default:
-				{
 					continue;
-				}
 			}
 		}
 	}
 
 	/// <summary>
-	/// A chainable call to add an option of <see cref="ISome{TValue, TError}" /> to the stream,
-	/// returning this class instance.
-	/// </summary>
-	/// <param name="some">The option to add to the stream.</param>
-	/// <param name="cancellationToken">
-	/// A cancellation token to observe while waiting for the task to complete.
-	/// </param>
-	/// <returns>A task representing the asynchronous operation.</returns>
-	public async Task Some(
-		ISome<TValue, TError> some, CancellationToken cancellationToken = default
-	) => await Next(
-		IOption<TValue, TError>.Some(some.Value, ignoredErrors: some.IgnoredErrors),
-		cancellationToken: cancellationToken
-	);
-
-	/// <summary>
-	/// A chainable call to add an option of <see cref="ISome{TValue, TError}" /> to the stream,
-	/// returning this class instance.
+	/// A chainable call to add an option of Some to the stream.
 	/// </summary>
 	/// <param name="value">The value of an option to add to the stream.</param>
 	/// <param name="ignoredErrors">
@@ -693,7 +587,6 @@ public sealed class OptionStream<TValue, TError> : IVoid<TError>
 		IEnumerable<TError>? ignoredErrors = null,
 		CancellationToken cancellationToken = default
 	) => await Next(
-		IOption<TValue, TError>.Some(value, ignoredErrors: ignoredErrors),
-		cancellationToken: cancellationToken
+		Option<TValue, TError>.Some(value, ignoredErrors), cancellationToken: cancellationToken
 	);
 }

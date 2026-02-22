@@ -9,7 +9,7 @@ namespace ReillyDigital.Enumerations.Options._Internal;
 /// <param name="ignoredErrors">
 /// Errors that are ignored instead of being returned as the option value.
 /// </param>
-internal readonly struct OptionError<TValue, TError>(
+internal readonly struct BoxedError<TValue, TError>(
 	TError value, IEnumerable<TError>? ignoredErrors = null
 ) : IError<TValue>, IError<TValue, TError>, IIgnoredErrorSet<TError>
 {
@@ -20,22 +20,22 @@ internal readonly struct OptionError<TValue, TError>(
 	public TError Value => value;
 
 	/// <inheritdoc />
-	Exception IError<TValue>.Value => ((IError)this).Value;
+	ErrorValue IError<TValue>.Value => ((IError)this).Value;
 
 	/// <summary>
 	/// Throws the value of the error as returned by <see cref="IError.Value" />.
 	/// </summary>
-	TValue? IOption<TValue>.Value => throw ((IError)this).Value;
+	TValue? IOption<TValue>.Value => throw (Exception)((IError)this).Value;
 
 	/// <summary>
 	/// Throws the value of the error as returned by <see cref="IError.Value" />.
 	/// </summary>
-	TValue? IOption<TValue, TError>.Value => throw ((IError)this).Value;
+	TValue? IOption<TValue, TError>.Value => throw (Exception)((IError)this).Value;
 
 	/// <inheritdoc />
 	public override bool Equals(object? obj)
-		=> obj is OptionSome<TValue, TError> some
-		&& ((some.Value?.Equals(Value) ?? false) || (some.Value is null && Value is null));
+		=> obj is BoxedError<TValue, TError> error
+		&& ((error.Value?.Equals(Value) ?? false) || (error.Value is null && Value is null));
 
 	/// <inheritdoc />
 	public override int GetHashCode() => base.GetHashCode();

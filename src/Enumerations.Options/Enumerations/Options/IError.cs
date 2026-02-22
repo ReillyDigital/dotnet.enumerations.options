@@ -5,26 +5,26 @@ namespace ReillyDigital.Enumerations.Options;
 using System.Text.Json;
 
 /// <summary>
-/// Represents an option which has an error of <see cref="Exception" />.
+/// Represents an option which has an error of <see cref="ErrorValue" />.
 /// </summary>
 public interface IError : IVoid
 {
 	/// <summary>
-	/// The option error of <see cref="Exception" />.
+	/// The option error of <see cref="ErrorValue" />.
 	/// </summary>
-	public Exception Value { get; }
+	public ErrorValue Value { get; }
 }
 
 /// <summary>
-/// Represents an option which has an error of <see cref="Exception" />.
+/// Represents an option which has an error of <see cref="ErrorValue" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public interface IError<out TValue> : IError, IOption<TValue>
 {
 	/// <summary>
-	/// The option error of <see cref="Exception" />.
+	/// The option error of <see cref="ErrorValue" />.
 	/// </summary>
-	public new Exception Value { get; }
+	public new ErrorValue Value { get; }
 }
 
 /// <summary>
@@ -40,12 +40,13 @@ public interface IError<out TValue, out TError> : IError, IOption<TValue, TError
 	public new TError Value { get; }
 
 	/// <inheritdoc />
-	Exception IError.Value => Value switch
+	ErrorValue IError.Value => Value switch
 	{
-		Exception exception => exception,
+		ErrorValue errorValue => errorValue,
 		_ => new(
-			$"Value is an error of type {typeof(TError).FullName}.",
-			typeof(TError).IsSerializable ? new(JsonSerializer.Serialize(Value)) : null
+			typeof(TError).IsSerializable
+				? JsonSerializer.Serialize(Value)
+				: $"Value is an error of type {typeof(TError).FullName}."
 		)
 	};
 }

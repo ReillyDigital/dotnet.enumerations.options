@@ -1,10 +1,10 @@
 public static class SimpleValuesScenario
 {
-	public static IOption<string> GetMessage(int? messageId)
+	public static Option<string> GetMessage(int? messageId)
 	{
 		if (messageId is null)
 		{
-			return Error<string>(new NotSupportedException("Empty IDs are not supported."));
+			return OptionError<string>("Empty IDs are not supported.");
 		}
 		return messageId switch
 		{
@@ -19,13 +19,13 @@ public static class SimpleValuesScenario
 	{
 		switch (GetMessage(2))
 		{
-			case IError error:
-				throw error.Value;
-			case INone:
+			case { Type: OptionType.Error, ErrorValue: var error }:
+				throw error;
+			case { Type: OptionType.None }:
 				Console.WriteLine("No message found");
 				break;
-			case ISome<string> some:
-				Console.WriteLine(some.Value);
+			case { Type: OptionType.Some, Value: var value }:
+				Console.WriteLine(value);
 				break;
 		}
 	}

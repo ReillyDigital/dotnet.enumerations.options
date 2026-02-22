@@ -8,14 +8,9 @@ namespace ReillyDigital.Enumerations.Options._Internal;
 /// <param name="ignoredErrors">
 /// Errors that are ignored instead of being returned as the option value.
 /// </param>
-internal readonly struct OptionNone<TValue, TError>(IEnumerable<TError>? ignoredErrors = null)
+internal readonly struct BoxedNone<TValue, TError>(IEnumerable<TError>? ignoredErrors = null)
 	: IIgnoredErrorSet<TError>, INone<TValue>, INone<TValue, TError>
 {
-	/// <summary>
-	/// Static default reference for this option.
-	/// </summary>
-	public static readonly OptionNone<TValue, TError> Ref = default;
-
 	/// <inheritdoc />
 	public IEnumerable<TError> IgnoredErrors => ignoredErrors ?? [];
 
@@ -32,7 +27,7 @@ internal readonly struct OptionNone<TValue, TError>(IEnumerable<TError>? ignored
 		=> throw new NotSupportedException("Option is not a type with a value.");
 
 	/// <inheritdoc />
-	public override bool Equals(object? obj) => obj is OptionEnd<TValue, TError>;
+	public override bool Equals(object? obj) => obj is BoxedNone<TValue, TError>;
 
 	/// <inheritdoc />
 	public override int GetHashCode() => base.GetHashCode();

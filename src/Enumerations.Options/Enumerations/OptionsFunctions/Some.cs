@@ -1,17 +1,19 @@
 namespace ReillyDigital.Enumerations;
 
+using ReillyDigital.Enumerations.Options;
+
 public static partial class OptionsFunctions
 {
-	/// <inheritdoc cref="IOption{TValue}.Some(TValue, IEnumerable{Exception})" />
+	/// <inheritdoc cref="Option{TValue}.Some(TValue, IEnumerable{ErrorValue})" />
 	/// <typeparam name="TValue">The type of the value of the options.</typeparam>
-	public static ISome<TValue> Some<TValue>(
-		TValue value, IEnumerable<Exception>? ignoredErrors = null
-	) => IOption<TValue>.Some(value, ignoredErrors: ignoredErrors);
+	public static Option<TValue> Some<TValue>(
+		TValue value, IEnumerable<ErrorValue>? ignoredErrors = null
+	) => Option<TValue>.Some(value, ignoredErrors);
 
-	/// <inheritdoc cref="IOption{TValue, TError}.Some(TValue, IEnumerable{TError})" />
+	/// <inheritdoc cref="Option{TValue, TError}.Some(TValue, IEnumerable{TError})" />
 	/// <typeparam name="TValue">The type of the value of the options.</typeparam>
 	/// <typeparam name="TError">The type of the error of the options.</typeparam>
-	public static ISome<TValue, TError> Some<TValue, TError>(
+	public static Option<TValue, TError> Some<TValue, TError>(
 		TValue value, IEnumerable<TError>? ignoredErrors = null
-	) => IOption<TValue, TError>.Some(value, ignoredErrors: ignoredErrors);
+	) => Option<TValue, TError>.Some(value, ignoredErrors);
 }
