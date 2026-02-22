@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.10] - 2026-02-22
+
+### Changed
+
+- Major rework to add concrete Option and Void type for zero-allocation usage.
+- Providing `ToBoxed()` method on new concrete types to produce the old interface-based values.
+- Internal concrete values for the interface boxing now renamed w/ `Boxed` prefix.
+- Helper methods in `OptionsFunctions` now use the new concrete types.
+
 ## [2.0.0-alpha.9] - 2025-08-24
 
 ### Changed
