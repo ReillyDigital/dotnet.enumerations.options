@@ -6,15 +6,13 @@ A result object library for .NET.
 
 ### Simple Values
 
-Define a function that returns an `IOption<>` value:
+Define a function that returns an `Option<>` value:
 ```csharp
-static IOption<string> GetMessage(int? messageId)
+static Option<string> GetMessage(int? messageId)
 {
 	if (messageId is null)
 	{
-		return Error<string>(
-			new NotSupportedException("Empty IDs are not supported.")
-		);
+		return OptionError<string>("Empty IDs are not supported.");
 	}
 	return messageId switch
 	{
@@ -30,13 +28,13 @@ Check the result value against the various option types:
 ```csharp
 switch (GetMessage(2))
 {
-	case IError error:
-		throw error.Value;
-	case INone:
+	case { Type: OptionType.Error, ErrorValue: var error }:
+		throw error;
+	case { Type: OptionType.None }:
 		Console.WriteLine("No message found");
 		break;
-	case ISome<string> some:
-		Console.WriteLine(some.Value);
+	case { Type: OptionType.Some, Value: var value }:
+		Console.WriteLine(value);
 		break;
 }
 ```
@@ -49,13 +47,13 @@ class StreamProvider
 {
 	private OptionStream<string> Stream { get; } = new();
 
-	public void DoStuff()
+	public async Task DoStuff()
 	{
 		await Stream.Some("This is a streamed value.");
 		await Stream.Some("This is another streamed value.");
 		await Stream.Error("Oops. Streamed error.");
 		await Stream.Some("One more streamed value.");
-		await Stream.End();
+		Stream.End();
 	}
 
 	public ReadOnlyOptionStream<string> GetStream() => Stream.AsReadOnly();
@@ -77,13 +75,13 @@ Iterate over the stream options until an end of stream is provided:
 ```csharp
 await foreach (var each in stream.ReadToEnd())
 {
-	switch (each)
+	switch (each.Type)
 	{
-		case IError error:
-			Console.WriteLine(error.Value.Message);
+		case OptionType.Error:
+			Console.WriteLine(each.ErrorValue.Message);
 			break;
-		case ISome<string> some:
-			Console.WriteLine(some.Value);
+		case OptionType.Some:
+			Console.WriteLine(each.Value);
 			break;
 	}
 }
@@ -120,13 +118,10 @@ var bus = provider.GetBus();
 Add handlers to the bus for the various option types:
 ```csharp
 var completion = new TaskCompletionSource();
-bus.SomeReceived +=
-	(object? sender, ISome<string> some) => Console.WriteLine(some.Value);
-bus.ErrorReceived +=
-	(object? sender, IError<string> error) =>
-		Console.WriteLine(error.Value.Message);
-bus.EndReceived +=
-	(object? sender, IEnd<string> error) => completion.SetResult();
+bus.SomeReceived += (sender, option) => Console.WriteLine(option.Value);
+bus.ErrorReceived += (sender, option) =>
+	Console.WriteLine(option.ErrorValue.Message);
+bus.EndReceived += (sender, e) => completion.SetResult();
 ```
 
 Tell the bus provider to do stuff:
