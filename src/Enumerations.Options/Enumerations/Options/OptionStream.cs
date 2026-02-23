@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 /// <summary>
 /// Represents a stream of options with a value of <see cref="TValue" /> that are accessed by
 /// subscribing to events of each possible option type, triggered when an item of that type is
-/// added to the stream. Errors are of type <see cref="ErrorValue" />.
+/// added to the stream. Errors are of type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public sealed class OptionStream<TValue> : IVoid
@@ -90,8 +90,8 @@ public sealed class OptionStream<TValue> : IVoid
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Error(
-		ErrorValue value,
-		IEnumerable<ErrorValue>? ignoredErrors = null,
+		string? value,
+		IEnumerable<string?>? ignoredErrors = null,
 		CancellationToken cancellationToken = default
 	) => await Next(Option<TValue>.Error(value, ignoredErrors), cancellationToken: cancellationToken);
 
@@ -187,7 +187,7 @@ public sealed class OptionStream<TValue> : IVoid
 	/// </param>
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task None(
-		IEnumerable<ErrorValue>? ignoredErrors = null, CancellationToken cancellationToken = default
+		IEnumerable<string?>? ignoredErrors = null, CancellationToken cancellationToken = default
 	) => await Next(Option<TValue>.None(ignoredErrors), cancellationToken: cancellationToken);
 
 	/// <summary>
@@ -298,7 +298,7 @@ public sealed class OptionStream<TValue> : IVoid
 	/// <returns>A task representing the asynchronous operation.</returns>
 	public async Task Some(
 		TValue value,
-		IEnumerable<ErrorValue>? ignoredErrors = null,
+		IEnumerable<string?>? ignoredErrors = null,
 		CancellationToken cancellationToken = default
 	) => await Next(Option<TValue>.Some(value, ignoredErrors), cancellationToken: cancellationToken);
 }

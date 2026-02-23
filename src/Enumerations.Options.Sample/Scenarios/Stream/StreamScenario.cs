@@ -14,7 +14,7 @@ public static class StreamScenario
 					switch (each.Type)
 					{
 						case OptionType.Error:
-							Console.WriteLine(each.ErrorValue.Message);
+							Console.WriteLine(each.ErrorValue);
 							break;
 						case OptionType.Some:
 							Console.WriteLine(each.Value);

@@ -2,7 +2,7 @@ namespace ReillyDigital.Enumerations.Options;
 
 /// <summary>
 /// Represents a collection of options with a value of <see cref="TValue" />. Errors will be of
-/// type <see cref="ErrorValue" />.
+/// type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public interface IAsyncOptionEnumerable<out TValue> : IAsyncEnumerable<IOption<TValue>>, IVoid
@@ -15,8 +15,8 @@ public interface IAsyncOptionEnumerable<out TValue> : IAsyncEnumerable<IOption<T
 	/// </param>
 	/// <returns>An option of <see cref="IOptionEnumerableError{TValue}" />.</returns>
 	public new static IOptionEnumerableError<TValue> Error(
-		IEnumerable<ErrorValue>? ignoredErrors = null
-	) => new BoxedEnumerableError<TValue, ErrorValue>(new(), ignoredErrors: ignoredErrors);
+		IEnumerable<string?>? ignoredErrors = null
+	) => new BoxedEnumerableError<TValue, string?>(default, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IOptionEnumerableError{TValue}" />.
@@ -27,8 +27,8 @@ public interface IAsyncOptionEnumerable<out TValue> : IAsyncEnumerable<IOption<T
 	/// </param>
 	/// <returns>An option of <see cref="IOptionEnumerableError{TValue}" />.</returns>
 	public new static IOptionEnumerableError<TValue> Error(
-		ErrorValue value, IEnumerable<ErrorValue>? ignoredErrors = null
-	) => new BoxedEnumerableError<TValue, ErrorValue>(value, ignoredErrors: ignoredErrors);
+		string? value, IEnumerable<string?>? ignoredErrors = null
+	) => new BoxedEnumerableError<TValue, string?>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IOptionEnumerableError{TValue}" />.

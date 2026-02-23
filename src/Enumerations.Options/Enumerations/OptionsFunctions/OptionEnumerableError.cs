@@ -4,16 +4,16 @@ using ReillyDigital.Enumerations.Options;
 
 public static partial class OptionsFunctions
 {
-	/// <inheritdoc cref="IOptionEnumerable{TValue}.Error(IEnumerable{ErrorValue})" />
+	/// <inheritdoc cref="IOptionEnumerable{TValue}.Error(IEnumerable{string})" />
 	/// <typeparam name="TValue">The type of the value of the options.</typeparam>
 	public static IOptionEnumerableError<TValue> OptionEnumerableError<TValue>(
-		IEnumerable<ErrorValue>? ignoredErrors = null
+		IEnumerable<string?>? ignoredErrors = null
 	) => IOptionEnumerable<TValue>.Error(ignoredErrors: ignoredErrors);
 
-	/// <inheritdoc cref="IOptionEnumerable{TValue}.Error(ErrorValue, IEnumerable{ErrorValue})" />
+	/// <inheritdoc cref="IOptionEnumerable{TValue}.Error(string, IEnumerable{string})" />
 	/// <typeparam name="TValue">The type of the value of the options.</typeparam>
 	public static IOptionEnumerableError<TValue> OptionEnumerableError<TValue>(
-		ErrorValue value, IEnumerable<ErrorValue>? ignoredErrors = null
+		string? value, IEnumerable<string?>? ignoredErrors = null
 	) => IOptionEnumerable<TValue>.Error(value, ignoredErrors: ignoredErrors);
 
 	/// <inheritdoc cref="IOptionEnumerable{TValue, TError}.Error(TError, IEnumerable{TError})" />

@@ -4,8 +4,8 @@ using ReillyDigital.Enumerations.Options;
 
 public static partial class OptionsFunctions
 {
-	/// <inheritdoc cref="Options.Void.Success(IEnumerable{ErrorValue})" />
-	public static Options.Void Void(IEnumerable<ErrorValue>? ignoredErrors = null)
+	/// <inheritdoc cref="Options.Void.Success(IEnumerable{string})" />
+	public static Options.Void Void(IEnumerable<string?>? ignoredErrors = null)
 		=> Options.Void.Success(ignoredErrors);
 
 	/// <inheritdoc cref="Options.Void{TError}.Success(IEnumerable{TError})" />

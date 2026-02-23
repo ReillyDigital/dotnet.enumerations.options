@@ -1,5 +1,7 @@
 namespace ReillyDigital.Enumerations.Options;
 
+using System.Linq;
+
 /// <summary>
 /// Represents a void result that can be either a success or an error.
 /// </summary>
@@ -12,8 +14,8 @@ public readonly struct Void
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>A <see cref="Void" /> of Error.</returns>
-	public static Void Error(IEnumerable<ErrorValue>? ignoredErrors = null)
-		=> Error(new ErrorValue(), ignoredErrors);
+	public static Void Error(IEnumerable<string?>? ignoredErrors = null)
+		=> Error(default, ignoredErrors);
 
 	/// <summary>
 	/// Create a <see cref="Void" /> of Error.
@@ -23,8 +25,8 @@ public readonly struct Void
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>A <see cref="Void" /> of Error.</returns>
-	public static Void Error(ErrorValue error, IEnumerable<ErrorValue>? ignoredErrors = null)
-		=> new(Void<ErrorValue>.Error(error, ignoredErrors));
+	public static Void Error(string? error, IEnumerable<string?>? ignoredErrors = null)
+		=> new(Void<string?>.Error(error, ignoredErrors));
 
 	/// <summary>
 	/// Create a <see cref="Void" /> of Success.
@@ -33,30 +35,30 @@ public readonly struct Void
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>A <see cref="Void" /> of Success.</returns>
-	public static Void Success(IEnumerable<ErrorValue>? ignoredErrors = null)
-		=> new(Void<ErrorValue>.Success(ignoredErrors));
+	public static Void Success(IEnumerable<string?>? ignoredErrors = null)
+		=> new(Void<string?>.Success(ignoredErrors));
 
 	/// <summary>
-	/// Implicitly convert an <see cref="ErrorValue" /> to a <see cref="Void" /> of Error.
+	/// Implicitly convert a <see cref="string" /> to a <see cref="Void" /> of Error.
 	/// </summary>
 	/// <param name="value">The error value.</param>
-	public static implicit operator Void(ErrorValue value) => Error(value);
+	public static implicit operator Void(string? value) => Error(value);
 
 	/// <summary>
-	/// Explicitly convert a <see cref="Void" /> to an <see cref="ErrorValue" />.
+	/// Explicitly convert a <see cref="Void" /> to a <see cref="string" />.
 	/// </summary>
 	/// <param name="value">The void.</param>
-	public static explicit operator ErrorValue(Void value) => value.ErrorValue;
+	public static explicit operator string?(Void value) => value.ErrorValue;
 
 	/// <summary>
 	/// The error value of this void.
 	/// </summary>
-	public ErrorValue ErrorValue => Inner.ErrorValue;
+	public string? ErrorValue => Inner.ErrorValue;
 
 	/// <summary>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </summary>
-	public IEnumerable<ErrorValue> IgnoredErrors => Inner.IgnoredErrors;
+	public IEnumerable<string?> IgnoredErrors => Inner.IgnoredErrors;
 
 	/// <summary>
 	/// Whether this void is an Error.
@@ -73,26 +75,55 @@ public readonly struct Void
 	/// </summary>
 	public VoidType Type => Inner.Type;
 
-	private Void<ErrorValue> Inner { get; }
+	private Void<string?> Inner { get; }
 
-	internal Void(Void<ErrorValue> inner) => Inner = inner;
+	internal Void(Void<string?> inner) => Inner = inner;
 
 	/// <summary>
 	/// Deconstruct the void into its components.
 	/// </summary>
 	/// <param name="type">The type of void.</param>
 	/// <param name="error">The error if Error, otherwise default.</param>
-	public void Deconstruct(out VoidType type, out ErrorValue? error)
+	public void Deconstruct(out VoidType type, out string? error)
 	{
 		Inner.Deconstruct(out type, out var innerError);
 		error = innerError;
 	}
 
 	/// <summary>
+	/// Executes the specified callback if this void is of type <see cref="VoidType.Error" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute.</param>
+	/// <returns>The current void.</returns>
+	public Void IfError(Action callback) => IfError(_ => callback());
+
+	/// <summary>
+	/// Executes the specified callback if this void is of type <see cref="VoidType.Error" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute with the error.</param>
+	/// <returns>The current void.</returns>
+	public Void IfError(Action<string?> callback)
+	{
+		if (IsError) callback(ErrorValue);
+		return this;
+	}
+
+	/// <summary>
+	/// Executes the specified callback if this void has ignored errors.
+	/// </summary>
+	/// <param name="callback">The callback to execute with the errors.</param>
+	/// <returns>The current void.</returns>
+	public Void IfIgnoredErrors(Action<IEnumerable<string?>> callback)
+	{
+		if (IgnoredErrors.Any()) callback(IgnoredErrors);
+		return this;
+	}
+
+	/// <summary>
 	/// Convert this void to a boxed <see cref="IVoid{TError}" />.
 	/// </summary>
 	/// <returns>A boxed <see cref="IVoid{TError}" />.</returns>
-	public IVoid<ErrorValue> ToBoxed() => Inner.ToBoxed();
+	public IVoid<string?> ToBoxed() => Inner.ToBoxed();
 }
 
 /// <summary>
@@ -179,6 +210,35 @@ public readonly struct Void<TError>
 	/// <param name="error">The error if Error, otherwise default.</param>
 	public void Deconstruct(out VoidType type, out TError? error)
 		=> (error, type) = (_ErrorValue, Type);
+
+	/// <summary>
+	/// Executes the specified callback if this void is of type <see cref="VoidType.Error" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute.</param>
+	/// <returns>The current void.</returns>
+	public Void<TError> IfError(Action callback) => IfError(_ => callback());
+
+	/// <summary>
+	/// Executes the specified callback if this void is of type <see cref="VoidType.Error" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute with the error.</param>
+	/// <returns>The current void.</returns>
+	public Void<TError> IfError(Action<TError> callback)
+	{
+		if (IsError) callback(ErrorValue);
+		return this;
+	}
+
+	/// <summary>
+	/// Executes the specified callback if this void has ignored errors.
+	/// </summary>
+	/// <param name="callback">The callback to execute with the errors.</param>
+	/// <returns>The current void.</returns>
+	public Void<TError> IfIgnoredErrors(Action<IEnumerable<TError>> callback)
+	{
+		if (IgnoredErrors.Any()) callback(IgnoredErrors);
+		return this;
+	}
 
 	/// <summary>
 	/// Convert this void to a boxed <see cref="IVoid{TError}" />.

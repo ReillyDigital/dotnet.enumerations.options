@@ -10,10 +10,10 @@ using System.Text.Json;
 internal interface IIgnoredErrorSet
 {
 	/// <summary>
-	/// Additional errors of <see cref="ErrorValue" /> which are ignored instead of being returned
+	/// Additional errors of <see cref="string" /> which are ignored instead of being returned
 	/// as the option value.
 	/// </summary>
-	public IEnumerable<ErrorValue> IgnoredErrors { get; }
+	public IEnumerable<string?> IgnoredErrors { get; }
 }
 
 /// <summary>
@@ -29,15 +29,14 @@ internal interface IIgnoredErrorSet<out TError> : IIgnoredErrorSet
 	public new IEnumerable<TError> IgnoredErrors { get; }
 
 	/// <inheritdoc />
-	IEnumerable<ErrorValue> IIgnoredErrorSet.IgnoredErrors => IgnoredErrors.Select(
+	IEnumerable<string?> IIgnoredErrorSet.IgnoredErrors => IgnoredErrors.Select(
 		(error) => error switch
 		{
-			ErrorValue errorValue => errorValue,
-			_ => new ErrorValue(
-				typeof(TError).IsSerializable
-					? JsonSerializer.Serialize(error)
-					: $"Value is an error of type {typeof(TError).FullName}."
-			)
+			string s => s,
+			null => (string?)null,
+			_ => typeof(TError).IsSerializable
+				? JsonSerializer.Serialize(error)
+				: $"Value is an error of type {typeof(TError).FullName}."
 		}
 	);
 }

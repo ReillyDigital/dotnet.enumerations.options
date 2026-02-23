@@ -11,6 +11,11 @@ namespace ReillyDigital.Enumerations.Options._Internal;
 internal readonly struct BoxedNone<TValue, TError>(IEnumerable<TError>? ignoredErrors = null)
 	: IIgnoredErrorSet<TError>, INone<TValue>, INone<TValue, TError>
 {
+	/// <summary>
+	/// Static default reference for this option.
+	/// </summary>
+	public static readonly BoxedNone<TValue, TError> Ref = default;
+
 	/// <inheritdoc />
 	public IEnumerable<TError> IgnoredErrors => ignoredErrors ?? [];
 

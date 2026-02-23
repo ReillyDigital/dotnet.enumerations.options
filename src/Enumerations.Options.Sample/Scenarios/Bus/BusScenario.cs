@@ -8,7 +8,7 @@ public static class BusScenario
 		var bus = provider.GetBus();
 		var completion = new TaskCompletionSource();
 		bus.SomeReceived += (sender, option) => Console.WriteLine(option.Value);
-		bus.ErrorReceived += (sender, option) => Console.WriteLine(option.ErrorValue.Message);
+		bus.ErrorReceived += (sender, option) => Console.WriteLine(option.ErrorValue);
 		bus.EndReceived += (sender, e) => completion.SetResult();
 		provider.DoStuff();
 		await completion.Task;

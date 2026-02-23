@@ -3,7 +3,7 @@ namespace ReillyDigital.Enumerations.Options;
 /// <summary>
 /// Represents a bus of options with a value of <see cref="TValue" /> that are accessed by
 /// subscribing to events of each possible option type, triggered when an item of that type is
-/// added to the bus. Errors are of type <see cref="ErrorValue" />.
+/// added to the bus. Errors are of type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public sealed class OptionBus<TValue> : IVoid
@@ -65,7 +65,7 @@ public sealed class OptionBus<TValue> : IVoid
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionBus<TValue> Error(ErrorValue value, IEnumerable<ErrorValue>? ignoredErrors = null)
+	public OptionBus<TValue> Error(string? value, IEnumerable<string?>? ignoredErrors = null)
 		=> Next(Option<TValue>.Error(value, ignoredErrors));
 
 	/// <summary>
@@ -121,7 +121,7 @@ public sealed class OptionBus<TValue> : IVoid
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionBus<TValue> None(IEnumerable<ErrorValue>? ignoredErrors = null)
+	public OptionBus<TValue> None(IEnumerable<string?>? ignoredErrors = null)
 		=> Next(Option<TValue>.None(ignoredErrors));
 
 	/// <summary>
@@ -140,7 +140,7 @@ public sealed class OptionBus<TValue> : IVoid
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionBus<TValue> Some(TValue value, IEnumerable<ErrorValue>? ignoredErrors = null)
+	public OptionBus<TValue> Some(TValue value, IEnumerable<string?>? ignoredErrors = null)
 		=> Next(Option<TValue>.Some(value, ignoredErrors));
 }
 

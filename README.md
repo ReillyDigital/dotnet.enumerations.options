@@ -26,10 +26,10 @@ static Option<string> GetMessage(int? messageId)
 
 Check the result value against the various option types:
 ```csharp
-switch (GetMessage(2))
-{
-	case { Type: OptionType.Error, ErrorValue: var error }:
-		throw error;
+	switch (GetMessage(2))
+	{
+		case { Type: OptionType.Error, ErrorValue: var error }:
+			throw new Exception(error);
 	case { Type: OptionType.None }:
 		Console.WriteLine("No message found");
 		break;
@@ -78,7 +78,7 @@ await foreach (var each in stream.ReadToEnd())
 	switch (each.Type)
 	{
 		case OptionType.Error:
-			Console.WriteLine(each.ErrorValue.Message);
+			Console.WriteLine(each.ErrorValue);
 			break;
 		case OptionType.Some:
 			Console.WriteLine(each.Value);
@@ -120,7 +120,7 @@ Add handlers to the bus for the various option types:
 var completion = new TaskCompletionSource();
 bus.SomeReceived += (sender, option) => Console.WriteLine(option.Value);
 bus.ErrorReceived += (sender, option) =>
-	Console.WriteLine(option.ErrorValue.Message);
+	Console.WriteLine(option.ErrorValue);
 bus.EndReceived += (sender, e) => completion.SetResult();
 ```
 

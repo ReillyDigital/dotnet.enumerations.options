@@ -20,7 +20,7 @@ public static class SimpleValuesScenario
 		switch (GetMessage(2))
 		{
 			case { Type: OptionType.Error, ErrorValue: var error }:
-				throw error;
+				throw new Exception(error);
 			case { Type: OptionType.None }:
 				Console.WriteLine("No message found");
 				break;

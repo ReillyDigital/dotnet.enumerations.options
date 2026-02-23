@@ -2,7 +2,7 @@ namespace ReillyDigital.Enumerations.Options;
 
 /// <summary>
 /// Represents a read-only collection of options with a value of <see cref="TValue" /> that can be
-/// individually accessed by index. Errors will be of type <see cref="ErrorValue" />.
+/// individually accessed by index. Errors will be of type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public sealed class ReadOnlyOptionList<TValue> : IReadOnlyList<Option<TValue>>
@@ -19,7 +19,7 @@ public sealed class ReadOnlyOptionList<TValue> : IReadOnlyList<Option<TValue>>
 	/// <summary>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </summary>
-	public IEnumerable<ErrorValue> IgnoredErrors => List.IgnoredErrors;
+	public IEnumerable<string?> IgnoredErrors => List.IgnoredErrors;
 
 	/// <summary>
 	/// Gets a value indicating whether the collection is read-only.

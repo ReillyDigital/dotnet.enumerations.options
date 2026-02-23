@@ -1,5 +1,7 @@
 namespace ReillyDigital.Enumerations.Options;
 
+using System.Linq;
+
 /// <summary>
 /// Represents an option with a potential value of <typeparamref name="TValue" />.
 /// </summary>
@@ -13,8 +15,8 @@ public readonly struct Option<TValue>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>An <see cref="Option{TValue}" /> of Error.</returns>
-	public static Option<TValue> Error(IEnumerable<ErrorValue>? ignoredErrors = null)
-		=> Error(new(), ignoredErrors);
+	public static Option<TValue> Error(IEnumerable<string?>? ignoredErrors = null)
+		=> Error(default, ignoredErrors);
 
 	/// <summary>
 	/// Create an <see cref="Option{TValue}" /> of Error.
@@ -25,8 +27,8 @@ public readonly struct Option<TValue>
 	/// </param>
 	/// <returns>An <see cref="Option{TValue}" /> of Error.</returns>
 	public static Option<TValue> Error(
-		ErrorValue error, IEnumerable<ErrorValue>? ignoredErrors = null
-	) => new(Option<TValue, ErrorValue>.Error(error, ignoredErrors));
+		string? error, IEnumerable<string?>? ignoredErrors = null
+	) => new(Option<TValue, string?>.Error(error, ignoredErrors));
 
 	/// <summary>
 	/// Create an <see cref="Option{TValue}" /> of None.
@@ -35,8 +37,8 @@ public readonly struct Option<TValue>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>An <see cref="Option{TValue}" /> of None.</returns>
-	public static Option<TValue> None(IEnumerable<ErrorValue>? ignoredErrors = null)
-		=> new(Option<TValue, ErrorValue>.None(ignoredErrors));
+	public static Option<TValue> None(IEnumerable<string?>? ignoredErrors = null)
+		=> new(Option<TValue, string?>.None(ignoredErrors));
 
 	/// <summary>
 	/// Create an <see cref="Option{TValue}" /> of Some.
@@ -46,15 +48,15 @@ public readonly struct Option<TValue>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>An <see cref="Option{TValue}" /> of Some.</returns>
-	public static Option<TValue> Some(TValue value, IEnumerable<ErrorValue>? ignoredErrors = null)
-		=> new(Option<TValue, ErrorValue>.Some(value, ignoredErrors));
+	public static Option<TValue> Some(TValue value, IEnumerable<string?>? ignoredErrors = null)
+		=> new(Option<TValue, string?>.Some(value, ignoredErrors));
 
 	/// <summary>
-	/// Implicitly convert an <see cref="ErrorValue" /> to an <see cref="Option{TValue}" /> of
+	/// Implicitly convert a <see cref="string" /> to an <see cref="Option{TValue}" /> of
 	/// Error.
 	/// </summary>
 	/// <param name="value">The error value.</param>
-	public static implicit operator Option<TValue>(ErrorValue value) => Error(value);
+	public static implicit operator Option<TValue>(string? value) => Error(value);
 
 	/// <summary>
 	/// Implicitly convert a <typeparamref name="TValue" /> to an <see cref="Option{TValue}" /> of
@@ -64,10 +66,10 @@ public readonly struct Option<TValue>
 	public static implicit operator Option<TValue>(TValue value) => Some(value);
 
 	/// <summary>
-	/// Explicitly convert an <see cref="Option{TValue}" /> to an <see cref="ErrorValue" />.
+	/// Explicitly convert an <see cref="Option{TValue}" /> to a <see cref="string" />.
 	/// </summary>
 	/// <param name="value">The option.</param>
-	public static explicit operator ErrorValue(Option<TValue> value) => value.ErrorValue;
+	public static explicit operator string?(Option<TValue> value) => value.ErrorValue;
 
 	/// <summary>
 	/// Explicitly convert an <see cref="Option{TValue}" /> to a <typeparamref name="TValue" />.
@@ -78,12 +80,12 @@ public readonly struct Option<TValue>
 	/// <summary>
 	/// The error value of this option.
 	/// </summary>
-	public ErrorValue ErrorValue => Inner.ErrorValue;
+	public string? ErrorValue => Inner.ErrorValue;
 
 	/// <summary>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </summary>
-	public IEnumerable<ErrorValue> IgnoredErrors => Inner.IgnoredErrors;
+	public IEnumerable<string?> IgnoredErrors => Inner.IgnoredErrors;
 
 	/// <summary>
 	/// Whether this option is an Error.
@@ -110,9 +112,9 @@ public readonly struct Option<TValue>
 	/// </summary>
 	public TValue Value => Inner.Value;
 
-	private Option<TValue, ErrorValue> Inner { get; }
+	private Option<TValue, string?> Inner { get; }
 
-	internal Option(Option<TValue, ErrorValue> inner) => Inner = inner;
+	internal Option(Option<TValue, string?> inner) => Inner = inner;
 
 	/// <summary>
 	/// Deconstruct the option into its components.
@@ -120,17 +122,75 @@ public readonly struct Option<TValue>
 	/// <param name="type">The type of option.</param>
 	/// <param name="value">The value if Some, otherwise default.</param>
 	/// <param name="error">The error if Error, otherwise default.</param>
-	public void Deconstruct(out OptionType type, out TValue? value, out ErrorValue? error)
+	public void Deconstruct(out OptionType type, out TValue? value, out string? error)
 	{
 		Inner.Deconstruct(out type, out value, out var innerError);
 		error = innerError;
 	}
 
 	/// <summary>
+	/// Executes the specified callback if this option is of type <see cref="OptionType.Error" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue> IfError(Action callback) => IfError(_ => callback());
+
+	/// <summary>
+	/// Executes the specified callback if this option is of type <see cref="OptionType.Error" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute with the error.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue> IfError(Action<string?> callback)
+	{
+		if (IsError) callback(ErrorValue);
+		return this;
+	}
+
+	/// <summary>
+	/// Executes the specified callback if this option has ignored errors.
+	/// </summary>
+	/// <param name="callback">The callback to execute with the errors.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue> IfIgnoredErrors(Action<IEnumerable<string?>> callback)
+	{
+		if (IgnoredErrors.Any()) callback(IgnoredErrors);
+		return this;
+	}
+
+	/// <summary>
+	/// Executes the specified callback if this option is of type <see cref="OptionType.None" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue> IfNone(Action callback)
+	{
+		if (IsNone) callback();
+		return this;
+	}
+
+	/// <summary>
+	/// Executes the specified callback if this option is of type <see cref="OptionType.Some" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue> IfSome(Action callback) => IfSome(_ => callback());
+
+	/// <summary>
+	/// Executes the specified callback if this option is of type <see cref="OptionType.Some" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute with the value.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue> IfSome(Action<TValue> callback)
+	{
+		if (IsSome) callback(Value);
+		return this;
+	}
+
+	/// <summary>
 	/// Convert this option to a boxed <see cref="IVoid{TError}" />.
 	/// </summary>
 	/// <returns>A boxed <see cref="IVoid{TError}" />.</returns>
-	public IVoid<ErrorValue> ToBoxed() => Inner.ToBoxed();
+	public IVoid<string?> ToBoxed() => Inner.ToBoxed();
 }
 
 /// <summary>
@@ -263,6 +323,64 @@ public readonly struct Option<TValue, TError>
 	/// <param name="error">The error if Error, otherwise default.</param>
 	public void Deconstruct(out OptionType type, out TValue? value, out TError? error)
 		=> (error, type, value) = (_ErrorValue, Type, _SomeValue);
+
+	/// <summary>
+	/// Executes the specified callback if this option is of type <see cref="OptionType.Error" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue, TError> IfError(Action callback) => IfError(_ => callback());
+
+	/// <summary>
+	/// Executes the specified callback if this option is of type <see cref="OptionType.Error" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute with the error.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue, TError> IfError(Action<TError> callback)
+	{
+		if (IsError) callback(ErrorValue);
+		return this;
+	}
+
+	/// <summary>
+	/// Executes the specified callback if this option has ignored errors.
+	/// </summary>
+	/// <param name="callback">The callback to execute with the errors.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue, TError> IfIgnoredErrors(Action<IEnumerable<TError>> callback)
+	{
+		if (IgnoredErrors.Any()) callback(IgnoredErrors);
+		return this;
+	}
+
+	/// <summary>
+	/// Executes the specified callback if this option is of type <see cref="OptionType.None" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue, TError> IfNone(Action callback)
+	{
+		if (IsNone) callback();
+		return this;
+	}
+
+	/// <summary>
+	/// Executes the specified callback if this option is of type <see cref="OptionType.Some" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue, TError> IfSome(Action callback) => IfSome(_ => callback());
+
+	/// <summary>
+	/// Executes the specified callback if this option is of type <see cref="OptionType.Some" />.
+	/// </summary>
+	/// <param name="callback">The callback to execute with the value.</param>
+	/// <returns>The current option.</returns>
+	public Option<TValue, TError> IfSome(Action<TValue> callback)
+	{
+		if (IsSome) callback(Value);
+		return this;
+	}
 
 	/// <summary>
 	/// Convert this option to a boxed <see cref="IVoid{TError}" />.

@@ -2,7 +2,7 @@ namespace ReillyDigital.Enumerations.Options;
 
 /// <summary>
 /// Represents a collection of options with a value of <see cref="TValue" /> that can be
-/// individually accessed by index. Errors will be of type <see cref="ErrorValue" />.
+/// individually accessed by index. Errors will be of type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public sealed class OptionList<TValue> : IList<Option<TValue>>, IIgnoredErrorSet
@@ -24,7 +24,7 @@ public sealed class OptionList<TValue> : IList<Option<TValue>>, IIgnoredErrorSet
 	public int Count => List.Count;
 
 	/// <inheritdoc />
-	public IEnumerable<ErrorValue> IgnoredErrors { get; }
+	public IEnumerable<string?> IgnoredErrors { get; }
 
 	/// <summary>
 	/// Gets a value indicating whether the collection is read-only.
@@ -43,7 +43,7 @@ public sealed class OptionList<TValue> : IList<Option<TValue>>, IIgnoredErrorSet
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
-	public OptionList(IEnumerable<ErrorValue>? ignoredErrors = null)
+	public OptionList(IEnumerable<string?>? ignoredErrors = null)
 		=> (List, IgnoredErrors) = ([], ignoredErrors ?? []);
 
 	/// <summary>
@@ -54,7 +54,7 @@ public sealed class OptionList<TValue> : IList<Option<TValue>>, IIgnoredErrorSet
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	public OptionList(
-		IEnumerable<Option<TValue>> values, IEnumerable<ErrorValue>? ignoredErrors = null
+		IEnumerable<Option<TValue>> values, IEnumerable<string?>? ignoredErrors = null
 	) => (List, IgnoredErrors) = ([..values], ignoredErrors ?? []);
 
 	/// <summary>
@@ -64,7 +64,7 @@ public sealed class OptionList<TValue> : IList<Option<TValue>>, IIgnoredErrorSet
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
-	public OptionList(List<Option<TValue>> values, IEnumerable<ErrorValue>? ignoredErrors = null)
+	public OptionList(List<Option<TValue>> values, IEnumerable<string?>? ignoredErrors = null)
 		=> (List, IgnoredErrors) = (values, ignoredErrors ?? []);
 
 	/// <summary>

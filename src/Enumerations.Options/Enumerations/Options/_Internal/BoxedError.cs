@@ -20,17 +20,17 @@ internal readonly struct BoxedError<TValue, TError>(
 	public TError Value => value;
 
 	/// <inheritdoc />
-	ErrorValue IError<TValue>.Value => ((IError)this).Value;
+	string? IError<TValue>.Value => ((IError)this).Value;
 
 	/// <summary>
 	/// Throws the value of the error as returned by <see cref="IError.Value" />.
 	/// </summary>
-	TValue? IOption<TValue>.Value => throw (Exception)((IError)this).Value;
+	TValue? IOption<TValue>.Value => throw new Exception(((IError)this).Value);
 
 	/// <summary>
 	/// Throws the value of the error as returned by <see cref="IError.Value" />.
 	/// </summary>
-	TValue? IOption<TValue, TError>.Value => throw (Exception)((IError)this).Value;
+	TValue? IOption<TValue, TError>.Value => throw new Exception(((IError)this).Value);
 
 	/// <inheritdoc />
 	public override bool Equals(object? obj)
