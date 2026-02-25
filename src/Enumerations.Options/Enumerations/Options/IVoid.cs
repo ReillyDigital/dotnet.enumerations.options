@@ -113,7 +113,9 @@ public interface IVoid<out TError> : IVoid
 	/// <returns>A <see cref="IVoid" /> of <see cref="IError{TValue, TError}" />.</returns>
 	public static IError<IVoid, TError> Error(
 		TError value, IEnumerable<TError>? ignoredErrors = null
-	) => new BoxedError<IVoid, TError>(value, ignoredErrors: ignoredErrors);
+	) => value is null && ignoredErrors is null
+		? _Internal.BoxedError<IVoid, TError>.Ref
+		: new(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Additional errors of <see cref="TError" /> which are ignored instead of being returned as

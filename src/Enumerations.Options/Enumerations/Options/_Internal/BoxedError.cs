@@ -13,22 +13,16 @@ internal sealed class BoxedError<TValue, TError>(
 	TError? value, IEnumerable<TError>? ignoredErrors = null
 ) : IError<TValue>, IError<TValue, TError>, IIgnoredErrorSet<TError>
 {
-	private static BoxedError<TValue, TError>? _ref;
-
 	/// <summary>
-	/// Static default reference for error with empty message and no ignored errors.
-	/// Only supported when <typeparamref name="TError" /> is <see cref="string" />.
+	/// Static default reference for this option.
 	/// </summary>
-	public static BoxedError<TValue, TError> Ref =>
-		_ref ??= typeof(TError) == typeof(string)
-			? (BoxedError<TValue, TError>)(object)new BoxedError<TValue, string>("", null)
-			: throw new InvalidOperationException();
+	public static readonly BoxedError<TValue, TError> Ref = new(default);
 
 	/// <inheritdoc />
 	public IEnumerable<TError> IgnoredErrors => ignoredErrors ?? [];
 
 	/// <inheritdoc />
-	public TError Value => value ?? throw new InvalidOperationException();
+	public TError Value => value ?? default!;
 
 	/// <inheritdoc />
 	string IError<TValue>.Value => ((IError)this).Value;

@@ -134,7 +134,9 @@ public interface IOption<out TValue, out TError> : IVoid<TError>
 	/// <returns>An option of <see cref="IError{TValue, TError}" />.</returns>
 	public new static IError<TValue, TError> Error(
 		TError value, IEnumerable<TError>? ignoredErrors = null
-	) => new BoxedError<TValue, TError>(value, ignoredErrors: ignoredErrors);
+	) => value is null && ignoredErrors is null
+		? _Internal.BoxedError<TValue, TError>.Ref
+		: new(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="ISome{TValue, TError}" />.
