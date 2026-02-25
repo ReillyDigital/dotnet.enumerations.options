@@ -1,13 +1,11 @@
-namespace ReillyDigital.Enumerations.Options;
-
-using System.Collections;
+namespace ReillyDigital.Enumerations.Options.Boxed;
 
 /// <summary>
 /// Represents a collection of options with a value of <see cref="TValue" />. Errors will be of
 /// type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
-public interface IOptionEnumerable<out TValue> : IEnumerable<IOption<TValue>>, IVoid
+public interface IAsyncOptionEnumerable<out TValue> : IAsyncEnumerable<IOption<TValue>>, IVoid
 {
 	/// <summary>
 	/// Create a reference of <see cref="IOptionEnumerableError{TValue}" />.
@@ -45,33 +43,36 @@ public interface IOptionEnumerable<out TValue> : IEnumerable<IOption<TValue>>, I
 	) => new BoxedEnumerableError<TValue, TError>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
-	/// Returns the collection as a <see cref="IEnumerable{TValue}" />.
+	/// Returns the collection as a <see cref="IAsyncEnumerable{TValue}" />.
 	/// </summary>
-	/// <returns>A <see cref="IEnumerable{TValue}" /> of <see cref="IOption{TValue}" />.</returns>
-	public IEnumerable<IOption<TValue>> AsEnumerable();
+	/// <returns>
+	/// A <see cref="IAsyncEnumerable{TValue}" /> of <see cref="IOption{TValue}" />.
+	/// </returns>
+	public IAsyncEnumerable<IOption<TValue>> AsAsyncEnumerable();
 
 	/// <summary>
 	/// Iterates over each item in the collection, calling the param <see cref="handler" /> on each
 	/// item.
 	/// </summary>
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
-	public void ForEach(Action<IOption<TValue>> handler);
+	public Task ForEach(Action<IOption<TValue>> handler);
 
 	/// <summary>
 	/// Iterates over each item in the collection, calling the param <see cref="handler" /> on each
 	/// item.
 	/// </summary>
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
-	public void ForEach<TResult>(Func<IOption<TValue>, TResult> handler);
+	public Task ForEach<TResult>(Func<IOption<TValue>, TResult> handler);
 
-	/// <inheritdoc cref="IEnumerator{IOption{TValue}}" />
-	public new IEnumerator<IOption<TValue>> GetEnumerator();
+	/// <inheritdoc cref="IAsyncEnumerator{IOption{TValue}}" />
+	public new IAsyncEnumerator<IOption<TValue>> GetAsyncEnumerator(
+		CancellationToken cancellationToken = default
+	);
 
 	/// <inheritdoc />
-	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-	/// <inheritdoc />
-	IEnumerator<IOption<TValue>> IEnumerable<IOption<TValue>>.GetEnumerator() => GetEnumerator();
+	IAsyncEnumerator<IOption<TValue>> IAsyncEnumerable<IOption<TValue>>.GetAsyncEnumerator(
+		CancellationToken cancellationToken
+	) => GetAsyncEnumerator(cancellationToken);
 }
 
 /// <summary>
@@ -80,8 +81,8 @@ public interface IOptionEnumerable<out TValue> : IEnumerable<IOption<TValue>>, I
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <typeparam name="TError">The type of the error of the options.</typeparam>
-public interface IOptionEnumerable<out TValue, out TError>
-	: IEnumerable<IOption<TValue, TError>>, IVoid<TError>
+public interface IAsyncOptionEnumerable<out TValue, out TError>
+	: IAsyncEnumerable<IOption<TValue, TError>>, IVoid<TError>
 {
 	/// <summary>
 	/// Create a reference of <see cref="IOptionEnumerableError{TValue, TError}" />.
@@ -96,32 +97,34 @@ public interface IOptionEnumerable<out TValue, out TError>
 	) => new BoxedEnumerableError<TValue, TError>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
-	/// Returns the collection as a <see cref="IEnumerable{TValue}" />.
+	/// Returns the collection as a <see cref="IAsyncEnumerable{TValue}" />.
 	/// </summary>
-	/// <returns>A <see cref="IEnumerable{TValue}" /> of <see cref="IOption{TValue, TError}" />.</returns>
-	public IEnumerable<IOption<TValue, TError>> AsEnumerable();
+	/// <returns>
+	/// A <see cref="IAsyncEnumerable{TValue}" /> of <see cref="IOption{TValue, TError}" />.
+	/// </returns>
+	public IAsyncEnumerable<IOption<TValue, TError>> AsAsyncEnumerable();
 
 	/// <summary>
 	/// Iterates over each item in the collection, calling the param <see cref="handler" /> on each
 	/// item.
 	/// </summary>
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
-	public void ForEach(Action<IOption<TValue, TError>> handler);
+	public Task ForEach(Action<IOption<TValue, TError>> handler);
 
 	/// <summary>
 	/// Iterates over each item in the collection, calling the param <see cref="handler" /> on each
 	/// item.
 	/// </summary>
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
-	public void ForEach<TResult>(Func<IOption<TValue, TError>, TResult> handler);
+	public Task ForEach<TResult>(Func<IOption<TValue, TError>, TResult> handler);
 
-	/// <inheritdoc cref="IEnumerator{IOption{TValue, TError}}" />
-	public new IEnumerator<IOption<TValue, TError>> GetEnumerator();
+	/// <inheritdoc cref="IAsyncEnumerator{IOption{TValue, TError}}" />
+	public new IAsyncEnumerator<IOption<TValue, TError>> GetAsyncEnumerator(
+		CancellationToken cancellationToken = default
+	);
 
 	/// <inheritdoc />
-	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-	/// <inheritdoc />
-	IEnumerator<IOption<TValue, TError>> IEnumerable<IOption<TValue, TError>>.GetEnumerator()
-		=> GetEnumerator();
+	IAsyncEnumerator<IOption<TValue, TError>> IAsyncEnumerable<IOption<TValue, TError>>.GetAsyncEnumerator(
+		CancellationToken cancellationToken
+	) => GetAsyncEnumerator(cancellationToken);
 }

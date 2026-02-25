@@ -28,7 +28,8 @@
 	</PropertyGroup>
 	<ItemGroup Label="Global Usings">
 		<Using Include="ReillyDigital.Enumerations.Options" />
-		<Using Include="ReillyDigital.Enumerations.Options._Internal" />
+		<Using Include="ReillyDigital.Enumerations.Options.Boxed" />
+		<Using Include="ReillyDigital.Enumerations.Options.Boxed._Internal" />
 		<Using Include="ReillyDigital.Enumerations.OptionsFunctions" Static="true" />
 	</ItemGroup>
 	<ItemGroup Label="File References">

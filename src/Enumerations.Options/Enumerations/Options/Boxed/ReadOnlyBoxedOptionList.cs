@@ -1,4 +1,4 @@
-namespace ReillyDigital.Enumerations.Options;
+namespace ReillyDigital.Enumerations.Options.Boxed;
 
 /// <summary>
 /// Represents a read-only collection of options with a value of <see cref="TValue" /> that can be

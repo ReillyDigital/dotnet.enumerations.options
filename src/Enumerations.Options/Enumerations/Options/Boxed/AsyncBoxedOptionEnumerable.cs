@@ -1,6 +1,5 @@
-namespace ReillyDigital.Enumerations.Options;
+namespace ReillyDigital.Enumerations.Options.Boxed;
 
-using System.Collections;
 using System.Collections.Generic;
 
 /// <summary>
@@ -8,35 +7,35 @@ using System.Collections.Generic;
 /// type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
-public readonly struct BoxedOptionEnumerable<TValue> : IOptionEnumerable<TValue>
+public readonly struct AsyncBoxedOptionEnumerable<TValue> : IAsyncOptionEnumerable<TValue>
 {
 	/// <summary>
-	/// Create a <see cref="BoxedOptionEnumerable{TValue}" /> in error state.
+	/// Create an <see cref="AsyncBoxedOptionEnumerable{TValue}" /> in error state.
 	/// </summary>
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
-	/// <returns>A <see cref="BoxedOptionEnumerable{TValue}" /> in error state.</returns>
-	public static BoxedOptionEnumerable<TValue> Error(
+	/// <returns>An <see cref="AsyncBoxedOptionEnumerable{TValue}" /> in error state.</returns>
+	public static AsyncBoxedOptionEnumerable<TValue> Error(
 		IEnumerable<string>? ignoredErrors = null
 	) => new("", ignoredErrors);
 
 	/// <summary>
-	/// Create a <see cref="BoxedOptionEnumerable{TValue}" /> in error state.
+	/// Create an <see cref="AsyncBoxedOptionEnumerable{TValue}" /> in error state.
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
-	/// <returns>A <see cref="BoxedOptionEnumerable{TValue}" /> in error state.</returns>
-	public static BoxedOptionEnumerable<TValue> Error(
+	/// <returns>An <see cref="AsyncBoxedOptionEnumerable{TValue}" /> in error state.</returns>
+	public static AsyncBoxedOptionEnumerable<TValue> Error(
 		string value, IEnumerable<string>? ignoredErrors = null
 	) => new(value, ignoredErrors);
 
 	/// <summary>
-	/// Backing field for the inner enumerable when not in error state.
+	/// Backing field for the inner async enumerable when not in error state.
 	/// </summary>
-	private readonly IEnumerable<IOption<TValue>>? _Enumerable;
+	private readonly IAsyncEnumerable<IOption<TValue>>? _Enumerable;
 
 	/// <summary>
 	/// Backing field for the error value when in error state.
@@ -66,12 +65,13 @@ public readonly struct BoxedOptionEnumerable<TValue> : IOptionEnumerable<TValue>
 	/// <summary>
 	/// Constructor for enumerable state.
 	/// </summary>
-	/// <param name="enumerable">The inner enumerable.</param>
+	/// <param name="enumerable">The inner async enumerable.</param>
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
-	public BoxedOptionEnumerable(
-		IEnumerable<IOption<TValue>> enumerable, IEnumerable<string>? ignoredErrors = null
+	public AsyncBoxedOptionEnumerable(
+		IAsyncEnumerable<IOption<TValue>> enumerable,
+		IEnumerable<string>? ignoredErrors = null
 	)
 	{
 		_Enumerable = enumerable;
@@ -86,7 +86,9 @@ public readonly struct BoxedOptionEnumerable<TValue> : IOptionEnumerable<TValue>
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
-	private BoxedOptionEnumerable(string errorValue, IEnumerable<string>? ignoredErrors)
+	private AsyncBoxedOptionEnumerable(
+		string errorValue, IEnumerable<string>? ignoredErrors
+	)
 	{
 		_Enumerable = null;
 		_ErrorValue = errorValue;
@@ -94,10 +96,10 @@ public readonly struct BoxedOptionEnumerable<TValue> : IOptionEnumerable<TValue>
 	}
 
 	/// <summary>
-	/// Returns the collection as an <see cref="IEnumerable{IOption{TValue}}" />.
+	/// Returns the collection as an <see cref="IAsyncEnumerable{IOption{TValue}}" />.
 	/// </summary>
-	/// <returns>An <see cref="IEnumerable{IOption{TValue}}" />.</returns>
-	public IEnumerable<IOption<TValue>> AsEnumerable()
+	/// <returns>An <see cref="IAsyncEnumerable{IOption{TValue}}" />.</returns>
+	public IAsyncEnumerable<IOption<TValue>> AsAsyncEnumerable()
 		=> _Enumerable ?? throw new Exception(_ErrorValue ?? "Error");
 
 	/// <summary>
@@ -105,11 +107,11 @@ public readonly struct BoxedOptionEnumerable<TValue> : IOptionEnumerable<TValue>
 	/// on each item.
 	/// </summary>
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
-	public void ForEach(Action<IOption<TValue>> handler)
+	public async Task ForEach(Action<IOption<TValue>> handler)
 	{
 		if (_Enumerable is null)
 			throw new Exception(_ErrorValue ?? "Error");
-		foreach (var item in _Enumerable)
+		await foreach (var item in _Enumerable)
 			handler(item);
 	}
 
@@ -118,22 +120,23 @@ public readonly struct BoxedOptionEnumerable<TValue> : IOptionEnumerable<TValue>
 	/// on each item.
 	/// </summary>
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
-	public void ForEach<TResult>(Func<IOption<TValue>, TResult> handler)
+	public async Task ForEach<TResult>(Func<IOption<TValue>, TResult> handler)
 	{
 		if (_Enumerable is null)
 			throw new Exception(_ErrorValue ?? "Error");
-		foreach (var item in _Enumerable)
+		await foreach (var item in _Enumerable)
 			handler(item);
 	}
 
 	/// <summary>
-	/// Returns an enumerator for the collection.
+	/// Returns an async enumerator for the collection.
 	/// </summary>
-	/// <returns>An <see cref="IEnumerator{IOption{TValue}}" />.</returns>
-	public IEnumerator<IOption<TValue>> GetEnumerator()
-		=> (_Enumerable ?? throw new Exception(_ErrorValue ?? "Error")).GetEnumerator();
-
-	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+	/// <param name="cancellationToken">Cancellation token.</param>
+	/// <returns>An <see cref="IAsyncEnumerator{IOption{TValue}}" />.</returns>
+	public IAsyncEnumerator<IOption<TValue>> GetAsyncEnumerator(
+		CancellationToken cancellationToken = default
+	) => (_Enumerable ?? throw new Exception(_ErrorValue ?? "Error"))
+		.GetAsyncEnumerator(cancellationToken);
 }
 
 /// <summary>
@@ -142,24 +145,27 @@ public readonly struct BoxedOptionEnumerable<TValue> : IOptionEnumerable<TValue>
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <typeparam name="TError">The type of the error of the options.</typeparam>
-public readonly struct BoxedOptionEnumerable<TValue, TError> : IOptionEnumerable<TValue, TError>
+public readonly struct AsyncBoxedOptionEnumerable<TValue, TError>
+	: IAsyncOptionEnumerable<TValue, TError>
 {
 	/// <summary>
-	/// Create a <see cref="BoxedOptionEnumerable{TValue, TError}" /> in error state.
+	/// Create an <see cref="AsyncBoxedOptionEnumerable{TValue, TError}" /> in error state.
 	/// </summary>
 	/// <param name="value">The value of the error.</param>
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
-	/// <returns>A <see cref="BoxedOptionEnumerable{TValue, TError}" /> in error state.</returns>
-	public static BoxedOptionEnumerable<TValue, TError> Error(
+	/// <returns>
+	/// An <see cref="AsyncBoxedOptionEnumerable{TValue, TError}" /> in error state.
+	/// </returns>
+	public static AsyncBoxedOptionEnumerable<TValue, TError> Error(
 		TError value, IEnumerable<TError>? ignoredErrors = null
 	) => new(value, ignoredErrors);
 
 	/// <summary>
-	/// Backing field for the inner enumerable when not in error state.
+	/// Backing field for the inner async enumerable when not in error state.
 	/// </summary>
-	private readonly IEnumerable<IOption<TValue, TError>>? _Enumerable;
+	private readonly IAsyncEnumerable<IOption<TValue, TError>>? _Enumerable;
 
 	/// <summary>
 	/// Backing field for the error value when in error state.
@@ -189,12 +195,12 @@ public readonly struct BoxedOptionEnumerable<TValue, TError> : IOptionEnumerable
 	/// <summary>
 	/// Constructor for enumerable state.
 	/// </summary>
-	/// <param name="enumerable">The inner enumerable.</param>
+	/// <param name="enumerable">The inner async enumerable.</param>
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
-	public BoxedOptionEnumerable(
-		IEnumerable<IOption<TValue, TError>> enumerable,
+	public AsyncBoxedOptionEnumerable(
+		IAsyncEnumerable<IOption<TValue, TError>> enumerable,
 		IEnumerable<TError>? ignoredErrors = null
 	)
 	{
@@ -210,7 +216,9 @@ public readonly struct BoxedOptionEnumerable<TValue, TError> : IOptionEnumerable
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
-	private BoxedOptionEnumerable(TError? errorValue, IEnumerable<TError>? ignoredErrors)
+	private AsyncBoxedOptionEnumerable(
+		TError? errorValue, IEnumerable<TError>? ignoredErrors
+	)
 	{
 		_Enumerable = null;
 		_ErrorValue = errorValue;
@@ -218,10 +226,10 @@ public readonly struct BoxedOptionEnumerable<TValue, TError> : IOptionEnumerable
 	}
 
 	/// <summary>
-	/// Returns the collection as an <see cref="IEnumerable{IOption{TValue, TError}}" />.
+	/// Returns the collection as an <see cref="IAsyncEnumerable{IOption{TValue, TError}}" />.
 	/// </summary>
-	/// <returns>An <see cref="IEnumerable{IOption{TValue, TError}}" />.</returns>
-	public IEnumerable<IOption<TValue, TError>> AsEnumerable()
+	/// <returns>An <see cref="IAsyncEnumerable{IOption{TValue, TError}}" />.</returns>
+	public IAsyncEnumerable<IOption<TValue, TError>> AsAsyncEnumerable()
 		=> _Enumerable ?? throw new Exception(_ErrorValue?.ToString() ?? "Error");
 
 	/// <summary>
@@ -229,11 +237,11 @@ public readonly struct BoxedOptionEnumerable<TValue, TError> : IOptionEnumerable
 	/// on each item.
 	/// </summary>
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
-	public void ForEach(Action<IOption<TValue, TError>> handler)
+	public async Task ForEach(Action<IOption<TValue, TError>> handler)
 	{
 		if (_Enumerable is null)
 			throw new Exception(_ErrorValue?.ToString() ?? "Error");
-		foreach (var item in _Enumerable)
+		await foreach (var item in _Enumerable)
 			handler(item);
 	}
 
@@ -242,21 +250,21 @@ public readonly struct BoxedOptionEnumerable<TValue, TError> : IOptionEnumerable
 	/// on each item.
 	/// </summary>
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
-	public void ForEach<TResult>(Func<IOption<TValue, TError>, TResult> handler)
+	public async Task ForEach<TResult>(Func<IOption<TValue, TError>, TResult> handler)
 	{
 		if (_Enumerable is null)
 			throw new Exception(_ErrorValue?.ToString() ?? "Error");
-		foreach (var item in _Enumerable)
+		await foreach (var item in _Enumerable)
 			handler(item);
 	}
 
 	/// <summary>
-	/// Returns an enumerator for the collection.
+	/// Returns an async enumerator for the collection.
 	/// </summary>
-	/// <returns>An <see cref="IEnumerator{IOption{TValue, TError}}" />.</returns>
-	public IEnumerator<IOption<TValue, TError>> GetEnumerator()
-		=> (_Enumerable ?? throw new Exception(_ErrorValue?.ToString() ?? "Error"))
-			.GetEnumerator();
-
-	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+	/// <param name="cancellationToken">Cancellation token.</param>
+	/// <returns>An <see cref="IAsyncEnumerator{IOption{TValue, TError}}" />.</returns>
+	public IAsyncEnumerator<IOption<TValue, TError>> GetAsyncEnumerator(
+		CancellationToken cancellationToken = default
+	) => (_Enumerable ?? throw new Exception(_ErrorValue?.ToString() ?? "Error"))
+		.GetAsyncEnumerator(cancellationToken);
 }

@@ -1,6 +1,6 @@
 #pragma warning disable SYSLIB0050
 
-namespace ReillyDigital.Enumerations.Options;
+namespace ReillyDigital.Enumerations.Options.Boxed;
 
 using System.Text.Json;
 

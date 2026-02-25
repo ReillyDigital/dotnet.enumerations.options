@@ -1,4 +1,4 @@
-namespace ReillyDigital.Enumerations.Options;
+namespace ReillyDigital.Enumerations.Options.Boxed;
 
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;

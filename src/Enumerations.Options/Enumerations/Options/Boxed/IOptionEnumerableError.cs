@@ -1,4 +1,4 @@
-namespace ReillyDigital.Enumerations.Options;
+namespace ReillyDigital.Enumerations.Options.Boxed;
 
 /// <summary>
 /// Represents a collection of options which has an error of <see cref="Exception" />.

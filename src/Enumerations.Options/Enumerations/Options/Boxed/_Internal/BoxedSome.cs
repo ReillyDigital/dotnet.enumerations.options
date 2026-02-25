@@ -1,4 +1,4 @@
-namespace ReillyDigital.Enumerations.Options._Internal;
+namespace ReillyDigital.Enumerations.Options.Boxed._Internal;
 
 /// <summary>
 /// Represents an option value of <see cref="TValue" /> which has a value specified.

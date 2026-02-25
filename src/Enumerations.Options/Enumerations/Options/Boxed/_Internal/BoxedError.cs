@@ -1,4 +1,4 @@
-namespace ReillyDigital.Enumerations.Options._Internal;
+namespace ReillyDigital.Enumerations.Options.Boxed._Internal;
 
 /// <summary>
 /// Represents an option which has an error of <see cref="TError" />.

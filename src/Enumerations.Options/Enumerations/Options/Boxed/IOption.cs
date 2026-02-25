@@ -1,4 +1,4 @@
-namespace ReillyDigital.Enumerations.Options;
+namespace ReillyDigital.Enumerations.Options.Boxed;
 
 /// <summary>
 /// Represents an option with a potential value of <see cref="TValue" />.
@@ -52,7 +52,7 @@ public interface IOption<out TValue> : IVoid
 	/// <returns>An option of <see cref="ISome{TValue}" />.</returns>
 	public static ISome<TValue> Some(
 		TValue value, IEnumerable<string>? ignoredErrors = null
-	) => new BoxedSome<TValue, string>(value, ignoredErrors: ignoredErrors);
+	) => new _Internal.BoxedSome<TValue, string>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// The value of the option.
@@ -134,9 +134,7 @@ public interface IOption<out TValue, out TError> : IVoid<TError>
 	/// <returns>An option of <see cref="IError{TValue, TError}" />.</returns>
 	public new static IError<TValue, TError> Error(
 		TError value, IEnumerable<TError>? ignoredErrors = null
-	) => value is null && ignoredErrors is null
-		? _Internal.BoxedError<TValue, TError>.Ref
-		: new(value, ignoredErrors: ignoredErrors);
+	) => new _Internal.BoxedError<TValue, TError>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="ISome{TValue, TError}" />.
@@ -148,7 +146,7 @@ public interface IOption<out TValue, out TError> : IVoid<TError>
 	/// <returns>An option of <see cref="ISome{TValue, TError}" />.</returns>
 	public static ISome<TValue, TError> Some(
 		TValue value, IEnumerable<TError>? ignoredErrors = null
-	) => new BoxedSome<TValue, TError>(value, ignoredErrors: ignoredErrors);
+	) => new _Internal.BoxedSome<TValue, TError>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// The value of the option.

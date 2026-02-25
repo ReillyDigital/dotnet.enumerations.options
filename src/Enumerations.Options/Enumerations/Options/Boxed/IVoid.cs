@@ -1,6 +1,6 @@
 #pragma warning disable SYSLIB0050
 
-namespace ReillyDigital.Enumerations.Options;
+namespace ReillyDigital.Enumerations.Options.Boxed;
 
 using System.Text.Json;
 
@@ -32,7 +32,7 @@ public interface IVoid
 	public static IError Error(string value, IEnumerable<string>? ignoredErrors = null)
 		=> value == "" && ignoredErrors is null
 			? _Internal.BoxedError<IVoid, string>.Ref
-			: new(value, ignoredErrors: ignoredErrors);
+			: new _Internal.BoxedError<IVoid, string>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Additional errors of <see cref="string" /> which are ignored instead of being returned
@@ -101,7 +101,7 @@ public interface IVoid<out TError> : IVoid
 	/// </param>
 	/// <returns>A <see cref="IVoid{TError}" />.</returns>
 	public static IVoid<TError> Void(IEnumerable<TError>? ignoredErrors = null)
-		=> ignoredErrors is null ? _Internal.BoxedVoid<TError>.Ref : new(ignoredErrors);
+		=> ignoredErrors is null ? _Internal.BoxedVoid<TError>.Ref : new _Internal.BoxedVoid<TError>(ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IError{TValue, TError}" />.
@@ -113,9 +113,7 @@ public interface IVoid<out TError> : IVoid
 	/// <returns>A <see cref="IVoid" /> of <see cref="IError{TValue, TError}" />.</returns>
 	public static IError<IVoid, TError> Error(
 		TError value, IEnumerable<TError>? ignoredErrors = null
-	) => value is null && ignoredErrors is null
-		? _Internal.BoxedError<IVoid, TError>.Ref
-		: new(value, ignoredErrors: ignoredErrors);
+	) => new _Internal.BoxedError<IVoid, TError>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Additional errors of <see cref="TError" /> which are ignored instead of being returned as
