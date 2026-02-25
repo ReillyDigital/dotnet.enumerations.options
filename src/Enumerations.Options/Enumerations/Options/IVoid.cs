@@ -17,7 +17,9 @@ public interface IVoid
 	/// </param>
 	/// <returns>A <see cref="IVoid" /> of <see cref="IError" />.</returns>
 	public static IError Error(IEnumerable<string>? ignoredErrors = null)
-		=> ignoredErrors is null ? BoxedError<IVoid, string>.Ref : Error("", ignoredErrors);
+		=> ignoredErrors is null
+			? _Internal.BoxedError<IVoid, string>.Ref
+			: Error("", ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IError" />.
@@ -29,8 +31,8 @@ public interface IVoid
 	/// <returns>A <see cref="IVoid" /> of <see cref="IError" />.</returns>
 	public static IError Error(string value, IEnumerable<string>? ignoredErrors = null)
 		=> value == "" && ignoredErrors is null
-			? BoxedError<IVoid, string>.Ref
-			: new BoxedError<IVoid, string>(value, ignoredErrors: ignoredErrors);
+			? _Internal.BoxedError<IVoid, string>.Ref
+			: new(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Additional errors of <see cref="string" /> which are ignored instead of being returned
@@ -47,7 +49,7 @@ public interface IVoid
 	/// </param>
 	/// <returns>A <see cref="IVoid" />.</returns>
 	public static IVoid Void(IEnumerable<string>? ignoredErrors = null)
-		=> ignoredErrors is null ? BoxedVoid<string>.Ref : new BoxedVoid<string>(ignoredErrors);
+		=> ignoredErrors is null ? _Internal.BoxedVoid<string>.Ref : new _Internal.BoxedVoid<string>(ignoredErrors);
 
 	/// <summary>
 	/// Executes the specified callback if this reference is of type <see cref="IError" />.
@@ -99,7 +101,7 @@ public interface IVoid<out TError> : IVoid
 	/// </param>
 	/// <returns>A <see cref="IVoid{TError}" />.</returns>
 	public static IVoid<TError> Void(IEnumerable<TError>? ignoredErrors = null)
-		=> ignoredErrors is null ? BoxedVoid<TError>.Ref : new BoxedVoid<TError>(ignoredErrors);
+		=> ignoredErrors is null ? _Internal.BoxedVoid<TError>.Ref : new(ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IError{TValue, TError}" />.

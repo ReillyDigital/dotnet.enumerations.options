@@ -15,8 +15,8 @@ public interface IOption<out TValue> : IVoid
 	/// <returns>An option of <see cref="IError{TValue}" />.</returns>
 	public new static IError<TValue> Error(IEnumerable<string>? ignoredErrors = null)
 		=> ignoredErrors is null
-			? BoxedError<TValue, string>.Ref
-			: new BoxedError<TValue, string>("", ignoredErrors: ignoredErrors);
+			? _Internal.BoxedError<TValue, string>.Ref
+			: new("", ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IError{TValue}" />.
@@ -29,8 +29,8 @@ public interface IOption<out TValue> : IVoid
 	public new static IError<TValue> Error(
 		string value, IEnumerable<string>? ignoredErrors = null
 	) => value == "" && ignoredErrors is null
-		? BoxedError<TValue, string>.Ref
-		: new BoxedError<TValue, string>(value, ignoredErrors: ignoredErrors);
+		? _Internal.BoxedError<TValue, string>.Ref
+		: new(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="INone{TValue}" />.
@@ -40,7 +40,7 @@ public interface IOption<out TValue> : IVoid
 	/// </param>
 	/// <returns>A <see cref="INone{TValue}" />.</returns>
 	public static INone<TValue> None(IEnumerable<string>? ignoredErrors = null)
-		=> ignoredErrors is null ? BoxedNone<TValue, string>.Ref : new BoxedNone<TValue, string>(ignoredErrors);
+		=> ignoredErrors is null ? _Internal.BoxedNone<TValue, string>.Ref : new(ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="ISome{TValue}" />.
@@ -122,7 +122,7 @@ public interface IOption<out TValue, out TError> : IVoid<TError>
 	/// </param>
 	/// <returns>A <see cref="INone{TValue, TError}" />.</returns>
 	public static INone<TValue, TError> None(IEnumerable<TError>? ignoredErrors = null)
-		=> ignoredErrors is null ? BoxedNone<TValue, TError>.Ref : new BoxedNone<TValue, TError>(ignoredErrors);
+		=> ignoredErrors is null ? _Internal.BoxedNone<TValue, TError>.Ref : new(ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IError{TValue, TError}" />.
