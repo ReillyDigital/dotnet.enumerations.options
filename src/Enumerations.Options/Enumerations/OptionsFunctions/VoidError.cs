@@ -5,12 +5,12 @@ using ReillyDigital.Enumerations.Options;
 public static partial class OptionsFunctions
 {
 	/// <inheritdoc cref="Options.Void.Error(IEnumerable{string})" />
-	public static Void VoidError(IEnumerable<string?>? ignoredErrors = null)
+	public static Void VoidError(IEnumerable<string>? ignoredErrors = null)
 		=> Options.Void.Error(ignoredErrors);
 
 	/// <inheritdoc cref="Options.Void.Error(string, IEnumerable{string})" />
 	public static Void VoidError(
-		string? error, IEnumerable<string?>? ignoredErrors = null
+		string error, IEnumerable<string>? ignoredErrors = null
 	) => Options.Void.Error(error, ignoredErrors);
 
 	/// <inheritdoc cref="Options.Void{TError}.Error(TError, IEnumerable{TError})" />

@@ -16,8 +16,8 @@ public interface IVoid
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>A <see cref="IVoid" /> of <see cref="IError" />.</returns>
-	public static IError Error(IEnumerable<string?>? ignoredErrors = null)
-		=> Error(default, ignoredErrors);
+	public static IError Error(IEnumerable<string>? ignoredErrors = null)
+		=> ignoredErrors is null ? BoxedError<IVoid, string>.Ref : Error("", ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IError" />.
@@ -27,14 +27,16 @@ public interface IVoid
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>A <see cref="IVoid" /> of <see cref="IError" />.</returns>
-	public static IError Error(string? value, IEnumerable<string?>? ignoredErrors = null)
-		=> new BoxedError<IVoid, string?>(value, ignoredErrors: ignoredErrors);
+	public static IError Error(string value, IEnumerable<string>? ignoredErrors = null)
+		=> value == "" && ignoredErrors is null
+			? BoxedError<IVoid, string>.Ref
+			: new BoxedError<IVoid, string>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Additional errors of <see cref="string" /> which are ignored instead of being returned
 	/// as the option value.
 	/// </summary>
-	public IEnumerable<string?> IgnoredErrors
+	public IEnumerable<string> IgnoredErrors
 		=> this is IIgnoredErrorSet ignoredErrorSet ? ignoredErrorSet.IgnoredErrors : [];
 
 	/// <summary>
@@ -44,8 +46,8 @@ public interface IVoid
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>A <see cref="IVoid" />.</returns>
-	public static IVoid Void(IEnumerable<string?>? ignoredErrors = null)
-		=> ignoredErrors is null ? BoxedVoid<string?>.Ref : new BoxedVoid<string?>(ignoredErrors);
+	public static IVoid Void(IEnumerable<string>? ignoredErrors = null)
+		=> ignoredErrors is null ? BoxedVoid<string>.Ref : new BoxedVoid<string>(ignoredErrors);
 
 	/// <summary>
 	/// Executes the specified callback if this reference is of type <see cref="IError" />.
@@ -59,7 +61,7 @@ public interface IVoid
 	/// </summary>
 	/// <param name="callback">The callback to execute with the error.</param>
 	/// <returns>The current reference.</returns>
-	public IVoid IfError(Action<string?> callback)
+	public IVoid IfError(Action<string> callback)
 	{
 		if (this is IError error)
 		{
@@ -73,7 +75,7 @@ public interface IVoid
 	/// </summary>
 	/// <param name="callback">The callback to execute with the error.</param>
 	/// <returns>The current reference.</returns>
-	public IVoid IfIgnoredErrors(Action<IEnumerable<string?>> callback)
+	public IVoid IfIgnoredErrors(Action<IEnumerable<string>> callback)
 	{
 		if (IgnoredErrors.Any())
 		{
@@ -155,11 +157,11 @@ public interface IVoid<out TError> : IVoid
 	}
 
 	/// <inheritdoc />
-	IEnumerable<string?> IVoid.IgnoredErrors => IgnoredErrors.Select(
+	IEnumerable<string> IVoid.IgnoredErrors => IgnoredErrors.Select(
 		(error) => error switch
 		{
 			string s => s,
-			null => (string?)null,
+			null => "",
 			_ => typeof(TError).IsSerializable
 				? JsonSerializer.Serialize(error)
 				: $"Value is an error of type {typeof(TError).FullName}."

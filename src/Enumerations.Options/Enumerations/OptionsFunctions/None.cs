@@ -6,7 +6,7 @@ public static partial class OptionsFunctions
 {
 	/// <inheritdoc cref="Option{TValue}.None(IEnumerable{string})" />
 	/// <typeparam name="TValue">The type of the value of the options.</typeparam>
-	public static Option<TValue> None<TValue>(IEnumerable<string?>? ignoredErrors = null)
+	public static Option<TValue> None<TValue>(IEnumerable<string>? ignoredErrors = null)
 		=> Option<TValue>.None(ignoredErrors);
 
 	/// <inheritdoc cref="Option{TValue, TError}.None(IEnumerable{TError})" />

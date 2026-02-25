@@ -13,7 +13,7 @@ internal interface IIgnoredErrorSet
 	/// Additional errors of <see cref="string" /> which are ignored instead of being returned
 	/// as the option value.
 	/// </summary>
-	public IEnumerable<string?> IgnoredErrors { get; }
+	public IEnumerable<string> IgnoredErrors { get; }
 }
 
 /// <summary>
@@ -29,11 +29,11 @@ internal interface IIgnoredErrorSet<out TError> : IIgnoredErrorSet
 	public new IEnumerable<TError> IgnoredErrors { get; }
 
 	/// <inheritdoc />
-	IEnumerable<string?> IIgnoredErrorSet.IgnoredErrors => IgnoredErrors.Select(
+	IEnumerable<string> IIgnoredErrorSet.IgnoredErrors => IgnoredErrors.Select(
 		(error) => error switch
 		{
 			string s => s,
-			null => (string?)null,
+			null => "",
 			_ => typeof(TError).IsSerializable
 				? JsonSerializer.Serialize(error)
 				: $"Value is an error of type {typeof(TError).FullName}."

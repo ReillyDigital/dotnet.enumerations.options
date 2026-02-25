@@ -6,13 +6,13 @@ public static partial class OptionsFunctions
 {
 	/// <inheritdoc cref="Option{TValue}.Error(IEnumerable{string})" />
 	/// <typeparam name="TValue">The type of the value of the options.</typeparam>
-	public static Option<TValue> OptionError<TValue>(IEnumerable<string?>? ignoredErrors = null)
+	public static Option<TValue> OptionError<TValue>(IEnumerable<string>? ignoredErrors = null)
 		=> Option<TValue>.Error(ignoredErrors);
 
 	/// <inheritdoc cref="Option{TValue}.Error(string, IEnumerable{string})" />
 	/// <typeparam name="TValue">The type of the value of the options.</typeparam>
 	public static Option<TValue> OptionError<TValue>(
-		string? error, IEnumerable<string?>? ignoredErrors = null
+		string error, IEnumerable<string>? ignoredErrors = null
 	) => Option<TValue>.Error(error, ignoredErrors);
 
 	/// <inheritdoc cref="Option{TValue, TError}.Error(TError, IEnumerable{TError})" />

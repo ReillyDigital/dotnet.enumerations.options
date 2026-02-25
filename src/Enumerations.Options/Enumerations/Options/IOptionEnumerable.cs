@@ -17,8 +17,8 @@ public interface IOptionEnumerable<out TValue> : IEnumerable<IOption<TValue>>, I
 	/// </param>
 	/// <returns>An option of <see cref="IOptionEnumerableError{TValue}" />.</returns>
 	public new static IOptionEnumerableError<TValue> Error(
-		IEnumerable<string?>? ignoredErrors = null
-	) => new BoxedEnumerableError<TValue, string?>(default, ignoredErrors: ignoredErrors);
+		IEnumerable<string>? ignoredErrors = null
+	) => new BoxedEnumerableError<TValue, string>("", ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IOptionEnumerableError{TValue}" />.
@@ -29,8 +29,8 @@ public interface IOptionEnumerable<out TValue> : IEnumerable<IOption<TValue>>, I
 	/// </param>
 	/// <returns>An option of <see cref="IOptionEnumerableError{TValue}" />.</returns>
 	public new static IOptionEnumerableError<TValue> Error(
-		string? value, IEnumerable<string?>? ignoredErrors = null
-	) => new BoxedEnumerableError<TValue, string?>(value, ignoredErrors: ignoredErrors);
+		string value, IEnumerable<string>? ignoredErrors = null
+	) => new BoxedEnumerableError<TValue, string>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IOptionEnumerableError{TValue}" />.

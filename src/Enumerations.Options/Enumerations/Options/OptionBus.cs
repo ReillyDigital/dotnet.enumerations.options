@@ -65,7 +65,7 @@ public sealed class OptionBus<TValue> : IVoid
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionBus<TValue> Error(string? value, IEnumerable<string?>? ignoredErrors = null)
+	public OptionBus<TValue> Error(string value, IEnumerable<string>? ignoredErrors = null)
 		=> Next(Option<TValue>.Error(value, ignoredErrors));
 
 	/// <summary>
@@ -121,7 +121,7 @@ public sealed class OptionBus<TValue> : IVoid
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionBus<TValue> None(IEnumerable<string?>? ignoredErrors = null)
+	public OptionBus<TValue> None(IEnumerable<string>? ignoredErrors = null)
 		=> Next(Option<TValue>.None(ignoredErrors));
 
 	/// <summary>
@@ -140,7 +140,7 @@ public sealed class OptionBus<TValue> : IVoid
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>This class instance.</returns>
-	public OptionBus<TValue> Some(TValue value, IEnumerable<string?>? ignoredErrors = null)
+	public OptionBus<TValue> Some(TValue value, IEnumerable<string>? ignoredErrors = null)
 		=> Next(Option<TValue>.Some(value, ignoredErrors));
 }
 

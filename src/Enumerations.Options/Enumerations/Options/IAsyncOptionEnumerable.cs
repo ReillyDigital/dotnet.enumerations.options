@@ -15,8 +15,8 @@ public interface IAsyncOptionEnumerable<out TValue> : IAsyncEnumerable<IOption<T
 	/// </param>
 	/// <returns>An option of <see cref="IOptionEnumerableError{TValue}" />.</returns>
 	public new static IOptionEnumerableError<TValue> Error(
-		IEnumerable<string?>? ignoredErrors = null
-	) => new BoxedEnumerableError<TValue, string?>(default, ignoredErrors: ignoredErrors);
+		IEnumerable<string>? ignoredErrors = null
+	) => new BoxedEnumerableError<TValue, string>("", ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IOptionEnumerableError{TValue}" />.
@@ -27,8 +27,8 @@ public interface IAsyncOptionEnumerable<out TValue> : IAsyncEnumerable<IOption<T
 	/// </param>
 	/// <returns>An option of <see cref="IOptionEnumerableError{TValue}" />.</returns>
 	public new static IOptionEnumerableError<TValue> Error(
-		string? value, IEnumerable<string?>? ignoredErrors = null
-	) => new BoxedEnumerableError<TValue, string?>(value, ignoredErrors: ignoredErrors);
+		string value, IEnumerable<string>? ignoredErrors = null
+	) => new BoxedEnumerableError<TValue, string>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IOptionEnumerableError{TValue}" />.

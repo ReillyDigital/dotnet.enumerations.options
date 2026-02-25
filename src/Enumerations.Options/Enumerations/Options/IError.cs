@@ -12,7 +12,7 @@ public interface IError : IVoid
 	/// <summary>
 	/// The option error of <see cref="string" />.
 	/// </summary>
-	public string? Value { get; }
+	public string Value { get; }
 }
 
 /// <summary>
@@ -24,7 +24,7 @@ public interface IError<out TValue> : IError, IOption<TValue>
 	/// <summary>
 	/// The option error of <see cref="string" />.
 	/// </summary>
-	public new string? Value { get; }
+	public new string Value { get; }
 }
 
 /// <summary>
@@ -40,10 +40,10 @@ public interface IError<out TValue, out TError> : IError, IOption<TValue, TError
 	public new TError Value { get; }
 
 	/// <inheritdoc />
-	string? IError.Value => Value switch
+	string IError.Value => Value switch
 	{
 		string s => s,
-		null => null,
+		null => "",
 		_ => typeof(TError).IsSerializable
 			? JsonSerializer.Serialize(Value)
 			: $"Value is an error of type {typeof(TError).FullName}."

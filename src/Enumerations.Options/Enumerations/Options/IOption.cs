@@ -13,8 +13,10 @@ public interface IOption<out TValue> : IVoid
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>An option of <see cref="IError{TValue}" />.</returns>
-	public new static IError<TValue> Error(IEnumerable<string?>? ignoredErrors = null)
-		=> new BoxedError<TValue, string?>(default, ignoredErrors: ignoredErrors);
+	public new static IError<TValue> Error(IEnumerable<string>? ignoredErrors = null)
+		=> ignoredErrors is null
+			? BoxedError<TValue, string>.Ref
+			: new BoxedError<TValue, string>("", ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="IError{TValue}" />.
@@ -25,8 +27,10 @@ public interface IOption<out TValue> : IVoid
 	/// </param>
 	/// <returns>An option of <see cref="IError{TValue}" />.</returns>
 	public new static IError<TValue> Error(
-		string? value, IEnumerable<string?>? ignoredErrors = null
-	) => new BoxedError<TValue, string?>(value, ignoredErrors: ignoredErrors);
+		string value, IEnumerable<string>? ignoredErrors = null
+	) => value == "" && ignoredErrors is null
+		? BoxedError<TValue, string>.Ref
+		: new BoxedError<TValue, string>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="INone{TValue}" />.
@@ -35,8 +39,8 @@ public interface IOption<out TValue> : IVoid
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>A <see cref="INone{TValue}" />.</returns>
-	public static INone<TValue> None(IEnumerable<string?>? ignoredErrors = null)
-		=> ignoredErrors is null ? BoxedNone<TValue, string?>.Ref : new BoxedNone<TValue, string?>(ignoredErrors);
+	public static INone<TValue> None(IEnumerable<string>? ignoredErrors = null)
+		=> ignoredErrors is null ? BoxedNone<TValue, string>.Ref : new BoxedNone<TValue, string>(ignoredErrors);
 
 	/// <summary>
 	/// Create a reference of <see cref="ISome{TValue}" />.
@@ -47,8 +51,8 @@ public interface IOption<out TValue> : IVoid
 	/// </param>
 	/// <returns>An option of <see cref="ISome{TValue}" />.</returns>
 	public static ISome<TValue> Some(
-		TValue value, IEnumerable<string?>? ignoredErrors = null
-	) => new BoxedSome<TValue, string?>(value, ignoredErrors: ignoredErrors);
+		TValue value, IEnumerable<string>? ignoredErrors = null
+	) => new BoxedSome<TValue, string>(value, ignoredErrors: ignoredErrors);
 
 	/// <summary>
 	/// The value of the option.
@@ -60,11 +64,11 @@ public interface IOption<out TValue> : IVoid
 		=> (IOption<TValue>)((IVoid)this).IfError(callback);
 
 	/// <inheritdoc cref="IVoid.IfError(Action{string})" />
-	public new IOption<TValue> IfError(Action<string?> callback)
+	public new IOption<TValue> IfError(Action<string> callback)
 		=> (IOption<TValue>)((IVoid)this).IfError(callback);
 
 	/// <inheritdoc cref="IVoid.IfIgnoredErrors(Action{IEnumerable{string}})" />
-	public new IOption<TValue> IfIgnoredErrors(Action<IEnumerable<string?>> callback)
+	public new IOption<TValue> IfIgnoredErrors(Action<IEnumerable<string>> callback)
 		=> (IOption<TValue>)((IVoid)this).IfIgnoredErrors(callback);
 
 	/// <summary>

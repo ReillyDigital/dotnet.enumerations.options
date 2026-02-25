@@ -15,8 +15,8 @@ public readonly struct Option<TValue>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>An <see cref="Option{TValue}" /> of Error.</returns>
-	public static Option<TValue> Error(IEnumerable<string?>? ignoredErrors = null)
-		=> Error(default, ignoredErrors);
+	public static Option<TValue> Error(IEnumerable<string>? ignoredErrors = null)
+		=> Error("", ignoredErrors);
 
 	/// <summary>
 	/// Create an <see cref="Option{TValue}" /> of Error.
@@ -27,8 +27,8 @@ public readonly struct Option<TValue>
 	/// </param>
 	/// <returns>An <see cref="Option{TValue}" /> of Error.</returns>
 	public static Option<TValue> Error(
-		string? error, IEnumerable<string?>? ignoredErrors = null
-	) => new(Option<TValue, string?>.Error(error, ignoredErrors));
+		string error, IEnumerable<string>? ignoredErrors = null
+	) => new(Option<TValue, string>.Error(error ?? "", ignoredErrors));
 
 	/// <summary>
 	/// Create an <see cref="Option{TValue}" /> of None.
@@ -37,8 +37,8 @@ public readonly struct Option<TValue>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>An <see cref="Option{TValue}" /> of None.</returns>
-	public static Option<TValue> None(IEnumerable<string?>? ignoredErrors = null)
-		=> new(Option<TValue, string?>.None(ignoredErrors));
+	public static Option<TValue> None(IEnumerable<string>? ignoredErrors = null)
+		=> new(Option<TValue, string>.None(ignoredErrors));
 
 	/// <summary>
 	/// Create an <see cref="Option{TValue}" /> of Some.
@@ -48,15 +48,15 @@ public readonly struct Option<TValue>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>An <see cref="Option{TValue}" /> of Some.</returns>
-	public static Option<TValue> Some(TValue value, IEnumerable<string?>? ignoredErrors = null)
-		=> new(Option<TValue, string?>.Some(value, ignoredErrors));
+	public static Option<TValue> Some(TValue value, IEnumerable<string>? ignoredErrors = null)
+		=> new(Option<TValue, string>.Some(value, ignoredErrors));
 
 	/// <summary>
 	/// Implicitly convert a <see cref="string" /> to an <see cref="Option{TValue}" /> of
 	/// Error.
 	/// </summary>
 	/// <param name="value">The error value.</param>
-	public static implicit operator Option<TValue>(string? value) => Error(value);
+	public static implicit operator Option<TValue>(string value) => Error(value);
 
 	/// <summary>
 	/// Implicitly convert a <typeparamref name="TValue" /> to an <see cref="Option{TValue}" /> of
@@ -69,7 +69,7 @@ public readonly struct Option<TValue>
 	/// Explicitly convert an <see cref="Option{TValue}" /> to a <see cref="string" />.
 	/// </summary>
 	/// <param name="value">The option.</param>
-	public static explicit operator string?(Option<TValue> value) => value.ErrorValue;
+	public static explicit operator string(Option<TValue> value) => value.ErrorValue;
 
 	/// <summary>
 	/// Explicitly convert an <see cref="Option{TValue}" /> to a <typeparamref name="TValue" />.
@@ -80,12 +80,12 @@ public readonly struct Option<TValue>
 	/// <summary>
 	/// The error value of this option.
 	/// </summary>
-	public string? ErrorValue => Inner.ErrorValue;
+	public string ErrorValue => Inner.ErrorValue;
 
 	/// <summary>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </summary>
-	public IEnumerable<string?> IgnoredErrors => Inner.IgnoredErrors;
+	public IEnumerable<string> IgnoredErrors => Inner.IgnoredErrors;
 
 	/// <summary>
 	/// Whether this option is an Error.
@@ -112,9 +112,16 @@ public readonly struct Option<TValue>
 	/// </summary>
 	public TValue Value => Inner.Value;
 
-	private Option<TValue, string?> Inner { get; }
+	/// <summary>
+	/// The inner option with string error type.
+	/// </summary>
+	private Option<TValue, string> Inner { get; }
 
-	internal Option(Option<TValue, string?> inner) => Inner = inner;
+	/// <summary>
+	/// Constructor for this option.
+	/// </summary>
+	/// <param name="inner">The inner option.</param>
+	internal Option(Option<TValue, string> inner) => Inner = inner;
 
 	/// <summary>
 	/// Deconstruct the option into its components.
@@ -122,10 +129,10 @@ public readonly struct Option<TValue>
 	/// <param name="type">The type of option.</param>
 	/// <param name="value">The value if Some, otherwise default.</param>
 	/// <param name="error">The error if Error, otherwise default.</param>
-	public void Deconstruct(out OptionType type, out TValue? value, out string? error)
+	public void Deconstruct(out OptionType type, out TValue? value, out string error)
 	{
 		Inner.Deconstruct(out type, out value, out var innerError);
-		error = innerError;
+		error = innerError ?? "";
 	}
 
 	/// <summary>
@@ -140,7 +147,7 @@ public readonly struct Option<TValue>
 	/// </summary>
 	/// <param name="callback">The callback to execute with the error.</param>
 	/// <returns>The current option.</returns>
-	public Option<TValue> IfError(Action<string?> callback)
+	public Option<TValue> IfError(Action<string> callback)
 	{
 		if (IsError) callback(ErrorValue);
 		return this;
@@ -151,7 +158,7 @@ public readonly struct Option<TValue>
 	/// </summary>
 	/// <param name="callback">The callback to execute with the errors.</param>
 	/// <returns>The current option.</returns>
-	public Option<TValue> IfIgnoredErrors(Action<IEnumerable<string?>> callback)
+	public Option<TValue> IfIgnoredErrors(Action<IEnumerable<string>> callback)
 	{
 		if (IgnoredErrors.Any()) callback(IgnoredErrors);
 		return this;
@@ -190,7 +197,7 @@ public readonly struct Option<TValue>
 	/// Convert this option to a boxed <see cref="IVoid{TError}" />.
 	/// </summary>
 	/// <returns>A boxed <see cref="IVoid{TError}" />.</returns>
-	public IVoid<string?> ToBoxed() => Inner.ToBoxed();
+	public IVoid<string> ToBoxed() => Inner.ToBoxed();
 }
 
 /// <summary>
@@ -262,14 +269,22 @@ public readonly struct Option<TValue, TError>
 	/// <param name="value">The option.</param>
 	public static explicit operator TValue(Option<TValue, TError> value) => value.Value;
 
+	/// <summary>
+	/// The error if Error, otherwise default.
+	/// </summary>
 	private readonly TError? _ErrorValue;
 
 	/// <summary>
 	/// The error value of this option.
 	/// </summary>
 	public TError ErrorValue
-		=> _ErrorValue ?? throw new InvalidOperationException("Result is not Error.");
+		=> Type == OptionType.Error
+			? _ErrorValue!
+			: throw new InvalidOperationException("Result is not Error.");
 
+	/// <summary>
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </summary>
 	private readonly IEnumerable<TError>? _IgnoredErrors;
 
 	/// <summary>
@@ -297,14 +312,28 @@ public readonly struct Option<TValue, TError>
 	/// </summary>
 	public OptionType Type { get; }
 
+	/// <summary>
+	/// The value if Some, otherwise default.
+	/// </summary>
 	private readonly TValue? _SomeValue;
 
 	/// <summary>
 	/// The value of this option.
 	/// </summary>
 	public TValue Value
-		=> _SomeValue ?? throw new InvalidOperationException("Result is not Some.");
+		=> Type == OptionType.Some
+			? _SomeValue!
+			: throw new InvalidOperationException("Result is not Some.");
 
+	/// <summary>
+	/// Constructor for this option.
+	/// </summary>
+	/// <param name="type">The type of option.</param>
+	/// <param name="value">The value if Some, otherwise default.</param>
+	/// <param name="error">The error if Error, otherwise default.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
 	internal Option(
 		OptionType type, TValue? value, TError? error, IEnumerable<TError>? ignoredErrors
 	)
@@ -388,30 +417,12 @@ public readonly struct Option<TValue, TError>
 	/// <returns>A boxed <see cref="IVoid{TError}" />.</returns>
 	public IVoid<TError> ToBoxed() => Type switch
 	{
-		OptionType.Error => new BoxedError<TValue, TError>(_ErrorValue!, _IgnoredErrors),
+		OptionType.Error => new BoxedError<TValue, TError>(_ErrorValue, _IgnoredErrors),
 		OptionType.None => new BoxedNone<TValue, TError>(_IgnoredErrors),
-		OptionType.Some => new BoxedSome<TValue, TError>(_SomeValue!, _IgnoredErrors),
+		OptionType.Some => new BoxedSome<TValue, TError>(
+			_SomeValue ?? throw new InvalidOperationException("Some value cannot be null."),
+			_IgnoredErrors
+		),
 		_ => throw new InvalidOperationException($"Unknown OptionType: {Type}")
 	};
-}
-
-/// <summary>
-/// The type of option.
-/// </summary>
-public enum OptionType : byte
-{
-	/// <summary>
-	/// The option is an Error.
-	/// </summary>
-	Error = 255,
-
-	/// <summary>
-	/// The option is a None.
-	/// </summary>
-	None = 2,
-
-	/// <summary>
-	/// The option is a Some.
-	/// </summary>
-	Some = 1
 }

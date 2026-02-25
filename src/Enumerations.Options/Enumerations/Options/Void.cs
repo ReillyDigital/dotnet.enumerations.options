@@ -14,8 +14,8 @@ public readonly struct Void
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>A <see cref="Void" /> of Error.</returns>
-	public static Void Error(IEnumerable<string?>? ignoredErrors = null)
-		=> Error(default, ignoredErrors);
+	public static Void Error(IEnumerable<string>? ignoredErrors = null)
+		=> Error("", ignoredErrors);
 
 	/// <summary>
 	/// Create a <see cref="Void" /> of Error.
@@ -25,8 +25,8 @@ public readonly struct Void
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>A <see cref="Void" /> of Error.</returns>
-	public static Void Error(string? error, IEnumerable<string?>? ignoredErrors = null)
-		=> new(Void<string?>.Error(error, ignoredErrors));
+	public static Void Error(string error, IEnumerable<string>? ignoredErrors = null)
+		=> new(Void<string>.Error(error ?? "", ignoredErrors));
 
 	/// <summary>
 	/// Create a <see cref="Void" /> of Success.
@@ -35,30 +35,30 @@ public readonly struct Void
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
 	/// <returns>A <see cref="Void" /> of Success.</returns>
-	public static Void Success(IEnumerable<string?>? ignoredErrors = null)
-		=> new(Void<string?>.Success(ignoredErrors));
+	public static Void Success(IEnumerable<string>? ignoredErrors = null)
+		=> new(Void<string>.Success(ignoredErrors));
 
 	/// <summary>
 	/// Implicitly convert a <see cref="string" /> to a <see cref="Void" /> of Error.
 	/// </summary>
 	/// <param name="value">The error value.</param>
-	public static implicit operator Void(string? value) => Error(value);
+	public static implicit operator Void(string value) => Error(value);
 
 	/// <summary>
 	/// Explicitly convert a <see cref="Void" /> to a <see cref="string" />.
 	/// </summary>
 	/// <param name="value">The void.</param>
-	public static explicit operator string?(Void value) => value.ErrorValue;
+	public static explicit operator string(Void value) => value.ErrorValue;
 
 	/// <summary>
 	/// The error value of this void.
 	/// </summary>
-	public string? ErrorValue => Inner.ErrorValue;
+	public string ErrorValue => Inner.ErrorValue;
 
 	/// <summary>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </summary>
-	public IEnumerable<string?> IgnoredErrors => Inner.IgnoredErrors;
+	public IEnumerable<string> IgnoredErrors => Inner.IgnoredErrors;
 
 	/// <summary>
 	/// Whether this void is an Error.
@@ -75,19 +75,23 @@ public readonly struct Void
 	/// </summary>
 	public VoidType Type => Inner.Type;
 
-	private Void<string?> Inner { get; }
+	private Void<string> Inner { get; }
 
-	internal Void(Void<string?> inner) => Inner = inner;
+	/// <summary>
+	/// Constructor for this void.
+	/// </summary>
+	/// <param name="inner">The inner void.</param>
+	internal Void(Void<string> inner) => Inner = inner;
 
 	/// <summary>
 	/// Deconstruct the void into its components.
 	/// </summary>
 	/// <param name="type">The type of void.</param>
 	/// <param name="error">The error if Error, otherwise default.</param>
-	public void Deconstruct(out VoidType type, out string? error)
+	public void Deconstruct(out VoidType type, out string error)
 	{
 		Inner.Deconstruct(out type, out var innerError);
-		error = innerError;
+		error = innerError ?? "";
 	}
 
 	/// <summary>
@@ -102,7 +106,7 @@ public readonly struct Void
 	/// </summary>
 	/// <param name="callback">The callback to execute with the error.</param>
 	/// <returns>The current void.</returns>
-	public Void IfError(Action<string?> callback)
+	public Void IfError(Action<string> callback)
 	{
 		if (IsError) callback(ErrorValue);
 		return this;
@@ -113,7 +117,7 @@ public readonly struct Void
 	/// </summary>
 	/// <param name="callback">The callback to execute with the errors.</param>
 	/// <returns>The current void.</returns>
-	public Void IfIgnoredErrors(Action<IEnumerable<string?>> callback)
+	public Void IfIgnoredErrors(Action<IEnumerable<string>> callback)
 	{
 		if (IgnoredErrors.Any()) callback(IgnoredErrors);
 		return this;
@@ -123,7 +127,7 @@ public readonly struct Void
 	/// Convert this void to a boxed <see cref="IVoid{TError}" />.
 	/// </summary>
 	/// <returns>A boxed <see cref="IVoid{TError}" />.</returns>
-	public IVoid<string?> ToBoxed() => Inner.ToBoxed();
+	public IVoid<string> ToBoxed() => Inner.ToBoxed();
 }
 
 /// <summary>
@@ -196,6 +200,14 @@ public readonly struct Void<TError>
 	/// </summary>
 	public IEnumerable<TError> IgnoredErrors => _IgnoredErrors ?? [];
 
+	/// <summary>
+	/// Constructor for this void.
+	/// </summary>
+	/// <param name="type">The type of void.</param>
+	/// <param name="error">The error if Error, otherwise default.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
 	internal Void(VoidType type, TError? error, IEnumerable<TError>? ignoredErrors)
 	{
 		Type = type;
@@ -246,24 +258,8 @@ public readonly struct Void<TError>
 	/// <returns>A boxed <see cref="IVoid{TError}" />.</returns>
 	public IVoid<TError> ToBoxed() => Type switch
 	{
-		VoidType.Error => new BoxedError<Void, TError>(_ErrorValue!, _IgnoredErrors),
+		VoidType.Error => new BoxedError<Void, TError>(_ErrorValue, _IgnoredErrors),
 		VoidType.Void => new BoxedVoid<TError>(_IgnoredErrors),
 		_ => throw new InvalidOperationException($"Unknown VoidType: {Type}")
 	};
-}
-
-/// <summary>
-/// The type of void.
-/// </summary>
-public enum VoidType : byte
-{
-	/// <summary>
-	/// The void is an Error.
-	/// </summary>
-	Error = 255,
-
-	/// <summary>
-	/// The void is a Success.
-	/// </summary>
-	Void = 0
 }

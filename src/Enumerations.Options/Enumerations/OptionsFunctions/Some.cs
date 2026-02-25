@@ -7,7 +7,7 @@ public static partial class OptionsFunctions
 	/// <inheritdoc cref="Option{TValue}.Some(TValue, IEnumerable{string})" />
 	/// <typeparam name="TValue">The type of the value of the options.</typeparam>
 	public static Option<TValue> Some<TValue>(
-		TValue value, IEnumerable<string?>? ignoredErrors = null
+		TValue value, IEnumerable<string>? ignoredErrors = null
 	) => Option<TValue>.Some(value, ignoredErrors);
 
 	/// <inheritdoc cref="Option{TValue, TError}.Some(TValue, IEnumerable{TError})" />

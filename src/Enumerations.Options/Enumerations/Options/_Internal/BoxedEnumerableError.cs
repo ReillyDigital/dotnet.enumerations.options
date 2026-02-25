@@ -9,7 +9,7 @@ namespace ReillyDigital.Enumerations.Options._Internal;
 /// <param name="ignoredErrors">
 /// Errors that are ignored instead of being returned as the option value.
 /// </param>
-internal readonly struct BoxedEnumerableError<TValue, TError>(
+internal sealed class BoxedEnumerableError<TValue, TError>(
 	TError value, IEnumerable<TError>? ignoredErrors = null
 ) : IIgnoredErrorSet<TError>, IOptionEnumerableError<TValue>, IOptionEnumerableError<TValue, TError>
 {
@@ -22,7 +22,7 @@ internal readonly struct BoxedEnumerableError<TValue, TError>(
 	public TError Value => value;
 
 	/// <inheritdoc />
-	string? IError<TValue>.Value => ((IError)this).Value;
+	string IError<TValue>.Value => ((IError)this).Value;
 
 	/// <summary>
 	/// Throws the value of the error as returned by <see cref="IError.Value" />.

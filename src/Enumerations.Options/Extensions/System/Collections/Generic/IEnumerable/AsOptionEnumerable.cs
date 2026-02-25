@@ -8,78 +8,57 @@ public static partial class IEnumerableExtensions
 {
 	/// <summary>
 	/// Extension method to get the current collection as an
-	/// <see cref="IOptionEnumerable{TValue}" />.
+	/// <see cref="OptionEnumerable{TValue}" />.
 	/// </summary>
+	/// <param name="self">The source collection.</param>
 	/// <returns>
-	/// A new <see cref="IOptionEnumerable{TValue}" /> containing the items from this collection.
+	/// A new <see cref="OptionEnumerable{TValue}" /> containing the items from this collection.
 	/// </returns>
-	public static IOptionEnumerable<TValue> AsOptionEnumerable<TValue>(
-		this IEnumerable<IOption<TValue>> self
-	) => new BoxedOptionEnumerable<TValue>(self);
+	public static OptionEnumerable<TValue> AsOptionEnumerable<TValue>(
+		this IEnumerable<Option<TValue>> self
+	) => new(self);
 
 	/// <summary>
 	/// Extension method to get the current collection as an
-	/// <see cref="IOptionEnumerable{TValue, TError}" />.
+	/// <see cref="OptionEnumerable{TValue}" /> with optional ignored errors.
 	/// </summary>
+	/// <param name="self">The source collection.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
 	/// <returns>
-	/// A new <see cref="IOptionEnumerable{TValue, TError}" /> containing the items from this
+	/// A new <see cref="OptionEnumerable{TValue}" /> containing the items from this collection.
+	/// </returns>
+	public static OptionEnumerable<TValue> AsOptionEnumerable<TValue>(
+		this IEnumerable<Option<TValue>> self, IEnumerable<string>? ignoredErrors
+	) => new(self, ignoredErrors);
+
+	/// <summary>
+	/// Extension method to get the current collection as an
+	/// <see cref="OptionEnumerable{TValue, TError}" />.
+	/// </summary>
+	/// <param name="self">The source collection.</param>
+	/// <returns>
+	/// A new <see cref="OptionEnumerable{TValue, TError}" /> containing the items from this
 	/// collection.
 	/// </returns>
-	public static IOptionEnumerable<TValue, TError> AsOptionEnumerable<TValue, TError>(
-		this IEnumerable<IOption<TValue, TError>> self
-	) => new BoxedOptionEnumerable<TValue, TError>(self);
-}
+	public static OptionEnumerable<TValue, TError> AsOptionEnumerable<TValue, TError>(
+		this IEnumerable<Option<TValue, TError>> self
+	) => new(self);
 
-internal sealed class BoxedOptionEnumerable<TValue>(IEnumerable<IOption<TValue>> inner)
-	: IOptionEnumerable<TValue>
-{
-	public IEnumerable<IOption<TValue>> AsEnumerable() => inner;
-
-	public void ForEach(Action<IOption<TValue>> handler)
-	{
-		foreach (var item in inner)
-		{
-			handler(item);
-		}
-	}
-
-	public void ForEach<TResult>(Func<IOption<TValue>, TResult> handler)
-	{
-		foreach (var item in inner)
-		{
-			handler(item);
-		}
-	}
-
-	public IEnumerator<IOption<TValue>> GetEnumerator() => inner.GetEnumerator();
-
-	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-		=> inner.GetEnumerator();
-}
-
-internal sealed class BoxedOptionEnumerable<TValue, TError>(IEnumerable<IOption<TValue, TError>> inner)
-	: IOptionEnumerable<TValue, TError>
-{
-	public IEnumerable<IOption<TValue, TError>> AsEnumerable() => inner;
-
-	public void ForEach(Action<IOption<TValue, TError>> handler)
-	{
-		foreach (var item in inner)
-		{
-			handler(item);
-		}
-	}
-
-	public void ForEach<TResult>(Func<IOption<TValue, TError>, TResult> handler)
-	{
-		foreach (var item in inner)
-		{
-			handler(item);
-		}
-	}
-
-	public IEnumerator<IOption<TValue, TError>> GetEnumerator() => inner.GetEnumerator();
-
-	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
-		=> inner.GetEnumerator();
+	/// <summary>
+	/// Extension method to get the current collection as an
+	/// <see cref="OptionEnumerable{TValue, TError}" /> with optional ignored errors.
+	/// </summary>
+	/// <param name="self">The source collection.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>
+	/// A new <see cref="OptionEnumerable{TValue, TError}" /> containing the items from this
+	/// collection.
+	/// </returns>
+	public static OptionEnumerable<TValue, TError> AsOptionEnumerable<TValue, TError>(
+		this IEnumerable<Option<TValue, TError>> self, IEnumerable<TError>? ignoredErrors
+	) => new(self, ignoredErrors);
 }
