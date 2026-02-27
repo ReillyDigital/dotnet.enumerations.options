@@ -100,9 +100,9 @@ public readonly struct Option<TValue>
 	/// <returns>An <see cref="Option{TValue}" />.</returns>
 	public static Option<TValue> Unbox(IOption<TValue> option) => option switch
 	{
-		IError error => OptionError<TValue>(error.Value),
-		INone => None<TValue>(),
-		ISome<TValue> some => Some<TValue>(some.Value),
+		IError error => Error(error.Value),
+		INone => None(),
+		ISome<TValue> some => Some(some.Value),
 		_ => throw new InvalidOperationException("Invalid option type."),
 	};
 
