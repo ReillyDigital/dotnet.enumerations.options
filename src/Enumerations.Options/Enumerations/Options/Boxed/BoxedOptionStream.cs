@@ -49,7 +49,9 @@ public sealed class BoxedOptionStream<TValue> : IVoid
 	{
 		BufferSize = bufferSize;
 		if (BufferSize > 0)
+		{
 			Buffer = [];
+		}
 	}
 
 	/// <summary>
@@ -118,13 +120,17 @@ public sealed class BoxedOptionStream<TValue> : IVoid
 		if (Buffer is null)
 		{
 			while (UnbufferedNext is not null)
+			{
 				await Task.Delay(100, cancellationToken);
+			}
 			UnbufferedNext = option;
 		}
 		else
 		{
 			while (Buffer.Count >= BufferSize)
+			{
 				await Task.Delay(100, cancellationToken);
+			}
 			Buffer.Enqueue(option);
 		}
 		BufferLock.Release();
@@ -144,7 +150,9 @@ public sealed class BoxedOptionStream<TValue> : IVoid
 	)
 	{
 		foreach (var option in options)
+		{
 			await Next(option, cancellationToken: cancellationToken);
+		}
 	}
 
 	/// <summary>
@@ -162,7 +170,9 @@ public sealed class BoxedOptionStream<TValue> : IVoid
 	)
 	{
 		await foreach (var option in options)
+		{
 			await Next(option, cancellationToken: cancellationToken);
+		}
 	}
 
 	/// <summary>
@@ -179,7 +189,9 @@ public sealed class BoxedOptionStream<TValue> : IVoid
 	)
 	{
 		foreach (var option in options)
+		{
 			await Next(option, cancellationToken);
+		}
 	}
 
 	/// <summary>
@@ -217,7 +229,9 @@ public sealed class BoxedOptionStream<TValue> : IVoid
 			while (UnbufferedNext is null)
 			{
 				if (IsEnded)
+				{
 					throw new Exception("Stream has ended with no items to read.");
+				}
 				await Task.Delay(100, cancellationToken);
 			}
 			Current = UnbufferedNext;
@@ -229,13 +243,17 @@ public sealed class BoxedOptionStream<TValue> : IVoid
 			while (!Buffer.TryDequeue(out next))
 			{
 				if (IsEnded && Buffer.Count == 0)
+				{
 					throw new Exception("Stream has ended with no items to read.");
+				}
 				await Task.Delay(100, cancellationToken);
 			}
 			Current = next;
 		}
 		if (Current is null)
+		{
 			throw new InvalidOperationException("Current option cannot be null.");
+		}
 		return Current;
 	}
 
@@ -260,10 +278,14 @@ public sealed class BoxedOptionStream<TValue> : IVoid
 			if (next is IError<TValue>)
 			{
 				if (!shouldSkipErrors)
+				{
 					yield return next;
+				}
 			}
 			else if (next is ISome<TValue>)
+			{
 				yield return next;
+			}
 		}
 	}
 
@@ -355,7 +377,9 @@ public sealed class BoxedOptionStream<TValue, TError> : IVoid<TError>
 	{
 		BufferSize = bufferSize;
 		if (BufferSize > 0)
+		{
 			Buffer = [];
+		}
 	}
 
 	/// <summary>
@@ -430,13 +454,17 @@ public sealed class BoxedOptionStream<TValue, TError> : IVoid<TError>
 		if (Buffer is null)
 		{
 			while (UnbufferedNext is not null)
+			{
 				await Task.Delay(100, cancellationToken);
+			}
 			UnbufferedNext = option;
 		}
 		else
 		{
 			while (Buffer.Count >= BufferSize)
+			{
 				await Task.Delay(100, cancellationToken);
+			}
 			Buffer.Enqueue(option);
 		}
 		BufferLock.Release();
@@ -457,7 +485,9 @@ public sealed class BoxedOptionStream<TValue, TError> : IVoid<TError>
 	)
 	{
 		foreach (var option in options)
+		{
 			await Next(option, cancellationToken: cancellationToken);
+		}
 	}
 
 	/// <summary>
@@ -475,7 +505,9 @@ public sealed class BoxedOptionStream<TValue, TError> : IVoid<TError>
 	)
 	{
 		await foreach (var option in options)
+		{
 			await Next(option, cancellationToken: cancellationToken);
+		}
 	}
 
 	/// <summary>
@@ -493,7 +525,9 @@ public sealed class BoxedOptionStream<TValue, TError> : IVoid<TError>
 	)
 	{
 		foreach (var option in options)
+		{
 			await Next(option, cancellationToken);
+		}
 	}
 
 	/// <summary>
@@ -536,7 +570,9 @@ public sealed class BoxedOptionStream<TValue, TError> : IVoid<TError>
 			while (UnbufferedNext is null)
 			{
 				if (IsEnded)
+				{
 					throw new Exception("Stream has ended with no items to read.");
+				}
 				await Task.Delay(100, cancellationToken);
 			}
 			Current = UnbufferedNext;
@@ -548,13 +584,17 @@ public sealed class BoxedOptionStream<TValue, TError> : IVoid<TError>
 			while (!Buffer.TryDequeue(out next))
 			{
 				if (IsEnded && Buffer.Count == 0)
+				{
 					throw new Exception("Stream has ended with no items to read.");
+				}
 				await Task.Delay(100, cancellationToken);
 			}
 			Current = next;
 		}
 		if (Current is null)
+		{
 			throw new InvalidOperationException("Current option cannot be null.");
+		}
 		return Current;
 	}
 
@@ -579,10 +619,14 @@ public sealed class BoxedOptionStream<TValue, TError> : IVoid<TError>
 			if (next is IError<TValue, TError>)
 			{
 				if (!shouldSkipErrors)
+				{
 					yield return next;
+				}
 			}
 			else if (next is ISome<TValue>)
+			{
 				yield return next;
+			}
 		}
 	}
 

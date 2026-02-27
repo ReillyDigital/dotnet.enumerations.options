@@ -108,9 +108,13 @@ public readonly struct OptionEnumerable<TValue> : IEnumerable<Option<TValue>>
 	public void ForEach(Action<Option<TValue>> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue ?? "Error");
+		}
 		foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -121,9 +125,13 @@ public readonly struct OptionEnumerable<TValue> : IEnumerable<Option<TValue>>
 	public void ForEach<TResult>(Func<Option<TValue>, TResult> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue ?? "Error");
+		}
 		foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -231,9 +239,13 @@ public readonly struct OptionEnumerable<TValue, TError> : IEnumerable<Option<TVa
 	public void ForEach(Action<Option<TValue, TError>> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue?.ToString() ?? "Error");
+		}
 		foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -244,9 +256,13 @@ public readonly struct OptionEnumerable<TValue, TError> : IEnumerable<Option<TVa
 	public void ForEach<TResult>(Func<Option<TValue, TError>, TResult> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue?.ToString() ?? "Error");
+		}
 		foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>

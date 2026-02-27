@@ -1,7 +1,5 @@
 namespace ReillyDigital.Enumerations.Options;
 
-using System.Collections.Generic;
-
 /// <summary>
 /// Represents a collection of options with a value of <see cref="TValue" />. Errors will be of
 /// type <see cref="string" />.
@@ -112,9 +110,13 @@ public readonly struct AsyncOptionEnumerable<TValue> : IAsyncEnumerable<Option<T
 	)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue ?? "Error");
+		}
 		await foreach (var item in _Enumerable.WithCancellation(cancellationToken))
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -129,9 +131,13 @@ public readonly struct AsyncOptionEnumerable<TValue> : IAsyncEnumerable<Option<T
 	)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue ?? "Error");
+		}
 		await foreach (var item in _Enumerable.WithCancellation(cancellationToken))
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -246,9 +252,13 @@ public readonly struct AsyncOptionEnumerable<TValue, TError>
 	)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue?.ToString() ?? "Error");
+		}
 		await foreach (var item in _Enumerable.WithCancellation(cancellationToken))
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -263,9 +273,13 @@ public readonly struct AsyncOptionEnumerable<TValue, TError>
 	)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue?.ToString() ?? "Error");
+		}
 		await foreach (var item in _Enumerable.WithCancellation(cancellationToken))
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>

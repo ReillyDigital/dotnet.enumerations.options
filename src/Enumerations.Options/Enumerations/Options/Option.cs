@@ -149,7 +149,10 @@ public readonly struct Option<TValue>
 	/// <returns>The current option.</returns>
 	public Option<TValue> IfError(Action<string> callback)
 	{
-		if (IsError) callback(ErrorValue);
+		if (IsError)
+		{
+			callback(ErrorValue);
+		}
 		return this;
 	}
 
@@ -160,7 +163,10 @@ public readonly struct Option<TValue>
 	/// <returns>The current option.</returns>
 	public Option<TValue> IfIgnoredErrors(Action<IEnumerable<string>> callback)
 	{
-		if (IgnoredErrors.Any()) callback(IgnoredErrors);
+		if (IgnoredErrors.Any())
+		{
+			callback(IgnoredErrors);
+		}
 		return this;
 	}
 
@@ -171,7 +177,10 @@ public readonly struct Option<TValue>
 	/// <returns>The current option.</returns>
 	public Option<TValue> IfNone(Action callback)
 	{
-		if (IsNone) callback();
+		if (IsNone)
+		{
+			callback();
+		}
 		return this;
 	}
 
@@ -189,7 +198,10 @@ public readonly struct Option<TValue>
 	/// <returns>The current option.</returns>
 	public Option<TValue> IfSome(Action<TValue> callback)
 	{
-		if (IsSome) callback(Value);
+		if (IsSome)
+		{
+			callback(Value);
+		}
 		return this;
 	}
 
@@ -367,7 +379,10 @@ public readonly struct Option<TValue, TError>
 	/// <returns>The current option.</returns>
 	public Option<TValue, TError> IfError(Action<TError> callback)
 	{
-		if (IsError) callback(ErrorValue);
+		if (IsError)
+		{
+			callback(ErrorValue);
+		}
 		return this;
 	}
 
@@ -378,7 +393,10 @@ public readonly struct Option<TValue, TError>
 	/// <returns>The current option.</returns>
 	public Option<TValue, TError> IfIgnoredErrors(Action<IEnumerable<TError>> callback)
 	{
-		if (IgnoredErrors.Any()) callback(IgnoredErrors);
+		if (IgnoredErrors.Any())
+		{
+			callback(IgnoredErrors);
+		}
 		return this;
 	}
 
@@ -389,7 +407,10 @@ public readonly struct Option<TValue, TError>
 	/// <returns>The current option.</returns>
 	public Option<TValue, TError> IfNone(Action callback)
 	{
-		if (IsNone) callback();
+		if (IsNone)
+		{
+			callback();
+		}
 		return this;
 	}
 
@@ -407,7 +428,10 @@ public readonly struct Option<TValue, TError>
 	/// <returns>The current option.</returns>
 	public Option<TValue, TError> IfSome(Action<TValue> callback)
 	{
-		if (IsSome) callback(Value);
+		if (IsSome)
+		{
+			callback(Value);
+		}
 		return this;
 	}
 

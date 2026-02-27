@@ -108,9 +108,13 @@ public readonly struct BoxedOptionEnumerable<TValue> : IOptionEnumerable<TValue>
 	public void ForEach(Action<IOption<TValue>> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue ?? "Error");
+		}
 		foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -121,9 +125,13 @@ public readonly struct BoxedOptionEnumerable<TValue> : IOptionEnumerable<TValue>
 	public void ForEach<TResult>(Func<IOption<TValue>, TResult> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue ?? "Error");
+		}
 		foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -232,9 +240,13 @@ public readonly struct BoxedOptionEnumerable<TValue, TError> : IOptionEnumerable
 	public void ForEach(Action<IOption<TValue, TError>> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue?.ToString() ?? "Error");
+		}
 		foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -245,9 +257,13 @@ public readonly struct BoxedOptionEnumerable<TValue, TError> : IOptionEnumerable
 	public void ForEach<TResult>(Func<IOption<TValue, TError>, TResult> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue?.ToString() ?? "Error");
+		}
 		foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>

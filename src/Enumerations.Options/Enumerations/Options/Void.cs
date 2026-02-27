@@ -108,7 +108,10 @@ public readonly struct Void
 	/// <returns>The current void.</returns>
 	public Void IfError(Action<string> callback)
 	{
-		if (IsError) callback(ErrorValue);
+		if (IsError)
+		{
+			callback(ErrorValue);
+		}
 		return this;
 	}
 
@@ -119,7 +122,10 @@ public readonly struct Void
 	/// <returns>The current void.</returns>
 	public Void IfIgnoredErrors(Action<IEnumerable<string>> callback)
 	{
-		if (IgnoredErrors.Any()) callback(IgnoredErrors);
+		if (IgnoredErrors.Any())
+		{
+			callback(IgnoredErrors);
+		}
 		return this;
 	}
 
@@ -237,7 +243,10 @@ public readonly struct Void<TError>
 	/// <returns>The current void.</returns>
 	public Void<TError> IfError(Action<TError> callback)
 	{
-		if (IsError) callback(ErrorValue);
+		if (IsError)
+		{
+			callback(ErrorValue);
+		}
 		return this;
 	}
 
@@ -248,7 +257,10 @@ public readonly struct Void<TError>
 	/// <returns>The current void.</returns>
 	public Void<TError> IfIgnoredErrors(Action<IEnumerable<TError>> callback)
 	{
-		if (IgnoredErrors.Any()) callback(IgnoredErrors);
+		if (IgnoredErrors.Any())
+		{
+			callback(IgnoredErrors);
+		}
 		return this;
 	}
 

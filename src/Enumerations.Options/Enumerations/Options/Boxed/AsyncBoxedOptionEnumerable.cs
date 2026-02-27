@@ -110,9 +110,13 @@ public readonly struct AsyncBoxedOptionEnumerable<TValue> : IAsyncOptionEnumerab
 	public async Task ForEach(Action<IOption<TValue>> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue ?? "Error");
+		}
 		await foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -123,9 +127,13 @@ public readonly struct AsyncBoxedOptionEnumerable<TValue> : IAsyncOptionEnumerab
 	public async Task ForEach<TResult>(Func<IOption<TValue>, TResult> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue ?? "Error");
+		}
 		await foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -240,9 +248,13 @@ public readonly struct AsyncBoxedOptionEnumerable<TValue, TError>
 	public async Task ForEach(Action<IOption<TValue, TError>> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue?.ToString() ?? "Error");
+		}
 		await foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
@@ -253,9 +265,13 @@ public readonly struct AsyncBoxedOptionEnumerable<TValue, TError>
 	public async Task ForEach<TResult>(Func<IOption<TValue, TError>, TResult> handler)
 	{
 		if (_Enumerable is null)
+		{
 			throw new Exception(_ErrorValue?.ToString() ?? "Error");
+		}
 		await foreach (var item in _Enumerable)
+		{
 			handler(item);
+		}
 	}
 
 	/// <summary>
