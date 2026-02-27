@@ -9,6 +9,48 @@ using System.Linq;
 public readonly struct Option<TValue>
 {
 	/// <summary>
+	/// Create a boxed <see cref="IError{TValue}" />.
+	/// </summary>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="IError{TValue}" />.</returns>
+	public static IError<TValue> BoxedError(IEnumerable<string>? ignoredErrors = null)
+		=> IOption<TValue>.Error(ignoredErrors);
+
+	/// <summary>
+	/// Create a boxed <see cref="IError{TValue}" />.
+	/// </summary>
+	/// <param name="error">The error value.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="IError{TValue}" />.</returns>
+	public static IError<TValue> BoxedError(string error, IEnumerable<string>? ignoredErrors = null)
+		=> IOption<TValue>.Error(error, ignoredErrors);
+
+	/// <summary>
+	/// Create a boxed <see cref="INone{TValue}" />.
+	/// </summary>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="INone{TValue}" />.</returns>
+	public static INone<TValue> BoxedNone(IEnumerable<string>? ignoredErrors = null)
+		=> IOption<TValue>.None(ignoredErrors);
+
+	/// <summary>
+	/// Create a boxed <see cref="ISome{TValue}" />.
+	/// </summary>
+	/// <param name="value">The value.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="ISome{TValue}" />.</returns>
+	public static ISome<TValue> BoxedSome(TValue value, IEnumerable<string>? ignoredErrors = null)
+		=> IOption<TValue>.Some(value, ignoredErrors);
+
+	/// <summary>
 	/// Create an <see cref="Option{TValue}" /> of Error.
 	/// </summary>
 	/// <param name="ignoredErrors">
@@ -50,6 +92,19 @@ public readonly struct Option<TValue>
 	/// <returns>An <see cref="Option{TValue}" /> of Some.</returns>
 	public static Option<TValue> Some(TValue value, IEnumerable<string>? ignoredErrors = null)
 		=> new(Option<TValue, string>.Some(value, ignoredErrors));
+
+	/// <summary>
+	/// Convert a boxed <see cref="IOption{TValue}" /> to an <see cref="Option{TValue}" />.
+	/// </summary>
+	/// <param name="option">The boxed option.</param>
+	/// <returns>An <see cref="Option{TValue}" />.</returns>
+	public static Option<TValue> Unbox(IOption<TValue> option) => option switch
+	{
+		IError error => OptionError<TValue>(error.Value),
+		INone => None<TValue>(),
+		ISome<TValue> some => Some<TValue>(some.Value),
+		_ => throw new InvalidOperationException("Invalid option type."),
+	};
 
 	/// <summary>
 	/// Implicitly convert a <see cref="string" /> to an <see cref="Option{TValue}" /> of
@@ -220,6 +275,40 @@ public readonly struct Option<TValue>
 public readonly struct Option<TValue, TError>
 {
 	/// <summary>
+	/// Create a boxed <see cref="IError{TValue, TError}" />.
+	/// </summary>
+	/// <param name="error">The error value.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="IError{TValue, TError}" />.</returns>
+	public static IError<TValue, TError> BoxedError(
+		TError error, IEnumerable<TError>? ignoredErrors = null
+	) => IOption<TValue, TError>.Error(error, ignoredErrors);
+
+	/// <summary>
+	/// Create a boxed <see cref="INone{TValue, TError}" />.
+	/// </summary>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="INone{TValue, TError}" />.</returns>
+	public static INone<TValue, TError> BoxedNone(IEnumerable<TError>? ignoredErrors = null)
+		=> IOption<TValue, TError>.None(ignoredErrors);
+
+	/// <summary>
+	/// Create a boxed <see cref="ISome{TValue, TError}" />.
+	/// </summary>
+	/// <param name="value">The value.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="ISome{TValue, TError}" />.</returns>
+	public static ISome<TValue, TError> BoxedSome(
+		TValue value, IEnumerable<TError>? ignoredErrors = null
+	) => IOption<TValue, TError>.Some(value, ignoredErrors);
+
+	/// <summary>
 	/// Create an <see cref="Option{TValue, TError}" /> of Error.
 	/// </summary>
 	/// <param name="error">The error value.</param>
@@ -252,6 +341,20 @@ public readonly struct Option<TValue, TError>
 	public static Option<TValue, TError> Some(
 		TValue value, IEnumerable<TError>? ignoredErrors = null
 	) => new(OptionType.Some, value, default, ignoredErrors);
+
+	/// <summary>
+	/// Convert a boxed <see cref="IOption{TValue, TError}" /> to an
+	/// <see cref="Option{TValue, TError}" />.
+	/// </summary>
+	/// <param name="option">The boxed option.</param>
+	/// <returns>An <see cref="Option{TValue, TError}" />.</returns>
+	public static Option<TValue, TError> Unbox(IOption<TValue, TError> option) => option switch
+	{
+		IError<TValue, TError> error => Error(error.Value),
+		INone => None(),
+		ISome<TValue> some => Some(some.Value),
+		_ => throw new InvalidOperationException("Invalid option type."),
+	};
 
 	/// <summary>
 	/// Implicitly convert a <typeparamref name="TError" /> to an

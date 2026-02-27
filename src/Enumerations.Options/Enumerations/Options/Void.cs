@@ -8,6 +8,37 @@ using System.Linq;
 public readonly struct Void
 {
 	/// <summary>
+	/// Create a boxed <see cref="IError" />.
+	/// </summary>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="IError" />.</returns>
+	public static IError BoxedError(IEnumerable<string>? ignoredErrors = null)
+		=> IVoid.Error(ignoredErrors);
+
+	/// <summary>
+	/// Create a boxed <see cref="IError" />.
+	/// </summary>
+	/// <param name="error">The error value.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="IError" />.</returns>
+	public static IError BoxedError(string error, IEnumerable<string>? ignoredErrors = null)
+		=> IVoid.Error(error, ignoredErrors);
+
+	/// <summary>
+	/// Create a boxed <see cref="IVoid" /> representing success.
+	/// </summary>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="IVoid" />.</returns>
+	public static IVoid BoxedSuccess(IEnumerable<string>? ignoredErrors = null)
+		=> IVoid.Void(ignoredErrors);
+
+	/// <summary>
 	/// Create a <see cref="Void" /> of Error.
 	/// </summary>
 	/// <param name="ignoredErrors">
@@ -37,6 +68,17 @@ public readonly struct Void
 	/// <returns>A <see cref="Void" /> of Success.</returns>
 	public static Void Success(IEnumerable<string>? ignoredErrors = null)
 		=> new(Void<string>.Success(ignoredErrors));
+
+	/// <summary>
+	/// Convert a boxed <see cref="IVoid" /> to a <see cref="Void" />.
+	/// </summary>
+	/// <param name="value">The boxed void.</param>
+	/// <returns>A <see cref="Void" />.</returns>
+	public static Void Unbox(IVoid value) => value switch
+	{
+		IError error => Error(error.Value),
+		_ => Success(),
+	};
 
 	/// <summary>
 	/// Implicitly convert a <see cref="string" /> to a <see cref="Void" /> of Error.
@@ -143,6 +185,28 @@ public readonly struct Void
 public readonly struct Void<TError>
 {
 	/// <summary>
+	/// Create a boxed <see cref="IError{TValue, TError}" /> for void.
+	/// </summary>
+	/// <param name="error">The error value.</param>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="IError{TValue, TError}" />.</returns>
+	public static IError<IVoid, TError> BoxedError(
+		TError error, IEnumerable<TError>? ignoredErrors = null
+	) => IVoid<TError>.Error(error, ignoredErrors);
+
+	/// <summary>
+	/// Create a boxed <see cref="IVoid{TError}" /> representing success.
+	/// </summary>
+	/// <param name="ignoredErrors">
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </param>
+	/// <returns>A boxed <see cref="IVoid{TError}" />.</returns>
+	public static IVoid<TError> BoxedSuccess(IEnumerable<TError>? ignoredErrors = null)
+		=> IVoid<TError>.Void(ignoredErrors);
+
+	/// <summary>
 	/// Create a <see cref="Void{TError}" /> of Error.
 	/// </summary>
 	/// <param name="error">The error value.</param>
@@ -162,6 +226,17 @@ public readonly struct Void<TError>
 	/// <returns>A <see cref="Void{TError}" /> of Success.</returns>
 	public static Void<TError> Success(IEnumerable<TError>? ignoredErrors = null)
 		=> new(VoidType.Void, default, ignoredErrors);
+
+	/// <summary>
+	/// Convert a boxed <see cref="IVoid{TError}" /> to a <see cref="Void{TError}" />.
+	/// </summary>
+	/// <param name="value">The boxed void.</param>
+	/// <returns>A <see cref="Void{TError}" />.</returns>
+	public static Void<TError> Unbox(IVoid<TError> value) => value switch
+	{
+		IError<IVoid, TError> error => Error(error.Value),
+		_ => Success(),
+	};
 
 	/// <summary>
 	/// Implicitly convert a <typeparamref name="TError" /> to a <see cref="Void{TError}" /> of
