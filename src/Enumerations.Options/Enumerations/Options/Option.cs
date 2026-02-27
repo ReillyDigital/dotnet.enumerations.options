@@ -261,10 +261,10 @@ public readonly struct Option<TValue>
 	}
 
 	/// <summary>
-	/// Convert this option to a boxed <see cref="IVoid{TError}" />.
+	/// Convert this option to a boxed <see cref="IOption{TValue}" />.
 	/// </summary>
-	/// <returns>A boxed <see cref="IVoid{TError}" />.</returns>
-	public IVoid<string> ToBoxed() => Inner.ToBoxed();
+	/// <returns>A boxed <see cref="IOption{TValue}" />.</returns>
+	public IOption<TValue> ToBoxed() => (IOption<TValue>)Inner.ToBoxed();
 }
 
 /// <summary>
@@ -539,10 +539,10 @@ public readonly struct Option<TValue, TError>
 	}
 
 	/// <summary>
-	/// Convert this option to a boxed <see cref="IVoid{TError}" />.
+	/// Convert this option to a boxed <see cref="IOption{TValue, TError}" />.
 	/// </summary>
-	/// <returns>A boxed <see cref="IVoid{TError}" />.</returns>
-	public IVoid<TError> ToBoxed() => Type switch
+	/// <returns>A boxed <see cref="IOption{TValue, TError}" />.</returns>
+	public IOption<TValue, TError> ToBoxed() => Type switch
 	{
 		OptionType.Error => new BoxedError<TValue, TError>(_ErrorValue, _IgnoredErrors),
 		OptionType.None => new BoxedNone<TValue, TError>(_IgnoredErrors),

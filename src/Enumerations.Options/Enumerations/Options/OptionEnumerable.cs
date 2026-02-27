@@ -34,34 +34,24 @@ public readonly struct OptionEnumerable<TValue> : IEnumerable<Option<TValue>>
 	) => new(value, ignoredErrors);
 
 	/// <summary>
-	/// Backing field for the inner enumerable when not in error state.
-	/// </summary>
-	private readonly IEnumerable<Option<TValue>>? _Enumerable;
-
-	/// <summary>
-	/// Backing field for the error value when in error state.
-	/// </summary>
-	private readonly string _ErrorValue;
-
-	/// <summary>
-	/// Backing field for errors that are ignored instead of being returned as the option value.
-	/// </summary>
-	private readonly IEnumerable<string>? _IgnoredErrors;
-
-	/// <summary>
 	/// The error value of this option enumerable when in error state.
 	/// </summary>
-	public string ErrorValue => _ErrorValue;
+	public string ErrorValue { get; }
 
 	/// <summary>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </summary>
-	public IEnumerable<string> IgnoredErrors => _IgnoredErrors ?? [];
+	public IEnumerable<string> IgnoredErrors { get; }
 
 	/// <summary>
 	/// Whether this instance is in error state. When true, enumeration throws.
 	/// </summary>
-	public bool IsError => _Enumerable is null;
+	public bool IsError => Enumerable is null;
+
+	/// <summary>
+	/// The inner enumerable when not in error state.
+	/// </summary>
+	private IEnumerable<Option<TValue>>? Enumerable { get; }
 
 	/// <summary>
 	/// Constructor for enumerable state.
@@ -74,9 +64,9 @@ public readonly struct OptionEnumerable<TValue> : IEnumerable<Option<TValue>>
 		IEnumerable<Option<TValue>> enumerable, IEnumerable<string>? ignoredErrors = null
 	)
 	{
-		_Enumerable = enumerable;
-		_ErrorValue = "";
-		_IgnoredErrors = ignoredErrors ?? [];
+		Enumerable = enumerable;
+		ErrorValue = "";
+		IgnoredErrors = ignoredErrors ?? [];
 	}
 
 	/// <summary>
@@ -88,9 +78,9 @@ public readonly struct OptionEnumerable<TValue> : IEnumerable<Option<TValue>>
 	/// </param>
 	private OptionEnumerable(string errorValue, IEnumerable<string>? ignoredErrors)
 	{
-		_Enumerable = null;
-		_ErrorValue = errorValue;
-		_IgnoredErrors = ignoredErrors ?? [];
+		Enumerable = null;
+		ErrorValue = errorValue;
+		IgnoredErrors = ignoredErrors ?? [];
 	}
 
 	/// <summary>
@@ -98,7 +88,7 @@ public readonly struct OptionEnumerable<TValue> : IEnumerable<Option<TValue>>
 	/// </summary>
 	/// <returns>An <see cref="IEnumerable{Option{TValue}}" />.</returns>
 	public IEnumerable<Option<TValue>> AsEnumerable()
-		=> _Enumerable ?? throw new Exception(_ErrorValue ?? "Error");
+		=> Enumerable ?? throw new Exception(ErrorValue ?? "Error");
 
 	/// <summary>
 	/// Iterates over each item in the collection, calling the param <paramref name="handler" />
@@ -107,11 +97,11 @@ public readonly struct OptionEnumerable<TValue> : IEnumerable<Option<TValue>>
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
 	public void ForEach(Action<Option<TValue>> handler)
 	{
-		if (_Enumerable is null)
+		if (Enumerable is null)
 		{
-			throw new Exception(_ErrorValue ?? "Error");
+			throw new Exception(ErrorValue ?? "Error");
 		}
-		foreach (var item in _Enumerable)
+		foreach (var item in Enumerable)
 		{
 			handler(item);
 		}
@@ -124,11 +114,11 @@ public readonly struct OptionEnumerable<TValue> : IEnumerable<Option<TValue>>
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
 	public void ForEach<TResult>(Func<Option<TValue>, TResult> handler)
 	{
-		if (_Enumerable is null)
+		if (Enumerable is null)
 		{
-			throw new Exception(_ErrorValue ?? "Error");
+			throw new Exception(ErrorValue ?? "Error");
 		}
-		foreach (var item in _Enumerable)
+		foreach (var item in Enumerable)
 		{
 			handler(item);
 		}
@@ -139,7 +129,16 @@ public readonly struct OptionEnumerable<TValue> : IEnumerable<Option<TValue>>
 	/// </summary>
 	/// <returns>An <see cref="IEnumerator{Option{TValue}}" />.</returns>
 	public IEnumerator<Option<TValue>> GetEnumerator()
-		=> (_Enumerable ?? throw new Exception(_ErrorValue ?? "Error")).GetEnumerator();
+		=> (Enumerable ?? throw new Exception(ErrorValue ?? "Error")).GetEnumerator();
+
+	/// <summary>
+	/// Convert this enumerable to a <see cref="BoxedOptionEnumerable{TValue}" />.
+	/// </summary>
+	/// <returns>A <see cref="BoxedOptionEnumerable{TValue}" />.</returns>
+	public BoxedOptionEnumerable<TValue> ToBoxed()
+		=> IsError
+			? BoxedOptionEnumerable<TValue>.Error(ErrorValue, IgnoredErrors)
+			: new(Enumerable!.Select(item => item.ToBoxed()), IgnoredErrors);
 
 	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }
@@ -165,34 +164,24 @@ public readonly struct OptionEnumerable<TValue, TError> : IEnumerable<Option<TVa
 	) => new(value, ignoredErrors);
 
 	/// <summary>
-	/// Backing field for the inner enumerable when not in error state.
-	/// </summary>
-	private readonly IEnumerable<Option<TValue, TError>>? _Enumerable;
-
-	/// <summary>
-	/// Backing field for the error value when in error state.
-	/// </summary>
-	private readonly TError? _ErrorValue;
-
-	/// <summary>
-	/// Backing field for errors that are ignored instead of being returned as the option value.
-	/// </summary>
-	private readonly IEnumerable<TError>? _IgnoredErrors;
-
-	/// <summary>
 	/// The error value of this option enumerable when in error state.
 	/// </summary>
-	public TError? ErrorValue => _ErrorValue;
+	public TError? ErrorValue { get; }
 
 	/// <summary>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </summary>
-	public IEnumerable<TError> IgnoredErrors => _IgnoredErrors ?? [];
+	public IEnumerable<TError> IgnoredErrors { get; }
 
 	/// <summary>
 	/// Whether this instance is in error state. When true, enumeration throws.
 	/// </summary>
-	public bool IsError => _Enumerable is null;
+	public bool IsError => Enumerable is null;
+
+	/// <summary>
+	/// The inner enumerable when not in error state.
+	/// </summary>
+	private IEnumerable<Option<TValue, TError>>? Enumerable { get; }
 
 	/// <summary>
 	/// Constructor for enumerable state.
@@ -205,9 +194,9 @@ public readonly struct OptionEnumerable<TValue, TError> : IEnumerable<Option<TVa
 		IEnumerable<Option<TValue, TError>> enumerable, IEnumerable<TError>? ignoredErrors = null
 	)
 	{
-		_Enumerable = enumerable;
-		_ErrorValue = default;
-		_IgnoredErrors = ignoredErrors ?? [];
+		Enumerable = enumerable;
+		ErrorValue = default;
+		IgnoredErrors = ignoredErrors ?? [];
 	}
 
 	/// <summary>
@@ -219,9 +208,9 @@ public readonly struct OptionEnumerable<TValue, TError> : IEnumerable<Option<TVa
 	/// </param>
 	private OptionEnumerable(TError? errorValue, IEnumerable<TError>? ignoredErrors)
 	{
-		_Enumerable = null;
-		_ErrorValue = errorValue;
-		_IgnoredErrors = ignoredErrors ?? [];
+		Enumerable = null;
+		ErrorValue = errorValue;
+		IgnoredErrors = ignoredErrors ?? [];
 	}
 
 	/// <summary>
@@ -229,7 +218,7 @@ public readonly struct OptionEnumerable<TValue, TError> : IEnumerable<Option<TVa
 	/// </summary>
 	/// <returns>An <see cref="IEnumerable{Option{TValue, TError}}" />.</returns>
 	public IEnumerable<Option<TValue, TError>> AsEnumerable()
-		=> _Enumerable ?? throw new Exception(_ErrorValue?.ToString() ?? "Error");
+		=> Enumerable ?? throw new Exception(ErrorValue?.ToString() ?? "Error");
 
 	/// <summary>
 	/// Iterates over each item in the collection, calling the param <paramref name="handler" />
@@ -238,11 +227,11 @@ public readonly struct OptionEnumerable<TValue, TError> : IEnumerable<Option<TVa
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
 	public void ForEach(Action<Option<TValue, TError>> handler)
 	{
-		if (_Enumerable is null)
+		if (Enumerable is null)
 		{
-			throw new Exception(_ErrorValue?.ToString() ?? "Error");
+			throw new Exception(ErrorValue?.ToString() ?? "Error");
 		}
-		foreach (var item in _Enumerable)
+		foreach (var item in Enumerable)
 		{
 			handler(item);
 		}
@@ -255,11 +244,11 @@ public readonly struct OptionEnumerable<TValue, TError> : IEnumerable<Option<TVa
 	/// <param name="handler">The handler to be called for each item of the collection.</param>
 	public void ForEach<TResult>(Func<Option<TValue, TError>, TResult> handler)
 	{
-		if (_Enumerable is null)
+		if (Enumerable is null)
 		{
-			throw new Exception(_ErrorValue?.ToString() ?? "Error");
+			throw new Exception(ErrorValue?.ToString() ?? "Error");
 		}
-		foreach (var item in _Enumerable)
+		foreach (var item in Enumerable)
 		{
 			handler(item);
 		}
@@ -270,8 +259,16 @@ public readonly struct OptionEnumerable<TValue, TError> : IEnumerable<Option<TVa
 	/// </summary>
 	/// <returns>An <see cref="IEnumerator{Option{TValue, TError}}" />.</returns>
 	public IEnumerator<Option<TValue, TError>> GetEnumerator()
-		=> (_Enumerable ?? throw new Exception(_ErrorValue?.ToString() ?? "Error"))
-			.GetEnumerator();
+		=> (Enumerable ?? throw new Exception(ErrorValue?.ToString() ?? "Error")).GetEnumerator();
+
+	/// <summary>
+	/// Convert this enumerable to a <see cref="BoxedOptionEnumerable{TValue, TError}" />.
+	/// </summary>
+	/// <returns>A <see cref="BoxedOptionEnumerable{TValue, TError}" />.</returns>
+	public BoxedOptionEnumerable<TValue, TError> ToBoxed()
+		=> IsError
+			? BoxedOptionEnumerable<TValue, TError>.Error(ErrorValue!, IgnoredErrors)
+			: new(Enumerable!.Select(item => item.ToBoxed()), IgnoredErrors);
 
 	IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 }

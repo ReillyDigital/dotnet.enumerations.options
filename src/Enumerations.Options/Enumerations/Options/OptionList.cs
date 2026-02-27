@@ -198,6 +198,13 @@ public sealed class OptionList<TValue> : IList<Option<TValue>>, IIgnoredErrorSet
 	/// <exception cref="ArgumentOutOfRangeException" />
 	public void RemoveAt(int index) => List.RemoveAt(index);
 
+	/// <summary>
+	/// Convert this collection to a <see cref="BoxedOptionList{TValue}" />.
+	/// </summary>
+	/// <returns>A <see cref="BoxedOptionList{TValue}" />.</returns>
+	public BoxedOptionList<TValue> ToBoxed()
+		=> new(List.Select(item => item.ToBoxed()), IgnoredErrors);
+
 	/// <inheritdoc />
 	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		=> List.GetEnumerator();
@@ -406,6 +413,13 @@ public sealed class OptionList<TValue, TError> : IList<Option<TValue, TError>>, 
 	/// <param name="index">Determines the index of a specific item in the collection.</param>
 	/// <exception cref="ArgumentOutOfRangeException" />
 	public void RemoveAt(int index) => List.RemoveAt(index);
+
+	/// <summary>
+	/// Convert this collection to a <see cref="BoxedOptionList{TValue, TError}" />.
+	/// </summary>
+	/// <returns>A <see cref="BoxedOptionList{TValue, TError}" />.</returns>
+	public BoxedOptionList<TValue, TError> ToBoxed()
+		=> new(List.Select(item => item.ToBoxed()), IgnoredErrors);
 
 	/// <inheritdoc />
 	System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

@@ -203,6 +203,12 @@ public sealed class BoxedOptionList<TValue>
 	/// <param name="index">Determines the index of a specific item in the collection.</param>
 	/// <exception cref="ArgumentOutOfRangeException" />
 	public void RemoveAt(int index) => List.RemoveAt(index);
+
+	/// <summary>
+	/// Convert this collection to an <see cref="OptionList{TValue}" />.
+	/// </summary>
+	/// <returns>An <see cref="OptionList{TValue}" />.</returns>
+	public OptionList<TValue> ToUnboxed() => new(List.Select(Option<TValue>.Unbox), IgnoredErrors);
 }
 
 /// <summary>
@@ -412,4 +418,11 @@ public sealed class BoxedOptionList<TValue, TError>
 	/// <param name="index">Determines the index of a specific item in the collection.</param>
 	/// <exception cref="ArgumentOutOfRangeException" />
 	public void RemoveAt(int index) => List.RemoveAt(index);
+
+	/// <summary>
+	/// Convert this collection to an <see cref="OptionList{TValue, TError}" />.
+	/// </summary>
+	/// <returns>An <see cref="OptionList{TValue, TError}" />.</returns>
+	public OptionList<TValue, TError> ToUnboxed()
+		=> new(List.Select(Option<TValue, TError>.Unbox), IgnoredErrors);
 }
