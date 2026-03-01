@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.12] - 2026-02-28
+
+### Changed
+
+- Nuget README fix to point to root README.
+
+## [2.0.0-alpha.11] - 2026-02-28
+
+### Added
+
+- `BoxedSome`, `BoxedNone`, and `BoxedError` factory methods on struct types for direct boxed creation.
+- `Unbox()` static method on struct types for converting boxed interfaces back to structs.
+- Singleton `Ref` values for boxed `None` and `Error` types to reduce heap allocations.
+
+### Changed
+
+- Boxed interface types moved to `ReillyDigital.Enumerations.Options.Boxed` sub-namespace.
+- Removed `ErrorValue` wrapper type; base error value is now `string` directly.
+- Updated sample project with `SimpleOptionScenario`, `BoxedOptionScenario`, and `CovariantOptionScenario`.
+- Updated README with improved description and examples.
+- Removed deprecated `Summary` property from csproj.
+
 ## [2.0.0-alpha.10] - 2026-02-22
 
 ### Changed
