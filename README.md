@@ -44,8 +44,8 @@ switch (GetMessage(2))
 	case { Type: OptionType.None }:
 		Console.WriteLine("No message found.");
 		break;
-	case { Type: OptionType.Some, Value: var value }:
-		Console.WriteLine(value);
+	case { Type: OptionType.Some, Value: var some }:
+		Console.WriteLine(some);
 		break;
 }
 ```
@@ -191,8 +191,8 @@ await foreach (var each in stream.ReadToEnd())
 		case { Type: OptionType.Error, ErrorValue: var error }:
 			Console.WriteLine(error);
 			break;
-		case { Type: OptionType.Some, Value: var value }:
-			Console.WriteLine(value);
+		case { Type: OptionType.Some, Value: var some }:
+			Console.WriteLine(some);
 			break;
 	}
 }

@@ -16,8 +16,8 @@ public static class StreamScenario
 						case { Type: OptionType.Error, ErrorValue: var error }:
 							Console.WriteLine(error);
 							break;
-						case { Type: OptionType.Some, Value: var value }:
-							Console.WriteLine(value);
+						case { Type: OptionType.Some, Value: var some }:
+							Console.WriteLine(some);
 							break;
 					}
 				}

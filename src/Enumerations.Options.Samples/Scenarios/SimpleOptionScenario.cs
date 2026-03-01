@@ -24,8 +24,8 @@ public static class SimpleOptionScenario
 			case { Type: OptionType.None }:
 				Console.WriteLine("No message found.");
 				break;
-			case { Type: OptionType.Some, Value: var value }:
-				Console.WriteLine(value);
+			case { Type: OptionType.Some, Value: var some }:
+				Console.WriteLine(some);
 				break;
 		}
 	}
