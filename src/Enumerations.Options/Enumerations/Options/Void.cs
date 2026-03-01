@@ -117,13 +117,16 @@ public readonly struct Void
 	/// </summary>
 	public VoidType Type => Inner.Type;
 
+	/// <summary>
+	/// The inner void with string error type.
+	/// </summary>
 	private Void<string> Inner { get; }
 
 	/// <summary>
 	/// Constructor for this void.
 	/// </summary>
 	/// <param name="inner">The inner void.</param>
-	internal Void(Void<string> inner) => Inner = inner;
+	private Void(Void<string> inner) => Inner = inner;
 
 	/// <summary>
 	/// Deconstruct the void into its components.
@@ -266,6 +269,9 @@ public readonly struct Void<TError>
 	/// </summary>
 	public VoidType Type { get; }
 
+	/// <summary>
+	/// The error value if Error, otherwise default.
+	/// </summary>
 	private readonly TError? _ErrorValue;
 
 	/// <summary>
@@ -274,12 +280,10 @@ public readonly struct Void<TError>
 	public TError ErrorValue
 		=> _ErrorValue ?? throw new InvalidOperationException("Result is not Error.");
 
-	private readonly IEnumerable<TError>? _IgnoredErrors;
-
 	/// <summary>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </summary>
-	public IEnumerable<TError> IgnoredErrors => _IgnoredErrors ?? [];
+	public IEnumerable<TError> IgnoredErrors { get; }
 
 	/// <summary>
 	/// Constructor for this void.
@@ -289,12 +293,8 @@ public readonly struct Void<TError>
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
-	internal Void(VoidType type, TError? error, IEnumerable<TError>? ignoredErrors)
-	{
-		Type = type;
-		_ErrorValue = error;
-		_IgnoredErrors = ignoredErrors;
-	}
+	private Void(VoidType type, TError? error, IEnumerable<TError>? ignoredErrors)
+		=> (Type, _ErrorValue, IgnoredErrors) = (type, error, ignoredErrors ?? []);
 
 	/// <summary>
 	/// Deconstruct the void into its components.
@@ -345,8 +345,8 @@ public readonly struct Void<TError>
 	/// <returns>A boxed <see cref="IVoid{TError}" />.</returns>
 	public IVoid<TError> ToBoxed() => Type switch
 	{
-		VoidType.Error => new BoxedError<Void, TError>(_ErrorValue, _IgnoredErrors),
-		VoidType.Void => new BoxedVoid<TError>(_IgnoredErrors),
+		VoidType.Error => new BoxedError<Void, TError>(_ErrorValue, IgnoredErrors),
+		VoidType.Void => new BoxedVoid<TError>(IgnoredErrors),
 		_ => throw new InvalidOperationException($"Unknown VoidType: {Type}")
 	};
 }

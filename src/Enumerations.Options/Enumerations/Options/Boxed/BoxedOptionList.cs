@@ -6,7 +6,7 @@ namespace ReillyDigital.Enumerations.Options.Boxed;
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 public sealed class BoxedOptionList<TValue>
-	: IList<IOption<TValue>>, IIgnoredErrorSet, IOptionEnumerable<TValue>
+	: IIgnoredErrorSet, IList<IOption<TValue>>, IOptionEnumerable<TValue>
 {
 	/// <summary>
 	/// Returns an empty collection.
@@ -218,7 +218,7 @@ public sealed class BoxedOptionList<TValue>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <typeparam name="TError">The type of the error of the options.</typeparam>
 public sealed class BoxedOptionList<TValue, TError>
-	: IList<IOption<TValue, TError>>, IIgnoredErrorSet<TError>, IOptionEnumerable<TValue, TError>
+	: IIgnoredErrorSet<TError>, IList<IOption<TValue, TError>>, IOptionEnumerable<TValue, TError>
 {
 	/// <summary>
 	/// Returns an empty collection.

@@ -7,7 +7,8 @@ using System.Collections.Generic;
 /// type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
-public readonly struct AsyncBoxedOptionEnumerable<TValue> : IAsyncOptionEnumerable<TValue>
+public readonly struct AsyncBoxedOptionEnumerable<TValue>
+	: IAsyncOptionEnumerable<TValue>, IIgnoredErrorSet
 {
 	/// <summary>
 	/// Create an <see cref="AsyncBoxedOptionEnumerable{TValue}" /> in error state.
@@ -163,7 +164,7 @@ public readonly struct AsyncBoxedOptionEnumerable<TValue> : IAsyncOptionEnumerab
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <typeparam name="TError">The type of the error of the options.</typeparam>
 public readonly struct AsyncBoxedOptionEnumerable<TValue, TError>
-	: IAsyncOptionEnumerable<TValue, TError>
+	: IAsyncOptionEnumerable<TValue, TError>, IIgnoredErrorSet<TError>
 {
 	/// <summary>
 	/// Create an <see cref="AsyncBoxedOptionEnumerable{TValue, TError}" /> in error state.

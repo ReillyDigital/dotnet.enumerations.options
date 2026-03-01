@@ -122,7 +122,6 @@ public interface IVoid<out TError> : IVoid
 	public new IEnumerable<TError> IgnoredErrors
 		=> this is IIgnoredErrorSet<TError> ignoredErrorSet ? ignoredErrorSet.IgnoredErrors : [];
 
-
 	/// <summary>
 	/// Executes the specified callback if this reference is of type <see cref="IError{TValue, TError}" />.
 	/// </summary>

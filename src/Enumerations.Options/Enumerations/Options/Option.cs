@@ -176,7 +176,7 @@ public readonly struct Option<TValue>
 	/// Constructor for this option.
 	/// </summary>
 	/// <param name="inner">The inner option.</param>
-	internal Option(Option<TValue, string> inner) => Inner = inner;
+	private Option(Option<TValue, string> inner) => Inner = inner;
 
 	/// <summary>
 	/// Deconstruct the option into its components.
@@ -400,12 +400,7 @@ public readonly struct Option<TValue, TError>
 	/// <summary>
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </summary>
-	private readonly IEnumerable<TError>? _IgnoredErrors;
-
-	/// <summary>
-	/// Errors that are ignored instead of being returned as the option value.
-	/// </summary>
-	public IEnumerable<TError> IgnoredErrors => _IgnoredErrors ?? [];
+	public IEnumerable<TError> IgnoredErrors { get; }
 
 	/// <summary>
 	/// Whether this option is an Error.
@@ -449,15 +444,9 @@ public readonly struct Option<TValue, TError>
 	/// <param name="ignoredErrors">
 	/// Errors that are ignored instead of being returned as the option value.
 	/// </param>
-	internal Option(
+	private Option(
 		OptionType type, TValue? value, TError? error, IEnumerable<TError>? ignoredErrors
-	)
-	{
-		Type = type;
-		_SomeValue = value;
-		_ErrorValue = error;
-		_IgnoredErrors = ignoredErrors;
-	}
+	) => (Type, _SomeValue, _ErrorValue, IgnoredErrors) = (type, value, error, ignoredErrors ?? []);
 
 	/// <summary>
 	/// Deconstruct the option into its components.
@@ -544,11 +533,11 @@ public readonly struct Option<TValue, TError>
 	/// <returns>A boxed <see cref="IOption{TValue, TError}" />.</returns>
 	public IOption<TValue, TError> ToBoxed() => Type switch
 	{
-		OptionType.Error => new BoxedError<TValue, TError>(_ErrorValue, _IgnoredErrors),
-		OptionType.None => new BoxedNone<TValue, TError>(_IgnoredErrors),
+		OptionType.Error => new BoxedError<TValue, TError>(_ErrorValue, IgnoredErrors),
+		OptionType.None => new BoxedNone<TValue, TError>(IgnoredErrors),
 		OptionType.Some => new BoxedSome<TValue, TError>(
 			_SomeValue ?? throw new InvalidOperationException("Some value cannot be null."),
-			_IgnoredErrors
+			IgnoredErrors
 		),
 		_ => throw new InvalidOperationException($"Unknown OptionType: {Type}")
 	};

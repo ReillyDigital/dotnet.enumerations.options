@@ -5,7 +5,7 @@ namespace ReillyDigital.Enumerations.Options;
 /// individually accessed by index. Errors will be of type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
-public sealed class OptionList<TValue> : IList<Option<TValue>>, IIgnoredErrorSet
+public sealed class OptionList<TValue> : IIgnoredErrorSet, IList<Option<TValue>>
 {
 	/// <summary>
 	/// Returns an empty collection.
@@ -216,7 +216,8 @@ public sealed class OptionList<TValue> : IList<Option<TValue>>, IIgnoredErrorSet
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <typeparam name="TError">The type of the error of the options.</typeparam>
-public sealed class OptionList<TValue, TError> : IList<Option<TValue, TError>>, IIgnoredErrorSet<TError>
+public sealed class OptionList<TValue, TError>
+	: IIgnoredErrorSet<TError>, IList<Option<TValue, TError>>
 {
 	/// <summary>
 	/// Returns an empty collection.
