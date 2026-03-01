@@ -11,13 +11,13 @@ public static class StreamScenario
 			{
 				await foreach (var each in stream.ReadToEnd())
 				{
-					switch (each.Type)
+					switch (each)
 					{
-						case OptionType.Error:
-							Console.WriteLine(each.ErrorValue);
+						case { Type: OptionType.Error, ErrorValue: var error }:
+							Console.WriteLine(error);
 							break;
-						case OptionType.Some:
-							Console.WriteLine(each.Value);
+						case { Type: OptionType.Some, Value: var value }:
+							Console.WriteLine(value);
 							break;
 					}
 				}
