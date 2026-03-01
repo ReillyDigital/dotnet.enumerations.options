@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup Label="Project Properties">
+		<ImplicitUsings>enable</ImplicitUsings>
+		<LanguageVersion>12.0</LanguageVersion>
+		<Nullable>enable</Nullable>
+		<Optimize>true</Optimize>
+		<OutputType>Exe</OutputType>
+		<ProjectGuid>9C47A374-E41B-4543-9A68-E49DB424F915</ProjectGuid>
+		<RootNamespace>ReillyDigital.Enumerations.Options.Benchmarks</RootNamespace>
+		<TargetFramework>net10.0</TargetFramework>
+		<Version>0.1.0</Version>
+	</PropertyGroup>
+	<ItemGroup Label="Project References">
+	  <ProjectReference Include="..\Enumerations.Options\Enumerations.Options.csproj" />
+	</ItemGroup>
+	<ItemGroup Label="Package References">
+	  <PackageReference Include="Ardalis.Result" Version="10.1.0" />
+	  <PackageReference Include="BenchmarkDotNet" Version="0.15.8" />
+	  <PackageReference Include="FluentResults" Version="4.0.0" />
+	  <PackageReference Include="JetBrains.Annotations" Version="2025.2.4" />
+	  <PackageReference Include="LightResults" Version="10.0.3" />
+	  <PackageReference Include="Rascal" Version="1.1.0" />
+	  <PackageReference Include="SimpleResults" Version="4.0.0" />
+	</ItemGroup>
+</Project>

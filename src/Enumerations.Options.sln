@@ -4,6 +4,8 @@ VisualStudioVersion = 17.5.002.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enumerations.Options", "Enumerations.Options/Enumerations.Options.csproj", "{1C1D2522-48D7-4BB8-80DF-76B1DAF0D779}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enumerations.Options.Benchmarks", "Enumerations.Options.Sample/Enumerations.Options.Benchmarks.csproj", "{9C47A374-E41B-4543-9A68-E49DB424F915}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Enumerations.Options.Sample", "Enumerations.Options.Sample/Enumerations.Options.Sample.csproj", "{37287E71-8B25-429D-8396-BE31159148C1}"
 EndProject
 Global
@@ -16,6 +18,10 @@ Global
 		{1C1D2522-48D7-4BB8-80DF-76B1DAF0D779}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C1D2522-48D7-4BB8-80DF-76B1DAF0D779}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C1D2522-48D7-4BB8-80DF-76B1DAF0D779}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C47A374-E41B-4543-9A68-E49DB424F915}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C47A374-E41B-4543-9A68-E49DB424F915}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C47A374-E41B-4543-9A68-E49DB424F915}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C47A374-E41B-4543-9A68-E49DB424F915}.Release|Any CPU.Build.0 = Release|Any CPU
 		{37287E71-8B25-429D-8396-BE31159148C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{37287E71-8B25-429D-8396-BE31159148C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{37287E71-8B25-429D-8396-BE31159148C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
