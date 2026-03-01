@@ -17,6 +17,7 @@
 	</ItemGroup>
 	<ItemGroup Label="Global Usings">
 		<Using Include="ReillyDigital.Enumerations.Options" />
+		<Using Include="ReillyDigital.Enumerations.Options.Boxed" />
 		<Using Include="ReillyDigital.Enumerations.OptionsFunctions" Static="true" />
 	</ItemGroup>
 </Project>

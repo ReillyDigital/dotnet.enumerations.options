@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Company>Reilly Digital</Company>
-		<Description>A result object library for .NET.</Description>
+		<Description>A lightweight, zero-allocation result object library for .NET with discriminated union types for void, value, none, and error outcomes.</Description>
 		<EnableSourceLink>true</EnableSourceLink>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -20,10 +20,9 @@
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://gitlab.com/reilly-digital/dotnet/enumerations.options.git</RepositoryUrl>
 		<RootNamespace>ReillyDigital.Enumerations.Options</RootNamespace>
-		<Summary>A result object library for .NET.</Summary>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<TargetFramework>net8.0</TargetFramework>
-		<Title>ReillyDigital.Enumerations.Options - A result object library for .NET.</Title>
+		<Title>ReillyDigital.Enumerations.Options - A lightweight, zero-allocation result object library for .NET.</Title>
 		<Version>2.0.0-alpha.10</Version>
 	</PropertyGroup>
 	<ItemGroup Label="Global Usings">

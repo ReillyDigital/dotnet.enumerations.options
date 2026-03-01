@@ -1,4 +1,4 @@
-public static class SimpleValuesScenario
+public static class SimpleOptionScenario
 {
 	public static Option<string> GetMessage(int? messageId)
 	{
@@ -22,7 +22,7 @@ public static class SimpleValuesScenario
 			case { Type: OptionType.Error, ErrorValue: var error }:
 				throw new Exception(error);
 			case { Type: OptionType.None }:
-				Console.WriteLine("No message found");
+				Console.WriteLine("No message found.");
 				break;
 			case { Type: OptionType.Some, Value: var value }:
 				Console.WriteLine(value);
