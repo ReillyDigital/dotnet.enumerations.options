@@ -4,3 +4,5 @@
 **/bin
 **/obj
 **/*.csproj.user
+
+src/Enumerations.Options.Benchmarks/BenchmarkDotNet.Artifacts
