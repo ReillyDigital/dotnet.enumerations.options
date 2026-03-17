@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.0.0-alpha.13] - 2026-03-17
+
+### Changed
+
+- Fixed return types for OptionEnumerable helper methods which were incorrectly returning boxed types.
+
 ## [2.0.0-alpha.12] - 2026-02-28
 
 ### Changed
