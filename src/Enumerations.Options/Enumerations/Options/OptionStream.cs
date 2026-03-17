@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 /// added to the stream. Errors are of type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
-public sealed class OptionStream<TValue> : IVoid
+public sealed class OptionStream<TValue>
 {
 	/// <summary>
 	/// The current option from the stream.
@@ -310,7 +310,7 @@ public sealed class OptionStream<TValue> : IVoid
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <typeparam name="TError">The type of the errors.</typeparam>
-public sealed class OptionStream<TValue, TError> : IVoid<TError>
+public sealed class OptionStream<TValue, TError>
 {
 	/// <summary>
 	/// The current option from the stream.

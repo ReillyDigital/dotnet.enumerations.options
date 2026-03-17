@@ -5,7 +5,7 @@ namespace ReillyDigital.Enumerations.Options;
 /// individually accessed by index. Errors will be of type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
-public sealed class OptionList<TValue> : IIgnoredErrorSet, IList<Option<TValue>>
+public sealed class OptionList<TValue> : IList<Option<TValue>>
 {
 	/// <summary>
 	/// Returns an empty collection.
@@ -23,7 +23,9 @@ public sealed class OptionList<TValue> : IIgnoredErrorSet, IList<Option<TValue>>
 	/// <inheritdoc />
 	public int Count => List.Count;
 
-	/// <inheritdoc />
+	/// <summary>
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </summary>
 	public IEnumerable<string> IgnoredErrors { get; }
 
 	/// <summary>
@@ -216,8 +218,7 @@ public sealed class OptionList<TValue> : IIgnoredErrorSet, IList<Option<TValue>>
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <typeparam name="TError">The type of the error of the options.</typeparam>
-public sealed class OptionList<TValue, TError>
-	: IIgnoredErrorSet<TError>, IList<Option<TValue, TError>>
+public sealed class OptionList<TValue, TError> : IList<Option<TValue, TError>>
 {
 	/// <summary>
 	/// Returns an empty collection.
@@ -235,7 +236,9 @@ public sealed class OptionList<TValue, TError>
 	/// <inheritdoc />
 	public int Count => List.Count;
 
-	/// <inheritdoc />
+	/// <summary>
+	/// Errors that are ignored instead of being returned as the option value.
+	/// </summary>
 	public IEnumerable<TError> IgnoredErrors { get; }
 
 	/// <summary>

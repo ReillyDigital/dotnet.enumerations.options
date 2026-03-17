@@ -6,7 +6,7 @@ namespace ReillyDigital.Enumerations.Options;
 /// added to the bus. Errors are of type <see cref="string" />.
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
-public sealed class OptionBus<TValue> : IVoid
+public sealed class OptionBus<TValue>
 {
 	/// <summary>
 	/// An event triggered when the bus signals end.
@@ -151,7 +151,7 @@ public sealed class OptionBus<TValue> : IVoid
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <typeparam name="TError">The type of the error of the options.</typeparam>
-public sealed class OptionBus<TValue, TError> : IVoid<TError>
+public sealed class OptionBus<TValue, TError>
 {
 	/// <summary>
 	/// An event triggered when the bus signals end.

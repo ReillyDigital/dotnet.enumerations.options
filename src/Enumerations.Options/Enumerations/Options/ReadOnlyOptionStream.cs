@@ -9,7 +9,7 @@ using System.Runtime.CompilerServices;
 /// </summary>
 /// <typeparam name="TValue">The type of the value of the options.</typeparam>
 /// <param name="optionStream">The option stream to wrap.</param>
-public class ReadOnlyOptionStream<TValue>(OptionStream<TValue> optionStream) : IVoid
+public class ReadOnlyOptionStream<TValue>(OptionStream<TValue> optionStream)
 {
 	/// <inheritdoc cref="OptionStream{TValue}.Current" />
 	public Option<TValue>? Current => optionStream.Current;
@@ -42,7 +42,6 @@ public class ReadOnlyOptionStream<TValue>(OptionStream<TValue> optionStream) : I
 /// <typeparam name="TError">The type of the error of the options.</typeparam>
 /// <param name="optionStream">The option stream to wrap.</param>
 public class ReadOnlyOptionStream<TValue, TError>(OptionStream<TValue, TError> optionStream)
-	: IVoid<TError>
 {
 	/// <inheritdoc cref="OptionStream{TValue, TError}.Current" />
 	public Option<TValue, TError>? Current => optionStream.Current;
