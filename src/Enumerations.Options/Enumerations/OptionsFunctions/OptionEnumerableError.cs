@@ -4,22 +4,22 @@ using ReillyDigital.Enumerations.Options;
 
 public static partial class OptionsFunctions
 {
-	/// <inheritdoc cref="IOptionEnumerable{TValue}.Error(IEnumerable{string})" />
+	/// <inheritdoc cref="OptionEnumerable{TValue}.Error(IEnumerable{string})" />
 	/// <typeparam name="TValue">The type of the value of the options.</typeparam>
-	public static IOptionEnumerableError<TValue> OptionEnumerableError<TValue>(
+	public static OptionEnumerable<TValue> OptionEnumerableError<TValue>(
 		IEnumerable<string>? ignoredErrors = null
-	) => IOptionEnumerable<TValue>.Error(ignoredErrors: ignoredErrors);
+	) => OptionEnumerable<TValue>.Error(ignoredErrors: ignoredErrors);
 
-	/// <inheritdoc cref="IOptionEnumerable{TValue}.Error(string, IEnumerable{string})" />
+	/// <inheritdoc cref="OptionEnumerable{TValue}.Error(string, IEnumerable{string})" />
 	/// <typeparam name="TValue">The type of the value of the options.</typeparam>
-	public static IOptionEnumerableError<TValue> OptionEnumerableError<TValue>(
+	public static OptionEnumerable<TValue> OptionEnumerableError<TValue>(
 		string value, IEnumerable<string>? ignoredErrors = null
-	) => IOptionEnumerable<TValue>.Error(value, ignoredErrors: ignoredErrors);
+	) => OptionEnumerable<TValue>.Error(value, ignoredErrors: ignoredErrors);
 
-	/// <inheritdoc cref="IOptionEnumerable{TValue, TError}.Error(TError, IEnumerable{TError})" />
+	/// <inheritdoc cref="OptionEnumerable{TValue, TError}.Error(TError, IEnumerable{TError})" />
 	/// <typeparam name="TValue">The type of the value of the options.</typeparam>
 	/// <typeparam name="TError">The type of the error of the options.</typeparam>
-	public static IOptionEnumerableError<TValue, TError> OptionEnumerableError<TValue, TError>(
+	public static OptionEnumerable<TValue, TError> OptionEnumerableError<TValue, TError>(
 		TError value, IEnumerable<TError>? ignoredErrors = null
-	) => IOptionEnumerable<TValue, TError>.Error(value, ignoredErrors: ignoredErrors);
+	) => OptionEnumerable<TValue, TError>.Error(value, ignoredErrors: ignoredErrors);
 }
