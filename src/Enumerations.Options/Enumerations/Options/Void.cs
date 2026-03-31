@@ -81,18 +81,6 @@ public readonly struct Void
 	};
 
 	/// <summary>
-	/// Implicitly convert a <see cref="string" /> to a <see cref="Void" /> of Error.
-	/// </summary>
-	/// <param name="value">The error value.</param>
-	public static implicit operator Void(string value) => Error(value);
-
-	/// <summary>
-	/// Explicitly convert a <see cref="Void" /> to a <see cref="string" />.
-	/// </summary>
-	/// <param name="value">The void.</param>
-	public static explicit operator string(Void value) => value.ErrorValue;
-
-	/// <summary>
 	/// The error value of this void.
 	/// </summary>
 	public string ErrorValue => Inner.ErrorValue;
@@ -240,19 +228,6 @@ public readonly struct Void<TError>
 		IError<IVoid, TError> error => Error(error.Value),
 		_ => Success(),
 	};
-
-	/// <summary>
-	/// Implicitly convert a <typeparamref name="TError" /> to a <see cref="Void{TError}" /> of
-	/// Error.
-	/// </summary>
-	/// <param name="value">The error value.</param>
-	public static implicit operator Void<TError>(TError value) => Error(value);
-
-	/// <summary>
-	/// Implicitly convert a <see cref="Void{TError}" /> to a <typeparamref name="TError" />.
-	/// </summary>
-	/// <param name="value">The void.</param>
-	public static implicit operator TError(Void<TError> value) => value.ErrorValue;
 
 	/// <summary>
 	/// Whether this void is an Error.

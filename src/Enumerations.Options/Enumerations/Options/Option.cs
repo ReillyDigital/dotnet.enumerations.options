@@ -9,6 +9,31 @@ using System.Linq;
 public readonly struct Option<TValue>
 {
 	/// <summary>
+	/// Implicitly convert a <typeparamref name="TValue" /> to an <see cref="Option{TValue}" />. If
+	/// the value is null, an <see cref="Option{TValue}" /> with an option type of
+	/// <see cref="OptionType.None" /> is produced. Otherwise, an <see cref="Option{TValue}" /> with
+	/// an option type of <see cref="OptionType.Some" /> is produced.
+	/// </summary>
+	/// <param name="value">The value.</param>
+	public static implicit operator Option<TValue>(TValue? value)
+		=> value is null ? None() : Some(value);
+
+	/// <summary>
+	/// Explicitly convert an <see cref="Option{TValue}" /> to a <typeparamref name="TValue" />. If
+	/// the option has an option type of <see cref="OptionType.Some" />, the value is returned.
+	/// Otherwise, if the option has an option type of <see cref="OptionType.None" />, the default
+	/// value of <typeparamref name="TValue" /> is returned. Otherwise, an
+	/// <see cref="Exception" /> is thrown.
+	/// </summary>
+	/// <param name="value">The option.</param>
+	public static explicit operator TValue?(Option<TValue> value) => value switch {
+		{ Type: OptionType.Error, ErrorValue: var error } => throw new Exception(error),
+		{ Type: OptionType.None } => default,
+		{ Type: OptionType.Some, Value: var innerValue } => innerValue,
+		_ => throw new Exception("Invalid option type.")
+	};
+
+	/// <summary>
 	/// Create a boxed <see cref="IError{TValue}" />.
 	/// </summary>
 	/// <param name="ignoredErrors">
@@ -105,32 +130,6 @@ public readonly struct Option<TValue>
 		ISome<TValue> some => Some(some.Value),
 		_ => throw new InvalidOperationException("Invalid option type."),
 	};
-
-	/// <summary>
-	/// Implicitly convert a <see cref="string" /> to an <see cref="Option{TValue}" /> of
-	/// Error.
-	/// </summary>
-	/// <param name="value">The error value.</param>
-	public static implicit operator Option<TValue>(string value) => Error(value);
-
-	/// <summary>
-	/// Implicitly convert a <typeparamref name="TValue" /> to an <see cref="Option{TValue}" /> of
-	/// Some.
-	/// </summary>
-	/// <param name="value">The value.</param>
-	public static implicit operator Option<TValue>(TValue value) => Some(value);
-
-	/// <summary>
-	/// Explicitly convert an <see cref="Option{TValue}" /> to a <see cref="string" />.
-	/// </summary>
-	/// <param name="value">The option.</param>
-	public static explicit operator string(Option<TValue> value) => value.ErrorValue;
-
-	/// <summary>
-	/// Explicitly convert an <see cref="Option{TValue}" /> to a <typeparamref name="TValue" />.
-	/// </summary>
-	/// <param name="value">The option.</param>
-	public static explicit operator TValue(Option<TValue> value) => value.Value;
 
 	/// <summary>
 	/// The error value of this option.
@@ -275,6 +274,32 @@ public readonly struct Option<TValue>
 public readonly struct Option<TValue, TError>
 {
 	/// <summary>
+	/// Implicitly convert a <typeparamref name="TValue" /> to an
+	/// <see cref="Option{TValue, TError}" />. If the value is null, an
+	/// <see cref="Option{TValue, TError}" /> with an option type of <see cref="OptionType.None" />
+	/// is produced. Otherwise, an <see cref="Option{TValue, TError}" /> with an option type of
+	/// <see cref="OptionType.Some" /> is produced.
+	/// </summary>
+	/// <param name="value">The value.</param>
+	public static implicit operator Option<TValue, TError>(TValue? value)
+		=> value is null ? None() : Some(value);
+
+	/// <summary>
+	/// Explicitly convert an <see cref="Option{TValue, TError}" /> to a
+	/// <typeparamref name="TValue" />. If the option has an option type of
+	/// <see cref="OptionType.Some" />, the value is returned. Otherwise, if the option has an
+	/// option type of <see cref="OptionType.None" />, the default value of
+	/// <typeparamref name="TValue" /> is returned. Otherwise, an <see cref="Exception" /> is
+	/// thrown.
+	/// </summary>
+	/// <param name="value">The option.</param>
+	public static explicit operator TValue?(Option<TValue, TError> value) => value switch {
+		{ Type: OptionType.None } => default,
+		{ Type: OptionType.Some, Value: var innerValue } => innerValue,
+		_ => throw new Exception("Option is an error.")
+	};
+
+	/// <summary>
 	/// Create a boxed <see cref="IError{TValue, TError}" />.
 	/// </summary>
 	/// <param name="error">The error value.</param>
@@ -355,34 +380,6 @@ public readonly struct Option<TValue, TError>
 		ISome<TValue> some => Some(some.Value),
 		_ => throw new InvalidOperationException("Invalid option type."),
 	};
-
-	/// <summary>
-	/// Implicitly convert a <typeparamref name="TError" /> to an
-	/// <see cref="Option{TValue, TError}" /> of Error.
-	/// </summary>
-	/// <param name="value">The error value.</param>
-	public static implicit operator Option<TValue, TError>(TError value) => Error(value);
-
-	/// <summary>
-	/// Implicitly convert a <typeparamref name="TValue" /> to an
-	/// <see cref="Option{TValue, TError}" /> of Some.
-	/// </summary>
-	/// <param name="value">The value.</param>
-	public static implicit operator Option<TValue, TError>(TValue value) => Some(value);
-
-	/// <summary>
-	/// Explicitly convert an <see cref="Option{TValue, TError}" /> to a
-	/// <typeparamref name="TError" />.
-	/// </summary>
-	/// <param name="value">The option.</param>
-	public static explicit operator TError(Option<TValue, TError> value) => value.ErrorValue;
-
-	/// <summary>
-	/// Explicitly convert an <see cref="Option{TValue, TError}" /> to a
-	/// <typeparamref name="TValue" />.
-	/// </summary>
-	/// <param name="value">The option.</param>
-	public static explicit operator TValue(Option<TValue, TError> value) => value.Value;
 
 	/// <summary>
 	/// The error if Error, otherwise default.
