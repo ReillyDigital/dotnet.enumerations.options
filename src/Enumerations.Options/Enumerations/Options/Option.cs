@@ -20,9 +20,9 @@ public readonly struct Option<TValue>
 
 	/// <summary>
 	/// Explicitly convert an <see cref="Option{TValue}" /> to a <typeparamref name="TValue" />. If
-	/// the option has an option type of <see cref="OptionType.Some" />, the value is returned.
+	/// the option has an option type of <see cref="OptionType.Some" />, the value is produced.
 	/// Otherwise, if the option has an option type of <see cref="OptionType.None" />, the default
-	/// value of <typeparamref name="TValue" /> is returned. Otherwise, an
+	/// value of <typeparamref name="TValue" /> is produced. Otherwise, an
 	/// <see cref="Exception" /> is thrown.
 	/// </summary>
 	/// <param name="value">The option.</param>
@@ -31,6 +31,19 @@ public readonly struct Option<TValue>
 		{ Type: OptionType.None } => default,
 		{ Type: OptionType.Some, Value: var innerValue } => innerValue,
 		_ => throw new Exception("Invalid option type.")
+	};
+
+	/// <summary>
+	/// Implicitly convert an <see cref="Option{TValue}" /> to a <see cref="Void" />. If
+	/// the option has an option type of <see cref="OptionType.Error" />, a <see cref="Void" /> with
+	/// a void type of <see cref="VoidType.Error" /> is produced with the same error value.
+	/// Otherwise, a <see cref="Void" /> with a void type of <see cref="VoidType.Void" /> is
+	/// produced.
+	/// </summary>
+	/// <param name="value">The option.</param>
+	public static implicit operator Void(Option<TValue> value) => value switch {
+		{ Type: OptionType.Error, ErrorValue: var error } => VoidError(error),
+		_ => Void()
 	};
 
 	/// <summary>
@@ -297,6 +310,19 @@ public readonly struct Option<TValue, TError>
 		{ Type: OptionType.None } => default,
 		{ Type: OptionType.Some, Value: var innerValue } => innerValue,
 		_ => throw new Exception("Option is an error.")
+	};
+
+	/// <summary>
+	/// Implicitly convert an <see cref="Option{TValue, TError}" /> to a
+	/// <see cref="Void{TError}" />. If the option has an option type of
+	/// <see cref="OptionType.Error" />, a <see cref="Void{TError}" /> with a void type of
+	/// <see cref="VoidType.Error" /> is produced with the same error value. Otherwise, a
+	/// <see cref="Void{TError}" /> with a void type of <see cref="VoidType.Void" /> is produced.
+	/// </summary>
+	/// <param name="value">The option.</param>
+	public static implicit operator Void<TError>(Option<TValue, TError> value) => value switch {
+		{ Type: OptionType.Error, ErrorValue: var error } => VoidError(error),
+		_ => Void<TError>()
 	};
 
 	/// <summary>
