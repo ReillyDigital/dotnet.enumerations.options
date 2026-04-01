@@ -149,11 +149,11 @@ public partial class Scenario1
 
 	private Void S1_ReturnVoidErrorWithMessage_Impl_EnumerationsOptions() => VoidError(ErrorMessage);
 
-	private Option<string> S1_ReturnOptionStringSuccess_Impl_EnumerationsOptions() => Some(SuccessMessage);
+	private Option<string> S1_ReturnOptionStringSuccess_Impl_EnumerationsOptions() => SuccessMessage;
 
 	private Option<string> S1_ReturnOptionStringErrorNoMessage_Impl_EnumerationsOptions() => OptionError<string>();
 
 	private Option<string> S1_ReturnOptionStringErrorWithMessage_Impl_EnumerationsOptions() => OptionError<string>(ErrorMessage);
 
-	private Option<string> S1_ReturnOptionStringNone_Impl_EnumerationsOptions() => None<string>();
+	private Option<string> S1_ReturnOptionStringNone_Impl_EnumerationsOptions() => null;
 }

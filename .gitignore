@@ -1,8 +1,7 @@
 **/.netcoredbg_hist
 **/.vs
 **/.vscode
+**/BenchmarkDotNet.Artifacts
 **/bin
 **/obj
 **/*.csproj.user
-
-src/Enumerations.Options.Benchmarks/BenchmarkDotNet.Artifacts

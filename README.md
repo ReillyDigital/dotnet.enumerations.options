@@ -10,14 +10,14 @@ A lightweight, zero-allocation result object library for .NET with discriminated
 - **Boxed Interfaces** - `IVoid and IOption<TValue>` for polymorphism and covariance when needed, while providing minimal allocation boxing.
 - **Pattern Matching** - Full support for C# switch expressions and pattern matching.
 - **Enumerables** - `IEnumerable` and `IAsyncEnumerable` implementations for option collections.
-- **Streaming** - `OptionStream<T>` for async streaming of option values.
-- **Event Bus** - `OptionBus<T>` for event-based option distribution.
+- **Streaming** - `OptionStream<TValue>` for async streaming of option values.
+- **Event Bus** - `OptionBus<TValue>` for event-based option distribution.
 
 ## Usage
 
 ### Simple Option Values
 
-Define a function that returns an `Option<>` value:
+Define a function that returns an `Option<TValue>` value:
 ```csharp
 static Option<string> GetMessage(int? messageId)
 {
@@ -50,9 +50,44 @@ switch (GetMessage(2))
 }
 ```
 
+### Implicit Option Values
+
+Define a function that returns an `Option<TValue>` value and return the `TValue` value directly for an implicit option of type `Some` or return `null` directly for an implicit option of type `None`:
+```csharp
+static Option<string> GetMessage(int? messageId)
+{
+	if (messageId is null)
+	{
+		return OptionError<string>("Empty IDs are not supported.");
+	}
+	return messageId switch
+	{
+		1 => "Here is the message for 1.",
+		2 => "Here is the message for 2.",
+		3 => "Here is the message for 3.",
+		_ => null
+	};
+}
+```
+
+Check the result value against the various option types:
+```csharp
+switch (GetMessage(2))
+{
+	case { Type: OptionType.Error, ErrorValue: var error }:
+		throw new Exception(error);
+	case { Type: OptionType.None }:
+		Console.WriteLine("No message found.");
+		break;
+	case { Type: OptionType.Some, Value: var some }:
+		Console.WriteLine(some);
+		break;
+}
+```
+
 ### Boxed Option Values
 
-Define a function that returns an `IOption<>` value:
+Define a function that returns an `IOption<TValue>` value:
 ```csharp
 static IOption<string> GetMessage(int? messageId)
 {
