@@ -15,7 +15,6 @@
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageTags>csharp, c#, dotnet, result, option, zero-allocation, exceptionless, result-type, maybe, error, void, error-handling, discriminated-union, functional</PackageTags>
 		<PackageVersion>2.0.0-alpha.16</PackageVersion>
-		<ProjectGuid>AA0DA09D-1C29-47B8-912B-D323505872C3</ProjectGuid>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<RepositoryUrl>https://gitlab.com/reilly-digital/dotnet/enumerations.options.git</RepositoryUrl>

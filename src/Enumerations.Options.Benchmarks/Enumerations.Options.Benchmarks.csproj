@@ -5,7 +5,6 @@
 		<Nullable>enable</Nullable>
 		<Optimize>true</Optimize>
 		<OutputType>Exe</OutputType>
-		<ProjectGuid>9C47A374-E41B-4543-9A68-E49DB424F915</ProjectGuid>
 		<RootNamespace>ReillyDigital.Enumerations.Options.Benchmarks</RootNamespace>
 		<TargetFramework>net10.0</TargetFramework>
 	</PropertyGroup>
